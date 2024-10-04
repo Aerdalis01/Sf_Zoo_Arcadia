@@ -41,13 +41,22 @@ Zoo Arcadia est une application de gestion d’un zoo, permettant de gérer les 
   ```bash
   composer require symfony/orm-pack
 
+5. **Installer les dépendances symfony**
+  ```bash
+  composer require symfony/maker-bundle --dev
+
 5. **Installer Webpack Encore** :
   ```bash
   composer require symfony/webpack-encore-bundle
 
+6. **Installer les dépendances Webpack**
+  ```bash
+  npm install webpack-notifier@^1.15.0 --save-dev
+
+<!-- Modification ici MongoDB à installer au préalable avec extension=mongodb.so dans php.ici
 6. **Installer Doctrine MongoDB** :
     ```bash
-    composer require doctrine/mongodb-odm-bundle
+    composer require doctrine/mongodb-odm-bundle -->
 
 ### Frontend :
 
