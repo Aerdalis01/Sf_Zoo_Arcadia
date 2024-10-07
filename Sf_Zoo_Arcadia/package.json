@@ -3,7 +3,23 @@
         "@babel/core": "^7.17.0",
         "@babel/preset-env": "^7.16.0",
         "@symfony/webpack-encore": "^4.0.0",
+        "@babel/preset-react": "^7.24.7",
+        "@hotwired/stimulus": "^3.0.0",
+        "@symfony/stimulus-bridge": "^3.2.0",
+        "@symfony/ux-react": "file:vendor/symfony/ux-react/assets",
+        "@types/react": "^18.3.8",
+        "@types/react-dom": "^18.3.0",
+        "@types/react-router-dom": "^5.3.3",
         "core-js": "^3.23.0",
+        "dart-sass": "^1.25.0",
+        "file-loader": "^6.2.0",
+        "html-webpack-plugin": "^5.6.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "sass": "^1.79.1",
+        "sass-loader": "^14.2.1",
+        "ts-loader": "^9.5.1",
+        "typescript": "^5.6.2",
         "regenerator-runtime": "^0.13.9",
         "webpack": "^5.74.0",
         "webpack-cli": "^4.10.0",
@@ -16,5 +32,9 @@
         "dev": "encore dev",
         "watch": "encore dev --watch",
         "build": "encore production --progress"
+    },
+    "dependencies": {
+        "bootstrap": "^5.3.3",
+        "react-router-dom": "^6.26.2"
     }
 }
