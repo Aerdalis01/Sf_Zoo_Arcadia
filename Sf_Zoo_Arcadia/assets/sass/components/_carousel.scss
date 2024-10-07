@@ -1,0 +1,83 @@
+@import "../vendors/_custom-bootstrap";
+
+.carousel {
+  z-index: 0;
+  background-color: white;
+}
+
+.carousel-item {
+  height: 90svh;
+  max-height: 90svh;
+  position: relative;
+  font-family: 'Akaya_kanadaka', inter, sans-serif;
+  color: #000000;
+  text-shadow: 2px 2px 2px white;
+}
+
+.container-carousel {
+  position: absolute;
+
+  &--text {
+    @extend .container-carousel;
+    bottom: 20%;
+    left: 0;
+  }
+}
+
+
+.carousel-img--accueil {
+  position: fixed;
+  bottom: 0;
+  opacity: 75%;
+
+  @include media-breakpoint-up(sm) {
+    content: url("../../../public/uploads/images/carousel/cerf-LG.webp");
+  }
+
+  @include media-breakpoint-up(md) {
+    content: url("../../../public/uploads/images/carousel/cerf.webp");
+  }
+}
+
+.carousel-img--marais {
+  position: fixed;
+  bottom: 0;
+  opacity: 75%;
+
+  @include media-breakpoint-up(sm) {
+    content: url("../../../public/uploads/images/carousel/marais-md.webp");
+  }
+
+  @include media-breakpoint-up(md) {
+    content: url("../../../public/uploads/images/carousel/marais-lg.webp");
+    overflow: hidden;
+  }
+}
+
+.carousel-img--savane {
+  position: fixed;
+  bottom: 0;
+  opacity: 75%;
+
+  @include media-breakpoint-up(sm) {
+    content: url("../../../public/uploads/images/carousel/Savane-md.webp");
+  }
+
+  @include media-breakpoint-up(md) {
+    content: url("../../../public/uploads/images/carousel/Savane-lg.webp");
+  }
+}
+
+.carousel-img--jungle {
+  position: fixed;
+  bottom: 0;
+  opacity: 75%;
+
+  @include media-breakpoint-up(sm) {
+    content: url("../../../public/uploads/images/carousel/Jungle-md.webp");
+  }
+
+  @include media-breakpoint-up(md) {
+    content: url("../../../public/uploads/images/carousel/Jungle-lg.webp");
+  }
+}
