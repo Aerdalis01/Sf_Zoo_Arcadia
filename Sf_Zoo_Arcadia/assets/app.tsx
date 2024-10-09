@@ -1,17 +1,17 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client'
-import 'bootstrap';
+// import 'bootstrap';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // import { registerReactControllerComponents } from '@symfony/ux-react';
 // registerReactControllerComponents(require.context('./react/controllers', true, /\.(j|t)sx?$/));
-import './sass/app.scss';
+// import './sass/app.scss';
 
 
 // import Header  from './react/controllers/components/header';
 // import Footer  from './react/controllers/components/footer';
 
-import {AuthPage} from './react/pages/Auth/AuthPage'
-
+import {LoginPage} from './react/pages/Auth/LoginPage'
+import {RegisterPage} from './react/pages/Auth/RegisterPage'
 // import HomePage from './react/pages/HomePage';
 // import ServicePage from './react/pages/ServicesPage';
 // import { ServiceCreate } from './react/pages/ServiceCreate';
@@ -26,7 +26,8 @@ const App: React.FC = () => {
         <Router>
             {/* <Header/> */}
             <Routes>
-                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/auth" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
                 {/* <Route path="/" element={<HomePage />} />
                 <Route path="/services" element={<ServicePage />} />
                 <Route path="/services/create" element={<ServiceCreate />} />

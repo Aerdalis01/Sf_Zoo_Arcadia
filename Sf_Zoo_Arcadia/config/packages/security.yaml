@@ -24,11 +24,10 @@ security:
             lazy: true
             json_login:
                 username_path: email
+                password_path: password
                 check_path: _app_api_login_
                 provider: app_admin_provider
-            # access_token:
-            #     token_handler: App\Security\AccessTokenHandler
-            #     provider: app_admin_provider
+            
             logout:
                 path: logout
                 target: /

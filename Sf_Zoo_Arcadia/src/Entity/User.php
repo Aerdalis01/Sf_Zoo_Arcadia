@@ -17,15 +17,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(length: 50)]
-    private ?string $username = null;
-
+    
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
+    
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $email = null;
+    #[ORM\Column(type: 'json')]
+    private array $roles = [];
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -33,35 +33,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column(type: 'json')]
-    private array $roles = [];
-
-    /**
-     * @var Collection<int, AccessToken>
-     */
-    #[ORM\OneToMany(targetEntity: AccessToken::class, mappedBy: 'user')]
-    private Collection $accessTokens;
-
-    public function __construct()
-    {
-        $this->accessTokens = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): static
-    {
-        $this->username = $username;
-
-        return $this;
     }
 
     public function getPassword(): ?string
@@ -84,6 +59,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+    
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
 
         return $this;
     }
@@ -111,75 +106,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
-    public function getRoles(): array
-    {
-        return $this->roles;
-    }
-
-    public function setRoles(array $roles): static
-    {
-        $this->roles = $roles;
-
-        return $this;
-    }
-    public function isEmploye(): bool
-    {
-        return $this instanceof Employe;
-    }
-
-    public function isAdmin(): bool
-    {
-        return $this instanceof Admin;
-    }
-
-    public function isVeterinaire(): bool
-    {
-        return $this instanceof Veterinaire;
-    }
-
-    public function getUserIdentifier(): string
-    {
-        return $this->username;
-    }
-
-    public function getSalt(): ?string
-    {
-        return null;
-    }
+    
 
     public function eraseCredentials(): void
     {
-
-    }
-
-    /**
-     * @return Collection<int, AccessToken>
-     */
-    public function getAccessTokens(): Collection
-    {
-        return $this->accessTokens;
-    }
-
-    public function addAccessToken(AccessToken $accessToken): static
-    {
-        if (!$this->accessTokens->contains($accessToken)) {
-            $this->accessTokens->add($accessToken);
-            $accessToken->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAccessToken(AccessToken $accessToken): static
-    {
-        if ($this->accessTokens->removeElement($accessToken)) {
-            // set the owning side to null (unless already changed)
-            if ($accessToken->getUser() === $this) {
-                $accessToken->setUser(null);
-            }
-        }
-
-        return $this;
+ // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 }
