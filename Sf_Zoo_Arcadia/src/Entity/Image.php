@@ -6,6 +6,7 @@ use App\Repository\ImageRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Image
 {
     #[ORM\Id]
@@ -22,20 +23,34 @@ class Image
     #[ORM\Column(length: 255)]
     private ?string $imageSubDirectory = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?service $service = null;
-
     #[ORM\OneToOne(inversedBy: 'image', cascade: ['persist', 'remove'])]
-    private ?SousService $sousService = null;
+    #[ORM\JoinColumn(nullable: true, onDelete: "SET NULL")]
+    private ?Service $service = null;
 
     #[ORM\OneToOne(inversedBy: 'image', cascade: ['persist', 'remove'])]
     private ?Animal $animal = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    #[ORM\Column(type: 'datetime_immutable', nullable: false)]
+    private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'image',cascade: ['persist', 'remove'])]
+    private ?SousService $sousService = null;
+
+    #[ORM\PrePersist]
+    public function setCreatedAt(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): void
+    {
+        if ($this->createdAt !== null) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
     public function getNom(): ?string
     {
         return $this->nom;
@@ -84,17 +99,7 @@ class Image
         return $this;
     }
 
-    public function getSousService(): ?SousService
-    {
-        return $this->sousService;
-    }
 
-    public function setSousService(?SousService $sousService): static
-    {
-        $this->sousService = $sousService;
-
-        return $this;
-    }
 
     public function getAnimal(): ?Animal
     {
@@ -104,6 +109,29 @@ class Image
     public function setAnimal(?Animal $animal): static
     {
         $this->animal = $animal;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+    
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function getSousService(): ?SousService
+    {
+        return $this->sousService;
+    }
+
+    public function setSousService(?SousService $sousService): static
+    {
+        $this->sousService = $sousService;
 
         return $this;
     }

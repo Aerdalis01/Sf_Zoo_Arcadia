@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\SousServiceRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SousServiceRepository::class)]
@@ -19,17 +21,25 @@ class SousService
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
+    #[ORM\Column(type: "boolean")]
+    private  $menu = false;
+
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\OneToOne(mappedBy: 'sousService', cascade: ['persist', 'remove'])]
-    private ?Image $image = null;
-
     #[ORM\ManyToOne(inversedBy: 'sousService')]
     private ?Service $service = null;
+
+    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'sousService')]
+    private Collection $image;
+
+    public function __construct()
+    {
+        $this->image = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -60,6 +70,16 @@ class SousService
         return $this;
     }
 
+    public function setMenu(bool $menu): self
+    {
+        $this->menu = $menu;
+        return $this;
+    }
+
+    public function isMenu(): bool
+    {
+        return $this->menu;
+    }
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -84,28 +104,6 @@ class SousService
         return $this;
     }
 
-    public function getImage(): ?Image
-    {
-        return $this->image;
-    }
-
-    public function setImage(?Image $image): static
-    {
-        // unset the owning side of the relation if necessary
-        if ($image === null && $this->image !== null) {
-            $this->image->setSousService(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($image !== null && $image->getSousService() !== $this) {
-            $image->setSousService($this);
-        }
-
-        $this->image = $image;
-
-        return $this;
-    }
-
     public function getService(): ?Service
     {
         return $this->service;
@@ -114,6 +112,36 @@ class SousService
     public function setService(?Service $service): static
     {
         $this->service = $service;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Image>
+     */
+    public function getImage(): Collection
+    {
+        return $this->image;
+    }
+
+    public function addImage(Image $image): static
+    {
+        if (!$this->image->contains($image)) {
+            $this->image->add($image);
+            $image->setSousService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): static
+    {
+        if ($this->image->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getSousService() === $this) {
+                $image->setSousService(null);
+            }
+        }
 
         return $this;
     }

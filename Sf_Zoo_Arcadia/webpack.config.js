@@ -13,6 +13,9 @@ Encore
     })
     .addEntry('app', './assets/app.tsx')
     .splitEntryChunks()
+
+    // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
+    .enableStimulusBridge('./assets/controllers.json')
     .enableReactPreset()
     .enableStimulusBridge('./assets/controllers.json')
     .enableSingleRuntimeChunk()

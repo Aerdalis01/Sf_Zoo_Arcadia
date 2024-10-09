@@ -20,9 +20,8 @@ final class Version20241004082009 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE alimentation ADD animal_id INT DEFAULT NULL');
+        $this->addSql('CREATE TABLE alimentation (id INT AUTO_INCREMENT NOT NULL, animal_id INT DEFAULT NULL, date DATE NOT NULL, heure TIME NOT NULL, nourriture VARCHAR(255) NOT NULL, quantite VARCHAR(255) NOT NULL, created_by VARCHAR(100) NOT NULL, INDEX IDX_8E65DFA08E962C16 (animal_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE alimentation ADD CONSTRAINT FK_8E65DFA08E962C16 FOREIGN KEY (animal_id) REFERENCES animal (id)');
-        $this->addSql('CREATE INDEX IDX_8E65DFA08E962C16 ON alimentation (animal_id)');
     }
 
     public function down(Schema $schema): void

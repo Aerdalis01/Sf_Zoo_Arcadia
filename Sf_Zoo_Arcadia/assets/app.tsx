@@ -1,9 +1,53 @@
-/*
- * Welcome to your app's main JavaScript file!
- *
- * We recommend including the built version of this JavaScript file
- * (and its CSS file) in your base layout (base.html.twig).
- */
 
-// any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import {createRoot} from 'react-dom/client'
+import 'bootstrap';
+// import { registerReactControllerComponents } from '@symfony/ux-react';
+// registerReactControllerComponents(require.context('./react/controllers', true, /\.(j|t)sx?$/));
+import './sass/app.scss';
+
+
+// import Header  from './react/controllers/components/header';
+// import Footer  from './react/controllers/components/footer';
+
+// import {AuthPage} from './react/pages/Auth/AuthPage'
+
+// import HomePage from './react/pages/HomePage';
+import {ServicePage} from './react/pages/ServicesPage';
+import { ServiceCreate } from './react/pages/ServiceCreate';
+import { ServiceUpdate } from './react/pages/ServiceUpdate';
+import { SousServiceCreate } from './react/pages/SousServiceCreate';
+// import {AnimalCreate} from './react/pages/AnimalCreate';
+// import {RaceCreate} from './react/pages/RaceCreate';
+
+
+const App: React.FC = () => {
+    return (
+        <Router>
+            {/* <Header/> */}
+            <Routes>
+                {/* <Route path="/auth" element={<AuthPage />} />
+                <Route path="/" element={<HomePage />} /> */}
+                <Route path="/service" element={<ServicePage />} />
+                <Route path="/service/create" element={<ServiceCreate />} />
+                <Route path="/service/update" element={<ServiceUpdate />} />
+                <Route path="/sousService/create" element={<SousServiceCreate />} />
+                {/* <Route path="/animaux/create" element={<AnimalCreate />} />
+                <Route path="/race/create" element={<RaceCreate />} /> */}
+
+            </Routes>
+            {/* <Footer/> */}
+        </Router>
+    );
+};
+
+const rootElement = document.getElementById('root');
+if (rootElement) {
+    const root = createRoot(rootElement);
+    root.render(<App />);
+} else {
+    console.error("Root element not found");
+}
+

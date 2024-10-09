@@ -4,50 +4,71 @@ namespace App\Entity;
 
 use App\Repository\ServiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Service
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('service_basic')]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
+    #[Groups('service_basic')]
     private ?string $nom = null;
 
     #[ORM\Column(length: 25, nullable: true)]
+    #[Groups('service_basic')]
     private ?string $titre = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('service_basic')]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups('service_basic')]
     private ?string $horaire = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $carteZooPath = null;
+    #[ORM\Column(type: "boolean")]
+    #[Groups('service_basic')]
+    private  $carteZoo = false;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column(nullable: true)]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: "CASCADE")]
+    #[Groups('service_basic')]
     private ?Image $image = null;
-
-
-    #[ORM\Column(nullable: true)]
-    #[ORM\OneToMany(targetEntity: SousService::class, mappedBy: 'service')]
-    private Collection $sousService;
+    
+    #[ORM\OneToMany(targetEntity: SousService::class, mappedBy: 'service', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: "CASCADE")]
+    private Collection $sousServices;
 
     public function __construct()
     {
-        $this->sousService = new ArrayCollection();
+        $this->sousServices = new ArrayCollection();
+    }
+    #[ORM\PrePersist]
+    public function setCreatedAt(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): void
+    {
+        if ($this->createdAt !== null) {  // Vérifie que l'entité n'est pas nouvellement créée
+            $this->updatedAt = new \DateTimeImmutable();
+        }
     }
 
     public function getId(): ?int
@@ -91,10 +112,10 @@ class Service
         return $this;
     }
 
-    public function getHoraire(): ?string
-    {
-        return $this->horaire;
-    }
+    public function getHoraire(): ?array
+{
+    return $this->horaire ? json_decode($this->horaire, true) : null;
+}
 
     public function setHoraire(?string $horaire): static
     {
@@ -103,16 +124,15 @@ class Service
         return $this;
     }
 
-    public function getCarteZooPath(): ?string
+    public function setCarteZoo(bool $carteZoo): self
     {
-        return $this->carteZooPath;
+        $this->carteZoo = $carteZoo;
+        return $this;
     }
 
-    public function setCarteZooPath(?string $carteZooPath): static
+    public function isCarteZoo(): bool
     {
-        $this->carteZooPath = $carteZooPath;
-
-        return $this;
+        return $this->carteZoo;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
@@ -120,23 +140,9 @@ class Service
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 
     public function getImage(): ?Image
@@ -150,19 +156,28 @@ class Service
 
         return $this;
     }
+    public function removeImage(): self
+{
+    
+    if ($this->image !== null) {
+        $this->image->setService(null);
+        $this->image = null;
+    }
 
+    return $this;
+}
     /**
      * @return Collection<int, SousService>
      */
     public function getSousService(): Collection
     {
-        return $this->sousService;
+        return $this->sousServices;
     }
 
     public function addSousService(SousService $sousService): static
     {
-        if (!$this->sousService->contains($sousService)) {
-            $this->sousService->add($sousService);
+        if (!$this->sousServices->contains($sousService)) {
+            $this->sousServices->add($sousService);
             $sousService->setService($this);
         }
 
@@ -171,7 +186,7 @@ class Service
 
     public function removeSousService(SousService $sousService): static
     {
-        if ($this->sousService->removeElement($sousService)) {
+        if ($this->sousServices->removeElement($sousService)) {
             // set the owning side to null (unless already changed)
             if ($sousService->getService() === $this) {
                 $sousService->setService(null);
