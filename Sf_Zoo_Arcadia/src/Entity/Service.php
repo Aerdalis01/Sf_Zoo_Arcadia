@@ -6,8 +6,10 @@ use App\Repository\ServiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
+#[HasLifecycleCallbacks]
 class Service
 {
     #[ORM\Id]
@@ -45,6 +47,19 @@ class Service
     #[ORM\OneToMany(targetEntity: SousService::class, mappedBy: 'service')]
     private Collection $sousService;
 
+    public function prePersist() {
+        
+        $this->setCreatedAt(new \DateTimeImmutable());
+        $this->setUpdatedAt(new \DateTimeImmutable());
+
+    }
+
+    public function preUpdate() {
+
+        $this->setUpdatedAt(new \DateTimeImmutable());
+    }
+
+    
     public function __construct()
     {
         $this->sousService = new ArrayCollection();

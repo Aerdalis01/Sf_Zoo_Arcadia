@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,29 +12,43 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 
-#[Route('/api/register', name:'_app_api_register_')]
+#[Route('/api/admin/register', name:'_app_api_admin_register_')]
 class RegistrationController extends AbstractController
 {
-   
 
     #[Route('/new', name:'new', methods:['POST'])]
     public function createUser(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
     {
-        // Décoder le JSON reçu depuis le front-end
+        
         $data = json_decode($request->getContent(), true);
 
-        if (!$data || empty($data['email']) || empty($data['plainPassword'])) {
-            return new JsonResponse(['errors' => 'Email et mot de passe requis'], 400);
+        if (!$data || empty($data['email']) || empty($data['password']) || empty($data['role'])) {
+            return new JsonResponse(['errors' => 'Email, mot de passe ou rôle requis'], 400);
         }
 
-        // Créer un nouvel utilisateur
+        $validRoles = ['admin', 'employe', 'veterinaire'];
+        if (!in_array($data['role'], $validRoles)) {
+            return new JsonResponse(['errors' => ['Rôle invalide']], 400);
+        }
+        
         $user = new User();
         $user->setEmail($data['email']);
 
-        // Hashage du mot de passe
-        $hashedPassword = $passwordHasher->hashPassword($user, $data['plainPassword']);
+        switch ($data['role']) {
+            case 'admin':
+                $user->setRoles(['ROLE_ADMIN']);
+                break;
+            case 'employe':
+                $user->setRoles(['ROLE_EMPLOYE']);
+                break;
+            case 'veterinaire':
+                $user->setRoles(['ROLE_VETERINAIRE']);
+                break;
+            default:
+                return new JsonResponse(['errors' => 'Rôle invalide'], 400);
+        }
+        $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
         $user->setPassword($hashedPassword);
-
         // Persister l'utilisateur dans la base de données
         $entityManager->persist($user);
         $entityManager->flush();

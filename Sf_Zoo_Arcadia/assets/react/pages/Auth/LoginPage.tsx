@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 import React from "react";
 import { useState } from "react";
 import { z } from "zod";
@@ -29,7 +30,7 @@ export const LoginPage: React.FC = () => {
     const result = loginSchema.safeParse(formValues);
 
     if (result.success) {
-      const response = await fetch("symfony.local/api/login", {
+      const response = await fetch("http://symfony.local/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,13 +43,21 @@ export const LoginPage: React.FC = () => {
       if (response.ok) {
         const { token } = await response.json();
         setSuccess("Login successful! Token: " + token);
+        localStorage.setItem('jwt_token', token)
+
+        const decodedToken: any = jwtDecode(token);
+        console.log("Token décodé complet :", decodedToken);
+
+        // Les rôles sont un tableau, donc vous pouvez les stocker comme une chaîne JSON dans le localStorage
+        const userRoles = decodedToken.roles || [];
+        localStorage.setItem("ROLE", JSON.stringify(userRoles));
+
+        console.log("Rôle(s) de l'utilisateur :", userRoles);
       } else {
         setFormError("Failed to login. Please try again.");
       }
-      // If validation is successful, process the form submission
-      console.log("Form submitted successfully:", formValues);
     } else {
-      // Handle validation errors
+      // Gestion des erreurs de validation
       const fieldErrors: { [key: string]: string } = {};
       result.error.errors.forEach((error) => {
         fieldErrors[error.path[0]] = error.message;

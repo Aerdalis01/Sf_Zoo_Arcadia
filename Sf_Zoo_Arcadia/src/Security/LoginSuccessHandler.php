@@ -17,6 +17,7 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): JsonResponse
     {
+        
         $user = $token->getUser();
 
         // Generate JWT Token using a service
