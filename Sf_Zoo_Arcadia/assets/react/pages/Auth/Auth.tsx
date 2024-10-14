@@ -47,7 +47,7 @@ export const ProtectedRoute = ({ children, allowedRoles }) => {
 
     if (!hasAccess) {
       alert("Vous n'avez pas l'autorisation d'accéder à cette page.");
-      return <Navigate to="/unauthorized" replace />;
+      return <Navigate to="/login" replace />;
     }
 
   } catch (error) {
