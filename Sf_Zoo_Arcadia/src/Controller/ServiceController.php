@@ -9,6 +9,7 @@ use App\Service\ServiceService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +24,8 @@ class ServiceController extends AbstractController
         private ServiceService $serviceService, 
         private EntityManagerInterface $entityManager, 
         private LoggerInterface $logger, 
-        private ImageManagerService $imageManagerService)
+        private ImageManagerService $imageManagerService,
+        private ParameterBagInterface $parameterBag)
     {}
 
     #[Route('/', name: 'index', methods: ['GET'])]
@@ -163,19 +165,50 @@ class ServiceController extends AbstractController
     
     
 
-    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
-    public function delete(int $id, ServiceRepository $ServicesRepository): Response
+    #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
+    public function deleteService(int $id): JsonResponse
     {
-        $Service = $ServicesRepository->find($id);
-        
-        if (!$Service) {
-            return $this->json(['error' => 'Image not found'], Response::HTTP_NOT_FOUND);
-        }
-        $this->entityManager->remove($Service);
-        $this->entityManager->flush();
+        $service = $this->entityManager->getRepository(Service::class)->find($id);
 
-        return $this->json(['message' => 'Service supprimée avec succès'], Response::HTTP_OK);
+        if (!$service) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Service non trouvé'], 404);
+        }
+
+        // Supprimer le service et les entités associées
+        try {
+            // Suppression des sous-services
+            foreach ($service->getSousService() as $sousService) {
+                // Supprimer les images associées aux sous-services
+                foreach ($sousService->getImage() as $image) {
+                    $this->deleteImageFile($image->getImagePath());
+                    $this->entityManager->remove($image);
+                }
+
+                $this->entityManager->remove($sousService);
+            }
+
+            // Supprimer l'image associée au service
+            $currentImage = $service->getImage();
+            if ($currentImage !== null) {
+                $this->deleteImageFile($currentImage->getImagePath());
+                $this->entityManager->remove($currentImage);
+            }
+
+            // Supprimer le service
+            $this->entityManager->remove($service);
+            $this->entityManager->flush();
+
+            return new JsonResponse(['status' => 'success', 'message' => 'Service supprimé avec succès'], 200);
+        } catch (\Exception $e) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Erreur lors de la suppression : ' . $e->getMessage()], 500);
+        }
     }
-    
-    
+
+    private function deleteImageFile(string $imagePath): void
+    {
+        $filePath = $this->parameterBag->get('kernel.project_dir') . '/public' . $imagePath;
+        if (file_exists($filePath)) {
+            unlink($filePath); 
+        }
+    }
 }

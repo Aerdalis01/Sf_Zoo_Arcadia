@@ -1,5 +1,4 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ImageForm } from "./ImageForm";
 import { TextInputField } from "./form/TextInputField";
 import { HoraireField } from "./form/HoraireField";
@@ -28,6 +27,8 @@ export function ServiceFormUpdate() {
   const [removeSousService, setRemoveSousService] = useState<boolean | null>(
     null
   );
+  const [resetImage, setResetImage] = useState(false);
+  const formRef = useRef(null);
   const [isCarteZoo, setIsCarteZoo] = useState(false);
   const [removeImage, setRemoveImage] = useState<boolean | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -106,6 +107,7 @@ export function ServiceFormUpdate() {
         });
     }
   }, [selectedServiceId]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -172,19 +174,19 @@ export function ServiceFormUpdate() {
     }
     
     if (file) {
-      //Appel du timestamp pour générer un nom d'image unique
+      const originalFilename = file.name.split(".").slice(0, -1).join(".");
+      const extension = file.name.split(".").pop();
       const timestamp = new Date().getTime();
-      //utilisation du timestamp dans le nom de l'image
-      const imageNameGenerated = `${serviceData.nom}-${timestamp}`;
-      //enregistrament automatique du chemin de l'image
+      const imageNameGenerated = `${originalFilename}-${timestamp}.${extension}`;
+      
       const imagePathGenerated = `/${serviceData.nom.toLowerCase()}`;
-      const imageSubDirectory = `/uploads/images/services/${imageNameGenerated}`;
+      const imageSubDirectory = `/services`;
 
       formService.append("file", file);
-      formService.append("nom", imageNameGenerated);
+      formService.append("nomImage", imageNameGenerated);
       formService.append(
         "image_sub_directory",
-        `/uploads/images/services/${imageNameGenerated}`
+        imageSubDirectory
       );
     }
 
@@ -207,17 +209,20 @@ export function ServiceFormUpdate() {
         return response.json();
       })
       .then((data) => {
-        setSuccessMessage("Service mis à jour avec succès !");
-        setError(null);
-      })
-      .catch((error) => {
-        setError("Erreur lors de la mise à jour du service.");
-        setSuccessMessage(null);
-      });
+    console.log("Données renvoyées par le serveur:", data);
+    setSuccessMessage("Sous-service mis à jour avec succès !");
+    setError(null);
+  })
+  .catch((error) => {
+    console.error("Erreur:", error);
+    setError("Erreur lors de la mise à jour du sous-service.");
+    setSuccessMessage(null);
+  });
+  formRef.current.reset();
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form ref={formRef} onSubmit={handleSubmit}>
       <h3>Modifier un Service</h3>
 
       {/* Sélectionner un service */}
@@ -281,7 +286,7 @@ export function ServiceFormUpdate() {
         onChange={handleCheckboxChange}
       />
 
-      <ImageForm serviceName={serviceData.nom} onImageSelect={setFile} />
+      <ImageForm serviceName={serviceData.nom} onImageSelect={setFile} resetImage={resetImage}/>
       <div>
         <label>Supprimer l'image existante :</label>
         <input

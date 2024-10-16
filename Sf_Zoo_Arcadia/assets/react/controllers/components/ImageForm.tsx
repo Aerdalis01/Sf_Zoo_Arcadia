@@ -1,12 +1,13 @@
 import React from 'react';
-import  {useState} from 'react';
+import  {useState, useEffect} from 'react';
 
 export interface ImageFormProps {
   serviceName: string;
-  onImageSelect: (file: File | null) =>void
+  onImageSelect: (file: File | null) =>void;
+  resetImage: boolean;
 }
 
-export const ImageForm: React.FC<ImageFormProps> = ({ serviceName, onImageSelect }) => {
+export const ImageForm: React.FC<ImageFormProps> = ({ serviceName, onImageSelect, resetImage }) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -14,22 +15,27 @@ export const ImageForm: React.FC<ImageFormProps> = ({ serviceName, onImageSelect
       const file = event.target.files[0];
       onImageSelect(file);
       
-      // Créer un aperçu de l'image
+      
       const reader = new FileReader();
       reader.onloadend = () => {
           setImagePreview(reader.result as string);
       };
-      reader.readAsDataURL(file); // Lire l'image en tant qu'URL de données
+      reader.readAsDataURL(file);
   } else {
-      onImageSelect(null); // Aucun fichier sélectionné
-      setImagePreview(null); // Réinitialiser l'aperçu
+      onImageSelect(null);
+      setImagePreview(null);
   }
 };
+useEffect(() => {
+  if (resetImage) {
+    setImagePreview(null);
+  }
+}, [resetImage]);
 
   return (
     
       <div>
-        <label htmlFor="image">Select Image:</label>
+        <label htmlFor="image">Selectionnez une image:</label>
         <input
           type="file"
           id="image"

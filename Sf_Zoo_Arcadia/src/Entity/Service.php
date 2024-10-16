@@ -156,7 +156,7 @@ class Service
 
         return $this;
     }
-    public function removeImage(): self
+    public function removeImage(): static
 {
     
     if ($this->image !== null) {

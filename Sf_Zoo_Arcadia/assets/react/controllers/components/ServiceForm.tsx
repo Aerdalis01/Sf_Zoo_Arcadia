@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Service } from "../../models/serviceInterface";
 import { ImageForm } from "./ImageForm";
 import { TextInputField } from "./form/TextInputField";
@@ -14,6 +14,8 @@ export function ServiceForm() {
     horaire: "",
     carteZoo: false,
   });
+  const [resetImage, setResetImage] = useState(false);
+  const formRef = useRef(null);
   const [isCarteZoo, setIsCarteZoo] = useState(false);
   const [horaireNom1, setHoraireNom1] = useState("");
   const [horaireNom2, setHoraireNom2] = useState("");
@@ -136,6 +138,7 @@ export function ServiceForm() {
           setHoraires2([]);
           setFile(null);
           setError(null);
+          setResetImage(true);
 
           setTimeout(() => {
             setSuccessMessage(null);
@@ -150,9 +153,10 @@ export function ServiceForm() {
         setError("Erreur lors de l'ajout du service.");
         setSuccessMessage(null);
       });
+      formRef.current.reset();
   };
   return (
-    <form onSubmit={handleSubmit}>
+    <form ref={formRef} onSubmit={handleSubmit}>
       <TextInputField
         name="nom"
         label="Nom du service"
@@ -197,7 +201,7 @@ export function ServiceForm() {
         checked={isCarteZoo}
         onChange={handleCheckboxChange}
       />
-      <ImageForm serviceName={formData.nom} onImageSelect={setFile} />
+      <ImageForm serviceName={formData.nom} onImageSelect={setFile} resetImage={resetImage}/>
       <button type="submit">Soumettre</button>
 
       {error && <p style={{ color: "red" }}>{error}</p>}

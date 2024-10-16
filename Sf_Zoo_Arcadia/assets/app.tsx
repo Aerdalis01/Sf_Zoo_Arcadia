@@ -18,7 +18,10 @@ import './sass/app.scss';
 import {ServicePage} from './react/pages/ServicesPage';
 import { ServiceCreate } from './react/pages/ServiceCreate';
 import { ServiceUpdate } from './react/pages/ServiceUpdate';
+import { ServiceDelete } from './react/pages/serviceDelete';
 import { SousServiceCreate } from './react/pages/SousServiceCreate';
+import { SousServiceUpdate } from './react/pages/SousServiceUpdate';
+import { SousServiceDelete } from './react/pages/SousServiceDelete';
 // import {AnimalCreate} from './react/pages/AnimalCreate';
 // import {RaceCreate} from './react/pages/RaceCreate';
 
@@ -33,7 +36,10 @@ const App: React.FC = () => {
                 <Route path="/service" element={<ServicePage />} />
                 <Route path="/service/create" element={<ServiceCreate />} />
                 <Route path="/service/update" element={<ServiceUpdate />} />
+                <Route path="/service/delete" element={<ServiceDelete />} />
                 <Route path="/sousService/create" element={<SousServiceCreate />} />
+                <Route path="/sousService/update" element={<SousServiceUpdate />} />
+                <Route path="/sousService/delete" element={<SousServiceDelete />} />
                 {/* <Route path="/animaux/create" element={<AnimalCreate />} />
                 <Route path="/race/create" element={<RaceCreate />} /> */}
 

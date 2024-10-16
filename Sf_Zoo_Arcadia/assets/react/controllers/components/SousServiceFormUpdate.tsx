@@ -1,186 +1,247 @@
-// import { useState, useEffect } from "react";
-// import { ImageForm } from "../../controllers/components/ImageForm";
+import React, { useState, useEffect, useRef } from "react";
+import { ImageForm } from "../../controllers/components/ImageForm";
+import { CheckBoxField } from "./form/CheckBoxFieldProps";
+import { TextInputField } from "./form/TextInputField";
+import { Service } from "../../models/serviceInterface";
+
+export function SousServiceFormUpdate() {
+  const [sousServices, setSousServices] = useState([]);
+  const [selectedSousServiceId, setSelectedSousServiceId] = useState<
+    number | null
+  >(null);
+  const [sousServiceData, setSousServiceData] = useState({
+    id: 0,
+    nom: "",
+    description: "",
+    menu: false,
+    idService: "",
+  });
+  const [file1, setFile1] = useState<File | null>(null);
+  const [file2, setFile2] = useState<File | null>(null);
+  const [resetImage, setResetImage] = useState(false);
+  const formRef = useRef(null);
+  const [isMenu, setIsMenu] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [service, setServices] = useState<Service[]>([]);
+
+  useEffect(() => {
+    fetch("/api/sousService")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Sous-services récupérés :", data);
+        setSousServices(data); // Mettre à jour l'état des services
+      })
+      .catch((error) => {
+        console.error("Erreur lors du chargement des services :", error);
+      });
+  }, []);
+  useEffect(() => {
+    fetch("/api/service")
+      .then((response) => {
+        console.log("Réponse brute de l'API :", response);
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Données des services :", data);
+        setServices(data);
+      })
+      .catch((error) =>
+        console.error("Erreur lors du chargement des services", error)
+      );
+  }, []);
+  useEffect(() => {
+    if (selectedSousServiceId !== null) {
+      fetch(`/api/sousService/${selectedSousServiceId}`)
+        .then((response) => {
+          console.log("Réponse brute:", response);
+          if (!response.ok) {
+            throw new Error("Erreur lors du chargement des sous services");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Services récupérés :", data);
+
+          setSousServiceData({
+            id: data.id || 0,
+            nom: data.nom || "",
+            description: data.description || "",
+            menu: data.menu || false,
+            idService: data.idService || "",
+          });
+          setIsMenu(data.menu || false);
+          setResetImage(true);
+        })
+        .catch((error) => {
+          console.error(
+            "Erreur lors du chargement des données du service:",
+            error
+          );
+        });
+    }
+  }, [selectedSousServiceId]);
 
 
-// export function SousServiceFormUpdate() {
-//   const [sousServices, setSousServices] = useState([]);
-//   const [selectedSousServiceId, setSelectedSousServiceId] = useState<number | null>(
-//     null
-//   );
-//   const [sousServiceData, setSousServiceData] = useState({
-//     id: 0,
-//     nomSousService: "",
-//     titreSousService: "",
-//     description: "",
-//     typeSousService: "",
-//   });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setSousServiceData({
+      ...sousServiceData,
+      [name]: value,
+    });
+  };
+  //Gestion du changement du select
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = Number(e.target.value);
+    console.log("Sous service sélectionné avec l'ID :", selectedId);
+    setSelectedSousServiceId(selectedId);
+  };
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsMenu(e.target.checked);
+    setSousServiceData({
+      ...sousServiceData,
+      menu: e.target.checked ? true : false,
+    });
+  };
+  // Gestion des changements pour les champs de service
+  const handleSousServiceChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setSousServiceData({
+      ...sousServiceData,
+      [name]: value,
+    });
+  };
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formSousService = new FormData();
+    console.log("sous-service Data:", sousServiceData);
+    formSousService.append("nom", sousServiceData.nom);
+    formSousService.append("description", sousServiceData.description);
+    formSousService.append("idService", sousServiceData.idService);
 
-//   const [file, setFile] = useState<File | null>(null);
-//   const [error, setError] = useState<string | null>(null);
-//   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const appendImage = (file: File | null, fieldName: string) => {
+      if (file) {
+        const originalFilename = file.name.split(".").slice(0, -1).join(".");
+        const extension = file.name.split(".").pop();
+        const timestamp = new Date().getTime();
+        const imageNameGenerated = `${originalFilename}-${timestamp}.${extension}`;
+        const imageSubDirectory = `/services`;
 
-//   useEffect(() => {
-//     fetch("/api/sousServices")
-//       .then((response) => response.json())
-//       .then((data) => {
-//         console.log("Sous-services récupérés :", data);
-//         setSousServices(data); // Mettre à jour l'état des services
-//       })
-//       .catch((error) => {
-//         console.error("Erreur lors du chargement des services :", error);
-//       });
-//   }, []);
+        formSousService.append(fieldName, file);
+        formSousService.append(`${fieldName}_name`, imageNameGenerated);
+        formSousService.append(`${fieldName}_sub_directory`, imageSubDirectory);
+        console.log(
+          `Nom de l'image généré pour ${fieldName}:`,
+          imageNameGenerated
+        );
+      }
+    };
+    appendImage(file1, "image1");
+    appendImage(file2, "image2");
+    console.log(
+      "Données envoyées :",
+      Array.from((formSousService as any).entries())
+    );
 
-//   useEffect(() => {
-//     if (selectedSousServiceId !== null) {
-//       fetch(`/api/sousService/${selectedSousServiceId}`)
-//         .then((response) => {
-//           console.log("Réponse brute:", response);
-//           if (!response.ok) {
-//             throw new Error("Erreur lors du chargement des services");
-//           }
-//           return response.json();
-//         })
-//         .then((data) => {
-//           console.log("Services récupérés :", data);
-          
-//           setSousServiceData({
-//             id: data.id || 0,
-//             nomSousService: data.nomService || '',
-//             titreSousService: data.titreService || '',
-//             description: data.description || '',
-//             typeSousService: data.typeService || '',
-//           });
-//         })
-//         .catch((error) => {
-//           console.error("Erreur lors du chargement des données du service:", error);
-//         });
-//     }
-//   }, [selectedServiceId]);
+    fetch(`/api/sousService/${selectedSousServiceId}`, {
+      method: "POST",
+      body: formSousService,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Erreur lors de la mise à jour du sous-service");
+        }
+        return response.json();
+      })
+      .then(() => {
+        setSuccessMessage("Sous-service mis à jour avec succès !");
+        setError(null);
+        setFile(null);
+        setResetImage(true);
 
-//   //Gestion du changement du select
-//   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//     setSelectedServiceId(Number(e.target.value));
-//   };
+        setTimeout(() => setResetImage(false), 500);
+      })
+      .catch((error) => {
+        setError("Erreur lors de la mise à jour du sous-service.");
+        setSuccessMessage(null);
+      });
+    formRef.current?.reset();
+  };
 
-//   // Gestion des changements pour les champs de service
-//   const handleServiceChange = (
-//     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-//   ) => {
-//     const { name, value } = e.target;
-//     setServiceData({
-//       ...serviceData,
-//       [name]: value,
-//     });
-//   };
-//   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-//     e.preventDefault();
-//     const formService = new FormData();
-//     console.log("Service Data:", serviceData);
-//     formService.append('nomService', serviceData.nomService);
-//     formService.append('description', serviceData.description);
-//     formService.append('typeService', serviceData.typeService);
-//     formService.append('titreService', serviceData.titreService);
+  return (
+    <form ref={formRef} onSubmit={handleSubmit}>
+      <h3>Modifier un Sous Service</h3>
 
-//       if (file) {
-//         //Appel du timestamp pour générer un nom d'image unique
-//         const timestamp = new Date().getTime();
-//         //utilisation du timestamp dans le nom de l'image
-//         const imageNameGenerated = `${serviceData.nomService}-${timestamp}`;
-//         //enregistrament automatique du chemin de l'image
-//         const imagePathGenerated = `/${serviceData.nomService.toLowerCase()}`;
-//         const imageSubDirectory = `/uploads/images/services/${imageNameGenerated}`;
+      <select onChange={handleSelectChange} defaultValue="">
+        <option value="" disabled>
+          Sélectionner un sous service
+        </option>
+        {sousServices.map((sousService: any, index: number) => (
+          <option key={index} value={sousService.id}>
+            {sousService.nom}
+          </option>
+        ))}
+      </select>
+      <TextInputField
+        name="nom"
+        label="Nom du sous-service"
+        value={sousServiceData.nom}
+        onChange={handleSousServiceChange}
+      />
+      <TextInputField
+        name="description"
+        label="Description"
+        value={sousServiceData.description}
+        onChange={handleSousServiceChange}
+      />
+      <hr />
+      <div>
+        <ImageForm
+          serviceName= "Image Principal"
+          onImageSelect={setFile1}
+          resetImage={resetImage}
+        />
+      </div>
+      <hr />
+      <CheckBoxField
+        label="Si le service modifié contient une carte zoo cliqué"
+        checked={isMenu}
+        onChange={handleCheckboxChange}
+      />
+      {isMenu && (
+      <div>
+        <ImageForm
+          serviceName={sousServiceData.nom}
+          onImageSelect={setFile2}
+          resetImage={resetImage}
+        />
+      </div>
+      )}
+      <div>
+        <hr />
+        <label>Service :</label>
+        <select
+          name="idService"
+          value={sousServiceData.idService}
+          onChange={handleChange}
+        >
+          <option value="">Sélectionner un service</option>
+          {service.map((service, index) => (
+            <option key={service.id || index} value={service.id}>
+              {service.nom}
+            </option>
+          ))}
+        </select>
+      </div>
+      <button type="submit">Mettre à jour</button>
 
-//       formService.append('file', file);
-//       formService.append('nom', imageNameGenerated);
-//       formService.append('image_sub_directory', `/uploads/images/services/${imageNameGenerated}`);
-//       }
-    
-//     console.log("Données envoyées :", Array.from((formService as any).entries()));
-
-//     fetch(`/api/services/${selectedServiceId}`, {
-//       method: "POST", 
-//       body: formService,
-//     })
-//       .then((response) => {
-//         if (!response.ok) {
-//             throw new Error("Erreur lors de la mise à jour du service");
-//         }
-//         return response.json();
-//       })
-//       .then((data) => {
-//         setSuccessMessage("Service mis à jour avec succès !");
-//         setError(null);
-//       })
-//       .catch((error) => {
-//         setError("Erreur lors de la mise à jour du service.");
-//         setSuccessMessage(null);
-//       });
-//   };
-
-//   return (
-//     <form onSubmit={handleSubmit}>
-//       <h3>Modifier un Service</h3>
-
-//       {/* Sélectionner un service */}
-//       <select onChange={handleSelectChange} defaultValue="">
-//         <option value="" disabled>
-//           Sélectionner un service
-//         </option>
-//         {services.map((service: any) => (
-//           <option key={service.id} value={service.id}>
-//             {service.nomService}
-//           </option>
-//         ))}
-//       </select>
-//       <div>
-//         <label>Type de service :</label>
-//         <select
-//           name="typeService"
-//           value={serviceData.typeService}
-//           onChange={handleServiceChange}
-//         >
-//           <option value="">Sélectionner un type de service</option>
-//           <option value="restauration">Restauration</option>
-//           <option value="visite_guidee">Visite Guidée</option>
-//           <option value="petit_train">Petit Train</option>
-//           <option value="info_service">Info Service</option>
-//         </select>
-//       </div>
-//       <div>
-//         <label>Nom du service :</label>
-//         <input
-//           type="text"
-//           name="nomService"
-//           value={serviceData.nomService}
-//           onChange={handleServiceChange}
-//         />
-//       </div>
-//       <div>
-//         <label>Titre du service :</label>
-//         <input
-//           type="text"
-//           name="titreService"
-//           value={serviceData.titreService}
-//           onChange={handleServiceChange}
-//         />
-//       </div>
-//       <div>
-//         <label>Description :</label>
-//         <input
-//           type="text"
-//           name="description"
-//           value={serviceData.description}
-//           onChange={handleServiceChange}
-//         />
-//       </div>
-
-//       <ImageForm serviceName={serviceData.nomService} onImageSelect={setFile} />
-
-//       <button type="submit">Mettre à jour</button>
-
-//       {error && <p style={{ color: "red" }}>{error}</p>}
-//       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-//     </form>
-//   );
-// }
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+    </form>
+  );
+}

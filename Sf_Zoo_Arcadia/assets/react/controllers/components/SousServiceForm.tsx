@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { SousService } from "../../models/sousServiceInterface";
 import { ImageForm } from "./ImageForm";
 import { Service } from "../../models/serviceInterface";
 import { TextInputField } from "./form/TextInputField";
 import { CheckBoxField } from "./form/CheckBoxFieldProps";
-
-
 export function SousServiceForm() {
   const [formData, setFormData] = useState<SousService>({
     id: 0,
@@ -15,22 +13,23 @@ export function SousServiceForm() {
     idService: "",
   });
 
+  const [resetImage, setResetImage] = useState(false);
+  const formRef = useRef(null);
   const [isMenu, setIsMenu] = useState(false);
   const [file1, setFile1] = useState<File | null>(null);
   const [file2, setFile2] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [service, setServices] = useState<Service[]>([]);
-  
 
   useEffect(() => {
     fetch("/api/service")
       .then((response) => {
-        console.log("Réponse brute de l'API :", response); // Ajoutez cette ligne pour voir la réponse brute
+        console.log("Réponse brute de l'API :", response);
         return response.json();
       })
       .then((data) => {
-        console.log("Données des services :", data); // Vérifiez ce qui est récupéré
+        console.log("Données des services :", data); 
         setServices(data);
       })
       .catch((error) =>
@@ -60,25 +59,27 @@ export function SousServiceForm() {
     formSousService.append("menu", formData.menu ? "1" : "0");
     formSousService.append("idService", formData.idService);
 
-    const appendImage =(file: File | null, fieldName: string) => {
-    
-    if (file) {
-      // Récupérer le nom original du fichier téléchargé sans l'extension
-      const originalFilename = file.name.split(".").slice(0, -1).join(".");
-      // Récupérer l'extension du fichier
-      const extension = file.name.split(".").pop();
-      //Appel du timestamp pour générer un nom d'image unique
-      const timestamp = new Date().getTime();
-      //utilisation du timestamp dans le nom de l'image
-      const imageNameGenerated = `${originalFilename}-${timestamp}.${extension}`;
-      const imageSubDirectory = `/services`;
+    const appendImage = (file: File | null, fieldName: string) => {
+      if (file) {
+        // Récupérer le nom original du fichier téléchargé sans l'extension
+        const originalFilename = file.name.split(".").slice(0, -1).join(".");
+        // Récupérer l'extension du fichier
+        const extension = file.name.split(".").pop();
+        //Appel du timestamp pour générer un nom d'image unique
+        const timestamp = new Date().getTime();
+        //utilisation du timestamp dans le nom de l'image
+        const imageNameGenerated = `${originalFilename}-${timestamp}.${extension}`;
+        const imageSubDirectory = `/services`;
 
-      formSousService.append(fieldName, file);
-      formSousService.append(`${fieldName}_name`, imageNameGenerated);
-      formSousService.append(`${fieldName}_sub_directory`, imageSubDirectory);
-      console.log(`Nom de l'image généré pour ${fieldName}:`, imageNameGenerated);
-    }
-  };
+        formSousService.append(fieldName, file);
+        formSousService.append(`${fieldName}_name`, imageNameGenerated);
+        formSousService.append(`${fieldName}_sub_directory`, imageSubDirectory);
+        console.log(
+          `Nom de l'image généré pour ${fieldName}:`,
+          imageNameGenerated
+        );
+      }
+    };
     appendImage(file1, "file1");
     appendImage(file2, "file2");
 
@@ -100,32 +101,38 @@ export function SousServiceForm() {
         }
       })
       .then((data) => {
-        setSuccessMessage("Sous-Service ajouté avec succès !");
+        if (data && data.status === "success") {
+          setSuccessMessage("Sous-Service ajouté avec succès !");
 
-        setFormData({
-          id: 0,
-          nom: "",
-          description: "",
-          menu: false,
-          idService: "",
-        });
-        setFile1(null);
-        setFile2(null);
-        setError(null);
+          setFormData({
+            id: 0,
+            nom: "",
+            description: "",
+            menu: false,
+            idService: "",
+          });
+          setFile1(null);
+          setFile2(null);
+          setError(null);
+          setResetImage(true);
 
-        setTimeout(() => {
-          setSuccessMessage(null);
-        }, 5000);
+          setTimeout(() => {
+            setSuccessMessage(null);
+          }, 5000);
+        } else {
+          throw new Error("Erreur : Réponse inattendue.");
+        }
       })
       .catch((error) => {
         console.error("Erreur lors de la soumission du formulaire:", error);
         setError("Erreur lors de l'ajout du service.");
         setSuccessMessage(null);
       });
+      formRef.current.reset();
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form ref={formRef} onSubmit={handleSubmit}>
       <div>
         <label>Service :</label>
         <select
@@ -134,12 +141,11 @@ export function SousServiceForm() {
           onChange={handleChange}
         >
           <option value="">Sélectionner un service</option>
-            {service.map((service, index) => (
-              <option key={service.id || index} value={service.id}>
+          {service.map((service, index) => (
+            <option key={service.id || index} value={service.id}>
               {service.nom}
-              </option>
-            ))}
-            
+            </option>
+          ))}
         </select>
       </div>
       <TextInputField
@@ -161,11 +167,11 @@ export function SousServiceForm() {
         onChange={handleCheckboxChange}
       />
       <div>
-      <ImageForm serviceName={formData.nom} onImageSelect={setFile1} />
+        <ImageForm serviceName={formData.nom} onImageSelect={setFile1} resetImage={resetImage}/>
       </div>
       <hr />
       <div>
-      <ImageForm serviceName={formData.nom} onImageSelect={setFile2} />
+        <ImageForm serviceName={formData.nom} onImageSelect={setFile2} resetImage={resetImage}/>
       </div>
       <button type="submit">Soumettre</button>
 

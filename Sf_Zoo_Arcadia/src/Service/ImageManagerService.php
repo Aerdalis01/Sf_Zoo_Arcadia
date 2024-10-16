@@ -47,12 +47,14 @@ class ImageManagerService
 
         // Stocker le chemin du fichier dans l'entité Image
         $image = new Image();
-        $image->setNom($nom);
+        $image->setNom($safeFilename);
         $image->setImagePath($imageSubDirectory . '/' . $newFilename);
         $image->setImageSubDirectory($imageSubDirectory);
 
         $this->entityManager->persist($image);
+        $this->entityManager->flush(); 
 
+        $this->loggerInterface->info(sprintf('Image téléchargée avec succès : %s', $newFilename));
 
         return $image;
     }
