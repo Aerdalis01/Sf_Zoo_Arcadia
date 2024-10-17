@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 #[HasLifecycleCallbacks]
@@ -41,10 +42,8 @@ class Service
     #[ORM\Column(nullable: true)]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Image $image = null;
-
-
-    #[ORM\Column(nullable: true)]
-    #[ORM\OneToMany(targetEntity: SousService::class, mappedBy: 'service')]
+    
+    #[ORM\OneToMany(targetEntity: SousService::class, mappedBy: 'service', cascade: ['persist', 'remove'])]
     private Collection $sousService;
 
     public function prePersist() {
@@ -166,9 +165,7 @@ class Service
         return $this;
     }
 
-    /**
-     * @return Collection<int, SousService>
-     */
+
     public function getSousService(): Collection
     {
         return $this->sousService;

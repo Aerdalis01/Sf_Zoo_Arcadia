@@ -49,6 +49,13 @@ Zoo Arcadia est une application de gestion d’un zoo, permettant de gérer les 
     ```bash
     composer require doctrine/mongodb-odm-bundle
 
+
+
+note : pour l'authetification:
+dans php ini décomenter extension=sodium
+composer require lcobucci/jwt
+composer require firebase/php-jwt
+npm install zod
 ### Frontend :
 
 1. **Initialiser NPM (créer package.json)** :
