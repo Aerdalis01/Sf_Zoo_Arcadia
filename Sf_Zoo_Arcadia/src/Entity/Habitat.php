@@ -4,21 +4,26 @@ namespace App\Entity;
 
 use App\Repository\HabitatRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: HabitatRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Habitat
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('habitat')]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
+    #[Groups('habitat')]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('habitat')]
     private ?string $description = null;
 
     #[ORM\Column]
@@ -28,25 +33,40 @@ class Habitat
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'HabitatComment')]
+    #[Groups('habitat')]
     private ?self $HabitatComment = null;
 
     #[ORM\OneToMany(targetEntity: HabitatComment::class, mappedBy: 'habitat')]
+    #[Groups('habitat')]
     private Collection $habitatComment;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups('habitat')]
     private ?Image $image = null;
 
 
     #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'habitat')]
+    #[Groups('habitat')]
     private Collection $animal;
 
     public function __construct()
     {
-        $this->HabitatComment = new ArrayCollection();
         $this->habitatComment = new ArrayCollection();
         $this->animal = new ArrayCollection();
     }
+    #[ORM\PrePersist]
+    public function setCreatedAt(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): void
+    {
+        if ($this->createdAt !== null) {  // Vérifie que l'entité n'est pas nouvellement créée
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -81,23 +101,9 @@ class Habitat
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 
     public function getHabitatComment(): ?self

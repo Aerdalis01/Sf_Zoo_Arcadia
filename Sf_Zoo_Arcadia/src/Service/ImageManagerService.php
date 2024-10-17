@@ -63,9 +63,9 @@ class ImageManagerService
 
     public function deleteImage(string $imagePath): void
     {
-        $filePath = $this->imageDirectory.'/'.$imagePath;
+        $filePath = $this->parameterBag->get('kernel.project_dir') . '/public' . $imagePath;
         if (file_exists($filePath)) {
-            unlink($filePath);
+            unlink($filePath); 
         }
     }
 }

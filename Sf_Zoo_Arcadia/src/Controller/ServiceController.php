@@ -73,14 +73,8 @@ class ServiceController extends AbstractController
             if ($imageFile instanceof UploadedFile) {
                 // Récupérer le nom original du fichier (sans l'extension)
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                
-                // Ajouter un timestamp unique pour garantir l'unicité
-                $timestamp = time(); // Vous pouvez aussi utiliser uniqid() si nécessaire
-                
-                // Obtenir l'extension originale du fichier
+                $timestamp = time(); 
                 $extension = $imageFile->guessExtension();
-                
-                // Générer le nom final de l'image
                 $imageName = sprintf('%s-%s.%s', $originalFilename, $timestamp, $extension);
                 
                 // Enregistrer l'image
@@ -174,13 +168,13 @@ class ServiceController extends AbstractController
             return new JsonResponse(['status' => 'error', 'message' => 'Service non trouvé'], 404);
         }
 
-        // Supprimer le service et les entités associées
+        
         try {
-            // Suppression des sous-services
+            
             foreach ($service->getSousService() as $sousService) {
-                // Supprimer les images associées aux sous-services
+                
                 foreach ($sousService->getImage() as $image) {
-                    $this->deleteImageFile($image->getImagePath());
+                    $this->imageManagerService->deleteImage($image->getImagePath());
                     $this->entityManager->remove($image);
                 }
 
@@ -190,7 +184,7 @@ class ServiceController extends AbstractController
             // Supprimer l'image associée au service
             $currentImage = $service->getImage();
             if ($currentImage !== null) {
-                $this->deleteImageFile($currentImage->getImagePath());
+                $this->imageManagerService->deleteImage($currentImage->getImagePath());
                 $this->entityManager->remove($currentImage);
             }
 
@@ -201,14 +195,6 @@ class ServiceController extends AbstractController
             return new JsonResponse(['status' => 'success', 'message' => 'Service supprimé avec succès'], 200);
         } catch (\Exception $e) {
             return new JsonResponse(['status' => 'error', 'message' => 'Erreur lors de la suppression : ' . $e->getMessage()], 500);
-        }
-    }
-
-    private function deleteImageFile(string $imagePath): void
-    {
-        $filePath = $this->parameterBag->get('kernel.project_dir') . '/public' . $imagePath;
-        if (file_exists($filePath)) {
-            unlink($filePath); 
         }
     }
 }

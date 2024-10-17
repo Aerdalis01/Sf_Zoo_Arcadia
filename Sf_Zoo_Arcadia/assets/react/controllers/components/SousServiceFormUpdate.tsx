@@ -31,7 +31,7 @@ export function SousServiceFormUpdate() {
       .then((response) => response.json())
       .then((data) => {
         console.log("Sous-services récupérés :", data);
-        setSousServices(data); // Mettre à jour l'état des services
+        setSousServices(data);
       })
       .catch((error) => {
         console.error("Erreur lors du chargement des services :", error);
@@ -96,7 +96,6 @@ export function SousServiceFormUpdate() {
   //Gestion du changement du select
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = Number(e.target.value);
-    console.log("Sous service sélectionné avec l'ID :", selectedId);
     setSelectedSousServiceId(selectedId);
   };
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
