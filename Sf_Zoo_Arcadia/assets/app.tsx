@@ -18,7 +18,7 @@ import './sass/app.scss';
 import {ServicePage} from './react/pages/ServicesPage';
 import { ServiceCreate } from './react/pages/ServiceCreate';
 import { ServiceUpdate } from './react/pages/ServiceUpdate';
-import { ServiceDelete } from './react/pages/serviceDelete';
+import { ServiceDelete } from './react/pages/ServiceDelete';
 import { SousServiceCreate } from './react/pages/SousServiceCreate';
 import { SousServiceUpdate } from './react/pages/SousServiceUpdate';
 import { SousServiceDelete } from './react/pages/SousServiceDelete';
