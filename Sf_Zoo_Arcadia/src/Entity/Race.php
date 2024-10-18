@@ -27,7 +27,7 @@ class Race
     /**
      * @var Collection<int, Animal>
      */
-    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'race')]
+    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'race')]#[ORM\Column(nullable: true)]
     private Collection $animals;
 
     public function __construct()
