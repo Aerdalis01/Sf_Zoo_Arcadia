@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { TextInputField } from './form/TextInputField';
+import { TextInputField } from '../form/TextInputField';
 
 export const RaceForm = ({ onSubmit, initialRace }) => {
-  const [nom, setNom] = useState(initialRace ? initialRace.nom : '');
+  const [nom, setNom] = useState(initialRace?.nom || '');
 
   useEffect(() => {
     if (initialRace) {
@@ -13,22 +13,22 @@ export const RaceForm = ({ onSubmit, initialRace }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit({ nom });
-    setNom(''); // Réinitialiser le champ après soumission
+    if (!initialRace) {
+      setNom('');  
+    }
   };
 
   return (
-    <form  onSubmit={handleSubmit}>
+    <div>
       <TextInputField
         name="nom"
-        label="Nom du service"
-        value={initialRace}
-        onChange={(e) => setNom(e.target.value)}
+        label="Nom de la race"
+        value={nom}  // Utilise la variable d'état `nom`
+        onChange={(e) => setNom(e.target.value)}  // Mettre à jour `nom`
       />
-      <button type="submit">
+      <button type="button" onClick={handleSubmit}>
         {initialRace ? 'Modifier' : 'Créer'} la race
       </button>
-    </form>
+    </div>
   );
 };
-
-

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { SousService } from "../../models/sousServiceInterface";
+import { SousService } from "../../../models/sousServiceInterface";
 import { ImageForm } from "./ImageForm";
-import { Service } from "../../models/serviceInterface";
-import { TextInputField } from "./form/TextInputField";
-import { CheckBoxField } from "./form/CheckBoxFieldProps";
+import { Service } from "../../../models/serviceInterface";
+import { TextInputField } from "../form/TextInputField";
+import { CheckBoxField } from "../form/CheckBoxFieldProps";
 export function SousServiceForm() {
   const [formData, setFormData] = useState<SousService>({
     id: 0,

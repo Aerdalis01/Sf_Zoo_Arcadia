@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/race', name: '_app_api_race_')]
 class RaceController extends AbstractController
@@ -23,20 +24,24 @@ class RaceController extends AbstractController
 
 
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(): JsonResponse
+    public function index(SerializerInterface $serializer): JsonResponse
     {
         $races = $this->entityManager->getRepository(Race::class)->findAll();
-    
-        return new JsonResponse($races, 200, []);
+        $data = $serializer->serialize($races, 'json', ['groups' => 'race']);
+        return new JsonResponse($data, JsonResponse::HTTP_OK, [], true);
     }
     #[Route('/{id}', name: 'show', methods: ['GET'])]
-    public function showRace(int $id, RaceRepository $raceRepository): JsonResponse
+    public function showRace(int $id, EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
     {
-        $race = $raceRepository->find($id);
+        $race = $entityManager->getRepository(Race::class)->find($id);
         if (!$race) {
-            return $this->json(['error' => 'Race not found'], Response::HTTP_NOT_FOUND);
+          return new JsonResponse(['error' => 'Service not found'], 404);
         }
-        return new JsonResponse($race, 200, []); 
+        
+        $data = $serializer->serialize($race, 'json', ['groups' => 'race']);
+
+        
+        return new JsonResponse($race->toArray());
     }
 
 
@@ -60,7 +65,7 @@ class RaceController extends AbstractController
   }
 
 
-    #[Route('/{id}', name: 'update', methods: ['PUT'])]
+    #[Route('/{id}', name: 'update', methods: ['POST'])]
     public function update(int $id, Request $request): JsonResponse
     {
       try {
@@ -71,9 +76,12 @@ class RaceController extends AbstractController
         }
 
         $nom = $request->request->get('nom');
-        $race = $this->raceService->createOrUpdateRace(null, [
-          'nom' => $nom,
-        ]);
+        if ($nom) {
+          $race->setNom($nom);
+          foreach ($race->getAnimals() as $animal) {
+              $animal->setRace($race);
+          }
+        }
         
         $this->entityManager->persist($race);
         $this->entityManager->flush();
@@ -86,7 +94,7 @@ class RaceController extends AbstractController
   }
 
 
-    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
     public function delete(Race $race): Response
     {
       if (count($race->getAnimals()) > 0) {

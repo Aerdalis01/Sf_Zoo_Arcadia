@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\HabitatRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: HabitatRepository::class)]
@@ -13,12 +14,15 @@ class Habitat
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('habitat', 'animal')]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
+    #[Groups('habitat', 'animal')]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('habitat', 'animal')]
     private ?string $description = null;
 
     #[ORM\Column]
@@ -27,22 +31,21 @@ class Habitat
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'HabitatComment')]
-    private ?self $HabitatComment = null;
-
     #[ORM\OneToMany(targetEntity: HabitatComment::class, mappedBy: 'habitat')]
+    #[Groups('habitat', 'animal')]
     private Collection $habitatComment;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups('habitat')]
     private ?Image $image = null;
 
 
     #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'habitat')]
+    #[Groups('habitat')]
     private Collection $animal;
 
     public function __construct()
     {
-        $this->HabitatComment = new ArrayCollection();
         $this->habitatComment = new ArrayCollection();
         $this->animal = new ArrayCollection();
     }
@@ -100,33 +103,28 @@ class Habitat
         return $this;
     }
 
-    public function getHabitatComment(): ?self
+    public function getHabitatComment(): Collection
     {
-        return $this->HabitatComment;
+        return $this->habitatComment;
     }
 
-    public function setHabitatComment(?self $HabitatComment): static
-    {
-        $this->HabitatComment = $HabitatComment;
+    
 
-        return $this;
-    }
-
-    public function addHabitatComment(self $habitatComment): static
+    public function addHabitatComment(HabitatComment $habitatComment): static
     {
         if (!$this->habitatComment->contains($habitatComment)) {
             $this->habitatComment->add($habitatComment);
-            $habitatComment->setHabitatComment($this);
+            $habitatComment->setHabitat($this);
         }
 
         return $this;
     }
 
-    public function removeHabitatComment(self $habitatComment): static
+    public function removeHabitatComment(HabitatComment $habitatComment): static
     {
-        if ($this->habitatComment->removeElement($habitatComment)) {
-            if ($habitatComment->getHabitatComment() === $this) {
-                $habitatComment->setHabitatComment(null);
+        if (!$this->habitatComment->removeElement($habitatComment)) {
+            if ($habitatComment->getHabitat() === $this) {
+                $habitatComment->setHabitat($this);
             }
         }
 

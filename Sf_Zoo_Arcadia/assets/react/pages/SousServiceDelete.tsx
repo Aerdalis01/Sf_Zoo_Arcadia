@@ -1,4 +1,4 @@
-import { SousServiceDeleteForm} from "../controllers/components/SousServiceDeleteForm";
+import { SousServiceDeleteForm} from "../controllers/components/crud/SousServiceDeleteForm";
 
 export const SousServiceDelete = () => {
   return(

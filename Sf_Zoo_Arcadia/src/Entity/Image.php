@@ -39,6 +39,9 @@ class Image
     #[ORM\ManyToOne(inversedBy: 'image',cascade: ['persist', 'remove'])]
     private ?SousService $sousService = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Habitat $habitat = null;
+
     #[ORM\PrePersist]
     public function setCreatedAt(): void
     {
@@ -50,6 +53,10 @@ class Image
         if ($this->createdAt !== null) {
             $this->updatedAt = new \DateTimeImmutable();
         }
+    }
+    public function getId(): ?int
+    {
+        return $this->id;
     }
     public function getNom(): ?string
     {
@@ -87,6 +94,17 @@ class Image
         return $this;
     }
 
+    public function getHabitat(): ?Habitat
+    {
+        return $this->habitat;
+    }
+
+    public function setHabitat(?Habitat $habitat): static
+    {
+        $this->habitat = $habitat;
+
+        return $this;
+    }
     public function getService(): ?service
     {
         return $this->service;

@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react";
-import { Service } from "../../models/serviceInterface";
-import { ImageForm } from "./crud/ImageForm";
-import { TextInputField } from "./form/TextInputField";
-import { HoraireField } from "./form/HoraireField";
-import { CheckBoxField } from "./form/CheckBoxFieldProps";
+import { Service } from "../../../models/serviceInterface";
+import { ImageForm } from "./ImageForm";
+import { TextInputField } from "../form/TextInputField";
+import { HoraireField } from "../form/HoraireField";
+import { CheckBoxField } from "../form/CheckBoxFieldProps";
 
 export function ServiceForm() {
   const [formData, setFormData] = useState<Service>({

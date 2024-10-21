@@ -1,7 +1,12 @@
-// src/services/RaceService.js
+
 export const fetchRaces = async () => {
-  const res = await fetch('/api/race');
-  return res.json();
+  const res = await fetch('/api/race/');
+  if (!res.ok) {
+    throw new Error('Erreur lors du chargement des races');
+  }
+  const data = await res.json();
+  console.log("Races reçues depuis l'API:", data);
+  return data;
 };
 
 export const createRace = async (raceData) => {
@@ -10,18 +15,27 @@ export const createRace = async (raceData) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(raceData),
   });
+  if (!res.ok) {
+    throw new Error('Erreur lors de la création de la race');
+  }
   return res.json();
 };
 
 export const updateRace = async (raceId, raceData) => {
-  const res = await fetch(`/api/races/${raceId}/edit`, {
-    method: 'PUT',
+  const res = await fetch(`/api/race/${raceId}`, {
+    method: 'POST',  
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(raceData),
   });
+  if (!res.ok) {
+    throw new Error('Erreur lors de la mise à jour de la race');
+  }
   return res.json();
 };
 
 export const deleteRace = async (raceId) => {
-  await fetch(`/api/races/${raceId}/delete`, { method: 'DELETE' });
+  const res = await fetch(`/api/race/delete/${raceId}`, { method: 'DELETE' });
+  if (!res.ok) {
+    throw new Error('Erreur lors de la suppression de la race');
+  }
 };

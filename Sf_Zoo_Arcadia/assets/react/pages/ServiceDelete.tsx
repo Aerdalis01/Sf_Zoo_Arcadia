@@ -1,4 +1,4 @@
-import { ServiceDeleteForm} from "../controllers/components/ServiceDeleteForm";
+import { ServiceDeleteForm} from "../controllers/components/crud/ServiceDeleteForm";
 
 export const ServiceDelete = () => {
   return(

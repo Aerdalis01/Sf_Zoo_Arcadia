@@ -5,17 +5,21 @@ namespace App\Entity;
 use App\Repository\RaceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RaceRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Race
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('race', 'animal')]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
+    #[Groups('race', 'animal')] 
     private ?string $nom = null;
 
     #[ORM\Column]
@@ -27,14 +31,27 @@ class Race
     /**
      * @var Collection<int, Animal>
      */
-    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'race')]#[ORM\Column(nullable: true)]
+    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'race')]
+    #[Groups('race', 'animal')]
     private Collection $animals;
 
     public function __construct()
     {
         $this->animals = new ArrayCollection();
     }
+    #[ORM\PrePersist]
+    public function setCreatedAt(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): void
+    {
+        if ($this->createdAt !== null) {  // Vérifie que l'entité n'est pas nouvellement créée
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -57,23 +74,10 @@ class Race
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 
     /**
@@ -104,5 +108,18 @@ class Race
         }
 
         return $this;
+    }
+    public function toArray()
+    {
+        return [
+            'id' => $this->getId(),
+            'nom' => $this->getNom(),
+            'animals' => array_map(function ($animal) {
+                return [
+                    'id' => $animal->getId(),
+                    'nom' => $animal->getNom(),
+                ];
+            }, $this->animals->toArray())
+        ];
     }
 }
