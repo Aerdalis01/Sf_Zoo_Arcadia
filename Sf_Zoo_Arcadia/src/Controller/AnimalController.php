@@ -39,10 +39,11 @@ class AnimalController extends AbstractController
             ->leftJoin('a.habitat', 'h')
             ->leftJoin('a.race', 'r')
             ->getQuery();
-    
-        $animals = $query->getArrayResult();;
+
+        $animals = $query->getArrayResult();
+        ;
         $data = $serializer->serialize($animals, 'json', ['groups' => 'animal']);
-    
+
         return new JsonResponse($data, JsonResponse::HTTP_OK, [], true);
     }
     #[Route('/{id}', name: 'show', methods: ['GET'])]
@@ -56,13 +57,13 @@ class AnimalController extends AbstractController
             ->where('a.id = :id')
             ->setParameter('id', $id)
             ->getQuery();
-    
+
         $animal = $query->getArrayResult();
-    
+
         if (!$animal) {
             return new JsonResponse(['error' => 'Animal not found'], 404);
         }
-    
+
         $data = $serializer->serialize($animal, 'json', ['groups' => 'animal']);
         return new JsonResponse(json_decode($data), JsonResponse::HTTP_OK);
     }
@@ -70,13 +71,13 @@ class AnimalController extends AbstractController
     #[Route('/new', name: 'new', methods: ['POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        
+
         try {
             $nom = $request->request->get('nom');
             $idHabitat = $request->request->get('idHabitat');
             $idRace = $request->request->get('idRace');
             $nomRace = $request->request->get('nomRace');
-            
+
             if (!$nom || !$idHabitat || (!$idRace && !$nomRace)) {
                 return new JsonResponse([
                     'status' => 'error',
@@ -85,27 +86,27 @@ class AnimalController extends AbstractController
             }
 
             $habitat = $entityManager->getRepository(Habitat::class)->find($idHabitat);
-        if (!$habitat) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Habitat non trouvé'], 400);
-        }
-
-        $race = null;
-        if ($idRace) {
-            $race = $entityManager->getRepository(Race::class)->find($idRace);
-            if (!$race) {
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Race non trouvée'
-                ], Response::HTTP_BAD_REQUEST);
+            if (!$habitat) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Habitat non trouvé'], 400);
             }
-        } elseif ($nomRace) {
-            $race = $this->raceService->createOrUpdateRace(null, ['nom' => $nomRace]);
-        }
+
+            $race = null;
+            if ($idRace) {
+                $race = $entityManager->getRepository(Race::class)->find($idRace);
+                if (!$race) {
+                    return new JsonResponse([
+                        'status' => 'error',
+                        'message' => 'Race non trouvée'
+                    ], Response::HTTP_BAD_REQUEST);
+                }
+            } elseif ($nomRace) {
+                $race = $this->raceService->createOrUpdateRace(null, ['nom' => $nomRace]);
+            }
             $animal = new Animal();
             $animal->setNom($nom);
             $animal->setHabitat($habitat);
             $animal->setRace($race);
-            
+
             $this->entityManager->persist($animal);
             $this->entityManager->flush();
 
@@ -114,9 +115,9 @@ class AnimalController extends AbstractController
                 'message' => 'Animal créé avec succès',
                 'animalId' => $animal->getId()
             ], Response::HTTP_CREATED);
-    
+
         } catch (\Exception $e) {
-            
+
             return new JsonResponse([
                 'status' => 'error',
                 'message' => 'Erreur : ' . $e->getMessage()
@@ -128,64 +129,71 @@ class AnimalController extends AbstractController
     public function update(int $id, Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         try {
-        
-        $animal = $this->entityManager->getRepository(Animal::class)->find($id);
-        if (!$animal) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Animal non trouvé'], 404);
-        }
-        $nom = $request->request->get('nom');
-        $idHabitat = $request->request->get('idHabitat');
-        $idRace = $request->request->get('idRace');
-        $nomRace = $request->request->get('nomRace');
-        
-        $imageFile = $request->files->get('file');
-        $imageSubDirectory = $request->request->get('image_sub_directory');
-        $image = $this->imageManager->handleImageUpload($imageFile, $imageSubDirectory);
 
-        
-        $race = $animal->getRace();
-        if (!$race) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Race non trouvée'], 404);
-        }
-
-        
-        if ($nomRace && $nomRace !== $race->getNom()) {
-            $race->setNom($nomRace);
-            $this->entityManager->persist($race);
-            
-            $animals = $this->entityManager->getRepository(Animal::class)->findBy(['race' => $race]);
-            foreach ($animals as $otherAnimal) {
-                $otherAnimal->setRace($race);
-                $this->entityManager->persist($otherAnimal);
+            $animal = $this->entityManager->getRepository(Animal::class)->find($id);
+            if (!$animal) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Animal non trouvé'], 404);
             }
+            $nom = $request->request->get('nom');
+            $idHabitat = $request->request->get('idHabitat');
+            $idRace = $request->request->get('idRace');
+            $nomRace = $request->request->get('nomRace');
+
+            $imageFile = $request->files->get('file');
+            $imageSubDirectory = $request->request->get('image_sub_directory');
+            $image = $this->imageManager->handleImageUpload($imageFile, $imageSubDirectory);
+
+
+            $race = $animal->getRace();
+            if (!$race) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Race non trouvée'], 404);
+            }
+
+
+            if ($nomRace && $nomRace !== $race->getNom()) {
+                $race->setNom($nomRace);
+                $this->entityManager->persist($race);
+
+                $animals = $this->entityManager->getRepository(Animal::class)->findBy(['race' => $race]);
+                foreach ($animals as $otherAnimal) {
+                    $otherAnimal->setRace($race);
+                    $this->entityManager->persist($otherAnimal);
+                }
+            }
+
+            $animal = $this->animalService->createOrUpdateAnimal($animal, [
+                'nom' => $nom,
+                'idHabitat' => $idHabitat,
+                'race' => $race,
+            ], $image);
+
+            $this->entityManager->flush();
+
+            return new JsonResponse(['status' => 'success', 'id' => $animal->getId()], 200);
+
+        } catch (\Exception $e) {
+            // Logger l'erreur pour un suivi détaillé
+            $this->logger->error('Erreur lors de la mise à jour de l\'animal : ' . $e->getMessage());
+            return new JsonResponse(['status' => 'error', 'message' => 'Une erreur est survenue : ' . $e->getMessage()], 500);
         }
-        
-        $animal = $this->animalService->createOrUpdateAnimal($animal, [
-            'nom' => $nom,
-            'idHabitat' => $idHabitat,
-            'race' => $race,
-        ], $image);
-        
-        $this->entityManager->flush();
-
-        return new JsonResponse(['status' => 'success', 'id' => $animal->getId()], 200);
-
-    } catch (\Exception $e) {
-        // Logger l'erreur pour un suivi détaillé
-        $this->logger->error('Erreur lors de la mise à jour de l\'animal : ' . $e->getMessage());
-        return new JsonResponse(['status' => 'error', 'message' => 'Une erreur est survenue : ' . $e->getMessage()], 500);
     }
-}
-
-    public function deleteService(object $entity): void
+    #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
+    public function deleteService(int $id): JsonResponse
     {
-        
-        foreach ($entity->getImages() as $image) {
-            $this->imageManager->deleteImage($image->getImagePath());
-            $this->entityManager->remove($image);
-        }
+        try {
+            $animal = $this->entityManager->getRepository(Animal::class)->find($id);
+            $currentImage = $animal->getImage();
+            if ($currentImage !== null) {
+                $this->imageManager->deleteImage($currentImage->getId());
+                $this->entityManager->remove($currentImage);
+            }
 
-        $this->entityManager->remove($entity);
-        $this->entityManager->flush();
+            $this->entityManager->remove($animal);
+            $this->entityManager->flush();
+
+            return new JsonResponse(['status' => 'success', 'message' => 'Service supprimé avec succès'], 200);
+        } catch (\Exception $e) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Erreur lors de la suppression : ' . $e->getMessage()], 500);
+        }
     }
 }

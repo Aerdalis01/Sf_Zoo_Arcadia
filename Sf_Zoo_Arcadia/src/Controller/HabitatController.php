@@ -107,7 +107,7 @@ class HabitatController extends AbstractController
             $habitat = $this->entityManager->getRepository(Habitat::class)->find($id);
 
             if (!$habitat) {
-                return new JsonResponse(['status' => 'error', 'message' => 'Service non trouvé'], 404);
+                return new JsonResponse(['status' => 'error', 'message' => 'Habitat non trouvé'], 404);
             }
 
             
@@ -151,7 +151,7 @@ class HabitatController extends AbstractController
         $habitat = $this->entityManager->getRepository(Habitat::class)->find($id);
 
         if (!$habitat) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Service non trouvé'], 404);
+            return new JsonResponse(['status' => 'error', 'message' => 'Habitat non trouvé'], 404);
         }
         try {
 
