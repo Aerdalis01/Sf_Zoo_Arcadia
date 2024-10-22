@@ -13,6 +13,7 @@ const registerSchema = z.object({
       /[\W_]/,
       "Le mot de passe doit contenir au moins un caractère spécial."
     ),
+    role: z.string().nonempty({ message: "Un rôle doit être sélectionné." }), 
 });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -21,6 +22,7 @@ export const RegisterPage = () => {
   const [formValues, setFormValues] = useState<RegisterFormValues>({
     email: "",
     password: "",
+    role:"",
   });
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState(null);
@@ -74,7 +76,7 @@ export const RegisterPage = () => {
         console.log("Données de la réponse:", data);
   
         if (response.ok) {
-          setMessage("Inscription réussie !");
+          setSuccessMessage("Inscription réussie !");
         } else {
           const errorMessage = data.errors
             ? data.errors.join(", ")
@@ -149,6 +151,7 @@ export const RegisterPage = () => {
           <option value="veterinaire">Vétérinaire</option>
         </select>
         <button type="submit">S'inscrire</button>
+
         {error && <p style={{ color: "red" }}>{error}</p>}
         {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       </form>
