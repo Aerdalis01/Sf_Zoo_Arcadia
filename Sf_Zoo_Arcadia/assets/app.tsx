@@ -16,6 +16,9 @@ import './sass/app.scss';
 
 // import HomePage from './react/pages/HomePage';
 import {HabitatCreate} from './react/pages/HabitatCreate';
+import { AnimalCreate } from './react/pages/AnimalCreate';
+import { AnimalDelete } from './react/pages/AnimalDelete';
+import { AnimalUpdate } from './react/pages/AnimalUpdate';
 import {ServicePage} from './react/pages/ServicesPage';
 import { ServiceCreate } from './react/pages/ServiceCreate';
 import { ServiceUpdate } from './react/pages/ServiceUpdate';
@@ -35,6 +38,9 @@ const App: React.FC = () => {
                 {/* <Route path="/auth" element={<AuthPage />} />
                 <Route path="/" element={<HomePage />} /> */}
                 <Route path="/habitat/create" element={<HabitatCreate />} />
+                <Route path="/animal/create" element={<AnimalCreate />} />
+                <Route path="/animal/delete" element={<AnimalDelete />} />
+                <Route path="/animal/update" element={<AnimalUpdate />} />
                 <Route path="/service" element={<ServicePage />} />
                 <Route path="/service/create" element={<ServiceCreate />} />
                 <Route path="/service/update" element={<ServiceUpdate />} />

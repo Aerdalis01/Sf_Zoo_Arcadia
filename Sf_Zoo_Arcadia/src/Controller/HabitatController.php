@@ -4,13 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Habitat;
 use Psr\Log\LoggerInterface;
-use App\Form\HabitatType;
 use App\Service\HabitatService;
-use App\Repository\HabitatRepository;
 use App\Service\ImageManagerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -107,14 +104,14 @@ class HabitatController extends AbstractController
             $habitat = $this->entityManager->getRepository(Habitat::class)->find($id);
 
             if (!$habitat) {
-                return new JsonResponse(['status' => 'error', 'message' => 'Service non trouvé'], 404);
+                return new JsonResponse(['status' => 'error', 'message' => 'Habitat non trouvé'], 404);
             }
 
-            // Récupérer les données du formulaire
+            
             $nom = $request->request->get('nom');
             $description = $request->request->get('description');
 
-            // Vérification et gestion de l'image
+            
             $imageFile = $request->files->get('file');
             $imageSubDirectory = $request->request->get('image_sub_directory');
 
@@ -151,7 +148,7 @@ class HabitatController extends AbstractController
         $habitat = $this->entityManager->getRepository(Habitat::class)->find($id);
 
         if (!$habitat) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Service non trouvé'], 404);
+            return new JsonResponse(['status' => 'error', 'message' => 'Habitat non trouvé'], 404);
         }
         try {
 

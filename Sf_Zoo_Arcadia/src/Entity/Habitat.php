@@ -15,15 +15,15 @@ class Habitat
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('habitat')]
+    #[Groups('habitat', 'animal')]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
-    #[Groups('habitat')]
+    #[Groups('habitat', 'animal')]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('habitat')]
+    #[Groups('habitat', 'animal')]
     private ?string $description = null;
 
     #[ORM\Column]
@@ -32,12 +32,8 @@ class Habitat
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'HabitatComment')]
-    #[Groups('habitat')]
-    private ?self $HabitatComment = null;
-
     #[ORM\OneToMany(targetEntity: HabitatComment::class, mappedBy: 'habitat')]
-    #[Groups('habitat')]
+    #[Groups('habitat', 'animal')]
     private Collection $habitatComment;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
@@ -106,33 +102,28 @@ class Habitat
         return $this->updatedAt;
     }
 
-    public function getHabitatComment(): ?self
+    public function getHabitatComment(): Collection
     {
-        return $this->HabitatComment;
+        return $this->habitatComment;
     }
 
-    public function setHabitatComment(?self $HabitatComment): static
-    {
-        $this->HabitatComment = $HabitatComment;
+    
 
-        return $this;
-    }
-
-    public function addHabitatComment(self $habitatComment): static
+    public function addHabitatComment(HabitatComment $habitatComment): static
     {
         if (!$this->habitatComment->contains($habitatComment)) {
             $this->habitatComment->add($habitatComment);
-            $habitatComment->setHabitatComment($this);
+            $habitatComment->setHabitat($this);
         }
 
         return $this;
     }
 
-    public function removeHabitatComment(self $habitatComment): static
+    public function removeHabitatComment(HabitatComment $habitatComment): static
     {
-        if ($this->habitatComment->removeElement($habitatComment)) {
-            if ($habitatComment->getHabitatComment() === $this) {
-                $habitatComment->setHabitatComment(null);
+        if (!$this->habitatComment->removeElement($habitatComment)) {
+            if ($habitatComment->getHabitat() === $this) {
+                $habitatComment->setHabitat($this);
             }
         }
 

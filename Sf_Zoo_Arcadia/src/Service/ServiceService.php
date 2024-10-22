@@ -4,14 +4,17 @@ namespace App\Service;
 
 use App\Entity\Image;
 use App\Entity\Service;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class ServiceService
 {
-    public function __construct(private EntityManagerInterface $entityManager, private ImageManagerService $imageManager, private RequestStack $requestStack, private ParameterBagInterface $parameterBag)
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private ImageManagerService $imageManager,
+        private RequestStack $requestStack,
+        private ParameterBagInterface $parameterBag)
     {
     }
 
@@ -45,26 +48,25 @@ class ServiceService
                 unlink($filePath); 
             }
 
-            $entity->removeImage(); // Supprimer l'association entre l'image et le service
-            $this->entityManager->remove($currentImage); // Supprimer l'entité image de la base de données
+            $entity->removeImage(); 
+            $this->entityManager->remove($currentImage); 
         }
     }
         if ($image !== null) {
             if (!$image instanceof Image) {
                 throw new \InvalidArgumentException('L\'image fournie n\'est pas une instance de Image');
             }
-
-            // Si le service a déjà une image, on la remplace par la nouvelle
+            
             $currentImage = $entity->getImage();
             if ($currentImage !== null) {
                 // Supprimer l'ancienne image du disque
                 $filePath = $this->parameterBag->get('kernel.project_dir') . '/public' . $currentImage->getImagePath();
                 if (file_exists($filePath)) {
-                    unlink($filePath); // Supprimer le fichier du disque
+                    unlink($filePath); 
                 }
     
-                $entity->removeImage(); // Supprimer l'association de l'ancienne image
-                $this->entityManager->remove($currentImage); // Supprimer l'entité image de la base de données
+                $entity->removeImage(); 
+                $this->entityManager->remove($currentImage); 
             }
     
             // Rattacher la nouvelle image au service
@@ -81,7 +83,7 @@ class ServiceService
                 $entity->removeSousService($sousService);
                 $this->entityManager->remove($sousService);
             }
-            // On flush ici après suppression des sous-services et images
+            
             $this->entityManager->flush();
         }
         $this->entityManager->persist($entity);
@@ -92,13 +94,12 @@ class ServiceService
 
     public function deleteService(object $entity): void
     {
-        // Suppression des images associées
+        
         foreach ($entity->getImages() as $image) {
             $this->imageManager->deleteImage($image->getImagePath());
             $this->entityManager->remove($image);
         }
-
-        // Si c'est un Service, supprimer ses SousServices
+        
         if ($entity instanceof Service) {
             foreach ($entity->getSousService() as $sousService) {
                 $this->deleteService($sousService);

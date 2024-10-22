@@ -25,20 +25,18 @@ class ImageManagerService
             $safeFilename = $this->sluggerInterface->slug($originalFilename);
             $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
             
-            // Créer le chemin complet avec images_directory et image_sub_directory
             $uploadDirectory = $this->parameterBag->get('images_directory') . '/' . $imageSubDirectory;
             
         } else {
             throw new \InvalidArgumentException('Le fichier doit être une instance de UploadedFile.');
         }
-    
-        // Créez le sous-dossier s'il n'existe pas
+        
         if (!is_dir($uploadDirectory)) {
             mkdir($uploadDirectory, 0777, true);
         }
 
         try {
-            // Déplacer le fichier vers le bon répertoire
+            
             $imageFile->move($uploadDirectory, $newFilename);
         } catch (FileException $e) {
             $this->loggerInterface->error($e->getMessage());
@@ -61,11 +59,36 @@ class ImageManagerService
 
     
 
-    public function deleteImage(string $imagePath): void
-    {
-        $filePath = $this->parameterBag->get('kernel.project_dir') . '/public' . $imagePath;
-        if (file_exists($filePath)) {
-            unlink($filePath); 
+    public function deleteImage(int $imageId): void
+    {$image = $this->entityManager->getRepository(Image::class)->find($imageId);
+    
+        if ($image) {
+            $filePath = $this->parameterBag->get('kernel.project_dir') . '/public' . $image->getImagePath();
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+    
+            $this->entityManager->remove($image);
+            $this->entityManager->flush();
+            
+            $this->loggerInterface->info("Image supprimée avec succès via l'ID : " . $imageId);
+        } else {
+            $this->loggerInterface->error("Image non trouvée pour l'ID : " . $imageId);
         }
+    }
+
+    public function handleImageUpload(?UploadedFile $imageFile, ?string $subDirectory): ?Image
+    {
+        if ($imageFile instanceof UploadedFile) {
+            $imageName = $this->generateImageName($imageFile); // Logique déplacée dans le service
+            return $this->createImage($imageName, $subDirectory, $imageFile);
+        }
+        return null;
+    }
+    private function generateImageName(UploadedFile $imageFile): string
+    {
+        $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeFilename = $this->sluggerInterface->slug($originalFilename);
+        return $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
     }
 }

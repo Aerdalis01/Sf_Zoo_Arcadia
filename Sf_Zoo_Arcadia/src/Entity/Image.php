@@ -39,9 +39,8 @@ class Image
     #[ORM\ManyToOne(inversedBy: 'image',cascade: ['persist', 'remove'])]
     private ?SousService $sousService = null;
 
-    #[ORM\OneToOne(inversedBy: 'image',cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Habitat $habitat = null;
-
 
     #[ORM\PrePersist]
     public function setCreatedAt(): void
@@ -94,7 +93,7 @@ class Image
 
         return $this;
     }
-
+    
     public function getService(): ?service
     {
         return $this->service;

@@ -1,4 +1,4 @@
-import { ServiceForm } from "../controllers/components/ServiceForm";
+import { ServiceForm } from "../controllers/components/crud/ServiceForm";
 
 export const ServiceCreate = () => {
   return(

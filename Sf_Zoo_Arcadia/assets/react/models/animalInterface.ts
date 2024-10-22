@@ -2,5 +2,7 @@
 export interface Animal {
   id: number;
   nom: string;
-  race: string;
+  idHabitat: string;
+  idRace: string;
+  nomRace: string;
 }

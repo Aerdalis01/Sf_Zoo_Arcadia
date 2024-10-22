@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ImageForm } from "./ImageForm";
-import { TextInputField } from "./form/TextInputField";
-import { HoraireField } from "./form/HoraireField";
-import { CheckBoxField } from "./form/CheckBoxFieldProps";
-import { ServiceFormFields } from "./form/ServiceFormFieldsProps";
+import { TextInputField } from "../form/TextInputField";
+import { HoraireField } from "../form/HoraireField";
+import { CheckBoxField } from "../form/CheckBoxFieldProps";
+import { ServiceFormFields } from "../form/ServiceFormFieldsProps";
 
 export function ServiceFormUpdate() {
   const [services, setServices] = useState([]);

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ImageForm } from "../../controllers/components/ImageForm";
-import { CheckBoxField } from "./form/CheckBoxFieldProps";
-import { TextInputField } from "./form/TextInputField";
-import { Service } from "../../models/serviceInterface";
+import { ImageForm } from "./ImageForm";
+import { CheckBoxField } from "../form/CheckBoxFieldProps";
+import { TextInputField } from "../form/TextInputField";
+import { Service } from "../../../models/serviceInterface";
 
 export function SousServiceFormUpdate() {
   const [sousServices, setSousServices] = useState([]);

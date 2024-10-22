@@ -5,17 +5,21 @@ namespace App\Entity;
 use App\Repository\AnimalRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AnimalRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Animal
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('animal')]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
+    #[Groups('animal')]
     private ?string $nom = null;
 
     #[ORM\Column]
@@ -25,18 +29,23 @@ class Animal
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'animal')]
+    #[Groups('animal')]
     private ?Habitat $habitat = null;
 
     #[ORM\OneToMany(targetEntity: Alimentation::class, mappedBy: 'animal')]
+    #[Groups('animal')]
     private Collection $alimentation;
 
-    #[ORM\ManyToOne(inversedBy: 'animals')]
+    #[ORM\ManyToOne(inversedBy: 'animal')]
+    #[Groups('animal')]
     private ?Race $race = null;
 
     #[ORM\OneToMany(targetEntity: AnimalReport::class, mappedBy: 'animal')]
+    #[Groups('animal')]
     private Collection $animalReport;
 
     #[ORM\OneToOne(mappedBy: 'animal', cascade: ['persist', 'remove'])]
+    #[Groups('animal')]
     private ?Image $image = null;
 
     public function __construct()
@@ -44,7 +53,19 @@ class Animal
         $this->alimentation = new ArrayCollection();
         $this->animalReport = new ArrayCollection();
     }
+    #[ORM\PrePersist]
+    public function setCreatedAt(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): void
+    {
+        if ($this->createdAt !== null) {  // Vérifie que l'entité n'est pas nouvellement créée
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -67,23 +88,11 @@ class Animal
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
+   
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 
     public function getHabitat(): ?Habitat
