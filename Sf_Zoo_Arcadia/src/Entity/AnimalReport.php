@@ -23,7 +23,7 @@ class AnimalReport
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'AnimalReport')]
-    private ?Veterinaire $veterinaire = null;
+    private ?User $veterinaire = null;
 
     #[ORM\ManyToOne(inversedBy: 'animalReport')]
     private ?Animal $animal = null;
@@ -72,12 +72,12 @@ class AnimalReport
         return $this;
     }
 
-    public function getVeterinaire(): ?Veterinaire
+    public function getVeterinaire(): ?User
     {
         return $this->veterinaire;
     }
 
-    public function setVeterinaire(?Veterinaire $veterinaire): static
+    public function setVeterinaire(?User $veterinaire): static
     {
         $this->veterinaire = $veterinaire;
 

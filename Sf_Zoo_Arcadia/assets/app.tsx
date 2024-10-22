@@ -15,6 +15,9 @@ import './sass/app.scss';
 // import {AuthPage} from './react/pages/Auth/AuthPage'
 
 // import HomePage from './react/pages/HomePage';
+import {LoginPage} from './react/pages/Auth/LoginPage'
+import {RegisterPage} from './react/pages/Auth/RegisterPage'
+import { ProtectedRoute } from './react/pages/Auth/Auth';
 import {HabitatCreate} from './react/pages/HabitatCreate';
 import {HabitatUpdate} from './react/pages/HabitatUpdate';
 import {HabitatDelete} from './react/pages/HabitatDelete';
@@ -39,6 +42,12 @@ const App: React.FC = () => {
             <Routes>
                 {/* <Route path="/auth" element={<AuthPage />} />
                 <Route path="/" element={<HomePage />} /> */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={
+            <ProtectedRoute allowedRoles={['ROLE_ADMIN']}>
+              <RegisterPage />
+            </ProtectedRoute>
+          } />
                 <Route path="/habitat/create" element={<HabitatCreate />} />
                 <Route path="/habitat/update" element={<HabitatUpdate />} />
                 <Route path="/habitat/delete" element={<HabitatDelete />} />

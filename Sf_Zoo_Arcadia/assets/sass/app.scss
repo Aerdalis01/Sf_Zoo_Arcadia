@@ -13,6 +13,7 @@
 
          // Ensuite, importez Bootstrap
 
+<<<<<<< HEAD
 @use "pages/home";
 // @use "pages/services";
 
@@ -31,4 +32,24 @@
 @use "themes/_allThemes";
 
 @use "vendors/_custom-bootstrap";
+=======
+// @use "pages/home";
+// @use "pages/services";
+
+
+// @use "base/_font";
+
+// @use "layout/_allLayout";
+
+// @use "components/allComponents";
+
+
+// @use "abstracts/_all";
+
+// // @use "pages/_allPages";
+
+// @use "themes/_allThemes";
+
+// @use "vendors/_custom-bootstrap";
+>>>>>>> auth
 
