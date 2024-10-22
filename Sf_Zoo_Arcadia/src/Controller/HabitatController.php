@@ -147,37 +147,29 @@ class HabitatController extends AbstractController
 
 
 
-    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
-    public function deleteService(int $id, Request $request): JsonResponse
+    #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
+    public function deleteService(int $id): JsonResponse
     {
-        $habitat = $this->entityManager->getRepository(Habitat::class)->find($id);
-
-        if (!$habitat) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Habitat non trouvé'], 404);
-        }
         try {
-
-            foreach ($habitat->getAnimal() as $animal) {
-
-                foreach ($animal->getImage() as $image) {
-                    $this->imageManager->deleteImage($image->getImagePath());
-                    $this->entityManager->remove($image);
-                }
-
-                $this->entityManager->remove($animal);
+            $habitat = $this->entityManager->getRepository(Habitat::class)->find($id);
+    
+            if (!$habitat) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Habitat non trouvé'], 404);
             }
-
-            // Supprimer l'image associée au habitat
+            
             $currentImage = $habitat->getImage();
-            if ($currentImage !== null) {
-                $this->imageManager->deleteImage($currentImage->getImagePath());
-                $this->entityManager->remove($currentImage);
-            }
-
-            // Supprimer le habitat
-            $this->entityManager->remove($habitat);
+        if ($currentImage) {
+            
+            $habitat->setImage(null); 
+            $this->entityManager->persist($habitat);
             $this->entityManager->flush();
-
+            
+            $this->imageManager->deleteImage($currentImage->getId());
+            $this->entityManager->remove($currentImage);
+        }
+        $this->entityManager->remove($habitat);
+        $this->entityManager->flush();
+        
             return new JsonResponse(['status' => 'success', 'message' => 'Service supprimé avec succès'], 200);
         } catch (\Exception $e) {
             return new JsonResponse(['status' => 'error', 'message' => 'Erreur lors de la suppression : ' . $e->getMessage()], 500);

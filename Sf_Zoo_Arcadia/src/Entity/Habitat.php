@@ -41,7 +41,7 @@ class Habitat
     private ?Image $image = null;
 
 
-    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'habitat')]
+    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'habitat', cascade:['remove'] ,orphanRemoval: true)]
     #[Groups('habitat')]
     private Collection $animal;
 

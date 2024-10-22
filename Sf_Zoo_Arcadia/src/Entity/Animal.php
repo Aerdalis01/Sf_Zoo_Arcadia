@@ -44,7 +44,7 @@ class Animal
     #[Groups('animal')]
     private Collection $animalReport;
 
-    #[ORM\OneToOne(mappedBy: 'animal', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'animal', cascade: ['persist', 'remove'] ,orphanRemoval: true)]
     #[Groups('animal')]
     private ?Image $image = null;
 

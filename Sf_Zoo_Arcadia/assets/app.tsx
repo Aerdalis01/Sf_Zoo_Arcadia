@@ -17,6 +17,7 @@ import './sass/app.scss';
 // import HomePage from './react/pages/HomePage';
 import {HabitatCreate} from './react/pages/HabitatCreate';
 import {HabitatUpdate} from './react/pages/HabitatUpdate';
+import {HabitatDelete} from './react/pages/HabitatDelete';
 import { AnimalCreate } from './react/pages/AnimalCreate';
 import { AnimalDelete } from './react/pages/AnimalDelete';
 import { AnimalUpdate } from './react/pages/AnimalUpdate';
@@ -40,6 +41,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<HomePage />} /> */}
                 <Route path="/habitat/create" element={<HabitatCreate />} />
                 <Route path="/habitat/update" element={<HabitatUpdate />} />
+                <Route path="/habitat/delete" element={<HabitatDelete />} />
                 <Route path="/animal/create" element={<AnimalCreate />} />
                 <Route path="/animal/delete" element={<AnimalDelete />} />
                 <Route path="/animal/update" element={<AnimalUpdate />} />
