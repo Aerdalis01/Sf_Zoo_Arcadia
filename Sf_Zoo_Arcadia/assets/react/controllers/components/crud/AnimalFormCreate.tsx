@@ -3,7 +3,6 @@ import { Animal } from "../../../models/animalInterface";
 import { Habitat } from "../../../models/habitatInterface";
 import { TextInputField } from "../form/TextInputField";
 import { ImageForm } from "./ImageForm";
-import {RaceForm} from './RaceForm'
 import { fetchRaces, createRace, updateRace, deleteRace } from '../../../services/RaceService'; 
 
 export function AnimalForm() {

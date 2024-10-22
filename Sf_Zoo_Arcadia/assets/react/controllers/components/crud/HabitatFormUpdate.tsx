@@ -1,0 +1,210 @@
+import React, { useState, useRef, useEffect } from "react";
+import { Habitat } from "../../../models/habitatInterface";
+import { Animal } from "../../../models/animalInterface";
+import { ImageForm } from "./ImageForm";
+import { TextInputField } from "../form/TextInputField";
+
+export function HabitatFormUpdate() {
+  const [formData, setFormData] = useState<Habitat>({
+    id: 0,
+    nom: "",
+    description: "",
+  });
+  const [habitats, setHabitats] = useState<number[]>([]);
+  const [selectedAnimals, setSelectedAnimals] = useState<number[]>([]);
+  const [selectedHabitat, setSelectedHabitat] = useState<number | null>(null);
+  const [resetImage, setResetImage] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const formRef = useRef(null);
+  const [animals, setAnimals] = useState<Animal[]>([]);
+
+  useEffect(() => {
+    fetch("/api/animal")
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        setAnimals(data);
+      })
+      .catch((error) =>
+        console.error("Erreur lors du chargement des animaux", error)
+      );
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/habitat/")
+      .then((response) => response.json())
+      .then((data) => setHabitats(data))
+      .catch((error) =>
+        console.error("Erreur lors du chargement des habitats", error)
+      );
+  }, []);
+
+  useEffect(() => {
+    if (selectedHabitat !== null) {
+      fetch(`/api/habitat/${selectedHabitat}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Données des habitats :", data);
+        const habitatData = data.find((habitat: Habitat) => habitat.id === selectedHabitat);
+        setFormData({
+          id: habitatData.id || 0,
+          nom: habitatData.nom || "",
+          description: habitatData.description || null,
+        });
+      })
+      .catch((error) => {
+        console.error(
+          "Erreur lors du chargement des détails de l'habitat:",
+          error
+        );
+      });
+    }
+  }, [selectedHabitat]);
+
+  const handleAnimalChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedOptions = Array.from(e.target.selectedOptions).map((option) =>
+      Number(option.value)
+    );
+    setSelectedAnimals(selectedOptions);
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const habitatId: number = Number(e.target.value);
+    setSelectedHabitat(habitatId);
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formHabitat = new FormData();
+    formHabitat.append("nom", formData.nom);
+    formHabitat.append("description", formData.description);
+
+    selectedAnimals.forEach((animalId) => {
+      formHabitat.append("animals[]", animalId.toString());
+    });
+    if (file) {
+      const originalFilename = file.name.split(".").slice(0, -1).join(".");
+      const extension = file.name.split(".").pop();
+      const timestamp = new Date().getTime();
+      const imageNameGenerated = `${originalFilename}-${timestamp}.${extension}`;
+      const imageSubDirectory = `/services`;
+
+      formHabitat.append("file", file);
+      formHabitat.append("nomImage", imageNameGenerated);
+      formHabitat.append("image_sub_directory", imageSubDirectory);
+    }
+    formHabitat.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
+    fetch(`/api/habitat/update/${formData.id}`, {
+      method: "POST",
+      body: formHabitat,
+    })
+    .then(async (response) => {
+      const contentType = response.headers.get("content-type");
+      console.log("Content-Type de la réponse : ", contentType);
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
+      }
+  
+      // Si ce n'est pas du JSON, log la réponse brute
+      if (contentType && contentType.includes("application/json")) {
+        return response.json();
+      } else {
+        const textResponse = await response.text(); // Affiche le contenu brut
+        console.log("Réponse brute reçue : ", textResponse);
+        throw new Error("Réponse non JSON reçue.");
+      }
+    })
+      .then((data) => {
+        console.log("Données de l'habitat: ", data);
+        if (data && data.status === "success") {
+          setSuccess("habitat modifié avec succès !");
+          setFormData({
+            id: 0,
+            nom: "",
+            description: "",
+          });
+          setFile(null);
+          setError(null);
+          setResetImage(true);
+
+          setTimeout(() => {
+            setSuccess(null);
+          }, 5000);
+        } else {
+          throw new Error("Erreur : Réponse inattendue.");
+        }
+      })
+
+      .catch((error) => {
+        console.error("Erreur lors de la soumission du formulaire:", error);
+        setError("Erreur lors de la modification de l'habitat.");
+        setSuccess(null);
+        setResetImage(false);
+      });
+    formRef.current.reset();
+  };
+  return (
+    <form ref={formRef} onSubmit={handleSubmit}>
+      <select onChange={handleSelectChange} value={selectedHabitat !== null ? String(selectedHabitat) : ''}>
+        <option value="" disabled>
+          Sélectionner un habitat
+        </option>
+        {habitats.map((habitat: any) => (
+          <option key={habitat.id} value={habitat.id}>
+            {habitat.nom}
+          </option>
+        ))}
+      </select>
+
+      <TextInputField
+        name="nom"
+        label="Nom de l'habitat"
+        value={formData.nom}
+        onChange={handleChange}
+      />
+      <TextInputField
+        name="description"
+        label="Description"
+        value={formData.description}
+        onChange={handleChange}
+      />
+
+      <ImageForm
+        serviceName={formData.nom}
+        onImageSelect={setFile}
+        resetImage={resetImage}
+      />
+
+      <label>Animaux associés :</label>
+      <select name="animals" multiple onChange={handleAnimalChange}>
+        {animals.map((animal) => (
+          <option key={animal.id} value={animal.id}>
+            {animal.nom}
+          </option>
+        ))}
+      </select>
+
+      <button type="submit">Soumettre</button>
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {success && <p style={{ color: "green" }}>{success}</p>}
+    </form>
+  );
+}

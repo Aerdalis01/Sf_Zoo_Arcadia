@@ -14,7 +14,7 @@ export function AnimalFormUpdate() {
     nomRace: "",
   });
   const [animals, setAnimals] = useState([]);
-  const [selectedAnimal, setSelectedAnimal]= useState<number | null>(
+  const [selectedAnimal, setSelectedAnimal]= useState<number>(
     null
   );
   const [resetImage, setResetImage] = useState(false);

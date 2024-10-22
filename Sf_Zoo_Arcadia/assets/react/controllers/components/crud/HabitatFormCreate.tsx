@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Habitat } from "../../models/habitatInterface";
-import { Animal } from "../../models/animalInterface";
+import { Habitat } from "../../../models/habitatInterface";
+import { Animal } from "../../../models/animalInterface";
 import { ImageForm } from "./ImageForm";
-import { TextInputField } from "./form/TextInputField";
-import { HoraireField } from "./form/HoraireField";
-import { CheckBoxField } from "./form/CheckBoxFieldProps";
+import { TextInputField } from "../form/TextInputField";
+
 
 export function HabitatForm() {
   const [formData, setFormData] = useState<Habitat>({
@@ -20,20 +19,20 @@ export function HabitatForm() {
   const formRef = useRef(null);
   const [animals, setAnimals] = useState<Animal[]>([]);
 
-  // useEffect(() => {
-  //   fetch("/api/animal")
-  //     .then((response) => {
-  //       console.log("Réponse brute de l'API :", response);
-  //       return response.json();
-  //     })
-  //     .then((data) => {
-  //       console.log("Données des animaux :", data);
-  //       setAnimals(data);
-  //     })
-  //     .catch((error) =>
-  //       console.error("Erreur lors du chargement des animaux", error)
-  //     );
-  // }, []);
+  useEffect(() => {
+    fetch("/api/animal")
+      .then((response) => {
+        console.log("Réponse brute de l'API :", response);
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Données des animaux :", data);
+        setAnimals(data);
+      })
+      .catch((error) =>
+        console.error("Erreur lors du chargement des animaux", error)
+      );
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -129,14 +128,14 @@ export function HabitatForm() {
         resetImage={resetImage}
       />
 
-      {/* <label>Animaux associés :</label>
+      <label>Animaux associés :</label>
       <select name="animals" multiple onChange={handleChange}>
         {animals.map((animal) => (
           <option key={animal.id} value={animal.id}>
             {animal.nom}
           </option>
         ))}
-      </select> */}
+      </select>
 
       <button type="submit">Soumettre</button>
 

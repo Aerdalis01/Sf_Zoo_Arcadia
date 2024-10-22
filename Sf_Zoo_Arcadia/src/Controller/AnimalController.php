@@ -126,7 +126,7 @@ class AnimalController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]
-    public function update(int $id, Request $request, EntityManagerInterface $entityManager): JsonResponse
+    public function update(int $id, Request $request): JsonResponse
     {
         try {
 

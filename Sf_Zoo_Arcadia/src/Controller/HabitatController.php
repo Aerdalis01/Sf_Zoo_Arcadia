@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Habitat;
+use App\Entity\Animal;
 use Psr\Log\LoggerInterface;
 use App\Service\HabitatService;
 use App\Service\ImageManagerService;
@@ -97,8 +98,8 @@ class HabitatController extends AbstractController
         }
     }
 
-    #[Route('/{id}', name: 'edit', methods: ['POST'])]
-    public function edit(int $id, Request $request): JsonResponse
+    #[Route('/update/{id}', name: 'update', methods: ['POST'])]
+    public function update(int $id, Request $request): JsonResponse
     {
         try {
             $habitat = $this->entityManager->getRepository(Habitat::class)->find($id);
@@ -114,16 +115,20 @@ class HabitatController extends AbstractController
             
             $imageFile = $request->files->get('file');
             $imageSubDirectory = $request->request->get('image_sub_directory');
+            $image = $this->imageManager->handleImageUpload($imageFile, $imageSubDirectory);
 
-            $image = null;
-            if ($imageFile instanceof UploadedFile) {
-                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $timestamp = time();
-                $extension = $imageFile->guessExtension();
-                $imageName = sprintf('%s-%s.%s', $originalFilename, $timestamp, $extension);
-                $image = $this->imageManager->createImage($imageName, $imageSubDirectory, $imageFile);
-                $this->entityManager->persist($image);
+            $animalIds = $request->request->all('animals');
+            
+            if (!empty($animalIds)) {
+                $animals = $this->entityManager->getRepository(Animal::class)->findBy(['id' => $animalIds]);
+    
+                foreach ($animals as $animal) {
+                    $animal->setHabitat($habitat);
+                    $this->entityManager->persist($animal);
+                }
             }
+            
+            
 
             $habitat = $this->habitatService->createUpdateHabitat($habitat, [
                 'nom' => $nom,
@@ -143,7 +148,7 @@ class HabitatController extends AbstractController
 
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
-    public function deleteService(int $id): JsonResponse
+    public function deleteService(int $id, Request $request): JsonResponse
     {
         $habitat = $this->entityManager->getRepository(Habitat::class)->find($id);
 
