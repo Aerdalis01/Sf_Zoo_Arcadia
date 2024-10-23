@@ -15,6 +15,7 @@ import './sass/app.scss';
 // import {AuthPage} from './react/pages/Auth/AuthPage'
 
 // import HomePage from './react/pages/HomePage';
+import { DashboardPage } from './react/pages/Dashboard';
 import {LoginPage} from './react/pages/Auth/LoginPage'
 import {RegisterPage} from './react/pages/Auth/RegisterPage'
 import { ProtectedRoute } from './react/pages/Auth/Auth';
@@ -48,6 +49,7 @@ const App: React.FC = () => {
               <RegisterPage />
             </ProtectedRoute>
           } />
+                <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/habitat/create" element={<HabitatCreate />} />
                 <Route path="/habitat/update" element={<HabitatUpdate />} />
                 <Route path="/habitat/delete" element={<HabitatDelete />} />

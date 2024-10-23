@@ -57,28 +57,19 @@ services:
     #             $adminInitializer: '@App\Service\AdminInitializer'
     #         tags:
     #             - { name: 'console.command' }
-<<<<<<< HEAD
     App\Service\ImageManagerService:
         arguments:
             $imageDirectory: '%images_directory%'
-=======
     # App\Service\ImageManagerService:
     #     arguments:
     #         $imageDirectory: '%images_directory%'
->>>>>>> auth
             
     # App\EventListener\ExceptionListener:
     #     tags:
     #         - { name: kernel.event_listener, event: kernel.exception }
-<<<<<<< HEAD
     App\Service\ServiceService:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
-=======
-    # App\Service\ServiceService:
-    #     arguments:
-    #         $entityManager: '@doctrine.orm.entity_manager'
->>>>>>> auth
 
     # App\Controller\AuthController:
     #     autowire: true

@@ -6,3 +6,4 @@
 @forward "./auth/_connexion" as connexion*;
 @forward "./_employe" as avis*;
 @forward "./_admin" as admin*;
+@forward "./_dashboard" as dashboard*;

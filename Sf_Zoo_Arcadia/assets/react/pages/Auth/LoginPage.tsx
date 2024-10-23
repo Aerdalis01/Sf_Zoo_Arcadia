@@ -3,6 +3,20 @@ import React from "react";
 import { useState } from "react";
 import { z } from "zod";
 
+
+export const getUserRoles = (): string[] => {
+  const token = localStorage.getItem("jwt_token");
+  if (token) {
+    try {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.roles || []; // Les rôles sont extraits ici
+    } catch (error) {
+      console.error("Erreur lors du décodage du token JWT", error);
+      return [];
+    }
+  }
+  return [];
+};
 // Define the schema for the form using Zod
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -46,16 +60,19 @@ export const LoginPage: React.FC = () => {
         localStorage.setItem('jwt_token', token)
 
         const decodedToken: any = jwtDecode(token);
-        console.log("Token décodé complet :", decodedToken);
+      //   console.log("Token décodé complet :", decodedToken);
+      //   // Les rôles sont un tableau, donc vous pouvez les stocker comme une chaîne JSON dans le localStorage
+      //   const userRoles = decodedToken.roles || [];
+      //   localStorage.setItem("ROLE", JSON.stringify(userRoles));
 
-        // Les rôles sont un tableau, donc vous pouvez les stocker comme une chaîne JSON dans le localStorage
-        const userRoles = decodedToken.roles || [];
-        localStorage.setItem("ROLE", JSON.stringify(userRoles));
-
-        console.log("Rôle(s) de l'utilisateur :", userRoles);
-      } else {
-        setFormError("Failed to login. Please try again.");
-      }
+      //   console.log("Rôle(s) de l'utilisateur :", userRoles);
+      // } else {
+      //   setFormError("Failed to login. Please try again.");
+      // }
+      console.log("Rôle(s) de l'utilisateur :", decodedToken.roles);
+    } else {
+      setFormError("Échec de la connexion. Veuillez réessayer.");
+    }
     } else {
       // Gestion des erreurs de validation
       const fieldErrors: { [key: string]: string } = {};
@@ -64,7 +81,9 @@ export const LoginPage: React.FC = () => {
       });
       setErrors(fieldErrors);
     }
+    
   };
+  
 
   // Handle input changes
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
