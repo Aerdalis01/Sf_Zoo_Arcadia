@@ -10,11 +10,28 @@ export const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const handleFormSuccess = (message: string) => {
+    setShowForm(false); 
+    setSuccessMessage(message);
+  };
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage(null); // Masquer le message après 5 secondes
+      }, 5000);
+
+      return () => clearTimeout(timer); // Nettoyer le timer
+    }
+  }, [successMessage]);
 
 const handleFormToggle = () => {
     setShowForm(!showForm);
     
   };
+
+
   useEffect(() => {
     const fetchLatestAvis = async () => {
       try {
@@ -39,6 +56,8 @@ const handleFormToggle = () => {
   }, []);
   return (
     <>
+    {successMessage && 
+    <div className="alert alert-success">{successMessage}</div>}
       <hr className="hr-avis"/>
       <section className="avis mb-5">
         <div className="container-fluid">
@@ -81,7 +100,7 @@ const handleFormToggle = () => {
 
         {showForm && (
         <div className="overlay">
-          <AvisForm handleFormToggle={handleFormToggle}/>
+          <AvisForm handleFormToggle={handleFormToggle} onFormSuccess={handleFormSuccess}/>
         </div>
         )}
       </section>

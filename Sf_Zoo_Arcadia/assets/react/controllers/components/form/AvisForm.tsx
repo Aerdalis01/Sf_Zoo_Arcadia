@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Avis } from '../../../models/avisInterface'
 import { TextInputField } from "../form/TextInputField";
+
 export const renderStars = (note) => {
   const totalStars = 5;
   const stars = [];
@@ -17,7 +18,7 @@ export const renderStars = (note) => {
 
   return stars;
 };
-export function AvisForm ({ handleFormToggle }) {
+export function AvisForm ({ handleFormToggle, onFormSuccess }) {
   const[formData, setFormData] = useState<Avis>({
     id: 0,
     nom: "",
@@ -27,8 +28,6 @@ export function AvisForm ({ handleFormToggle }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
@@ -42,9 +41,13 @@ export function AvisForm ({ handleFormToggle }) {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    
+    if (isSubmitting) {
+      return;
+    }
+    setIsSubmitting(true); 
     setError(null);
-    setSuccessMessage(null);
+    
 
     const formAvis = new FormData();
     formAvis.append("nom", formData.nom)
@@ -56,11 +59,15 @@ export function AvisForm ({ handleFormToggle }) {
       body: formAvis,
     })
     .then(async (response) => {
+      console.log('Réponse du serveur :', response);
       if (response.ok) {
         const data = await response.json();
-        console.log('Avis créé avec succès:', data);
+        console.log('Données reçues :', data);
+        handleFormToggle();
+        onFormSuccess("Avis créé avec succès !");
       } else {
-        console.error('Erreur lors de la création de l\'avis:', response.status);
+        setError('Erreur lors de la création de l\'avis.');
+          console.error('Erreur lors de la création de l\'avis:', response.status);
       }
     })
     .catch((error) => {
@@ -91,7 +98,6 @@ export function AvisForm ({ handleFormToggle }) {
       <form id="avis-form" className="row g-3" onSubmit={handleSubmit}>
 
       {error && <div className="alert alert-danger">{error}</div>}
-      {successMessage && <div className="alert alert-success">{successMessage}</div>}
         <div className="col-md-6">
           <TextInputField
             name="nom"
@@ -125,7 +131,8 @@ export function AvisForm ({ handleFormToggle }) {
         </div>
         <input type="hidden" id="rating" name="rating" value={formData.note} />
         <div className="col-12 d-flex justify-content-center">
-          <button type="submit" className="btn btn-warning rounded-5 fw-semibold">Envoyer</button>
+          <button type="submit" className="btn btn-warning rounded-5 fw-semibold" disabled={isSubmitting}>{isSubmitting ? "Envoi en cours..." : "Envoyer"}</button>
+          
         </div>
       </form>
     </div>
