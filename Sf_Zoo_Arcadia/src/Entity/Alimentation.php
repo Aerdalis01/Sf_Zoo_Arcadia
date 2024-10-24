@@ -5,32 +5,49 @@ namespace App\Entity;
 use App\Repository\AlimentationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AlimentationRepository::class)]
+#[HasLifecycleCallbacks]
 class Alimentation
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('alimentation')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups('alimentation')]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Groups('alimentation')]
     private ?\DateTimeInterface $heure = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('alimentation')]
     private ?string $nourriture = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('alimentation')]
     private ?string $quantite = null;
 
     #[ORM\ManyToOne(inversedBy: 'alimentation')]
+    #[Groups('alimentation')]
     private ?Animal $animal = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups('alimentation')]
     private ?string $createdBy = null;
+
+    #[ORM\PrePersist]
+    public function setDefaults(): void
+    {
+        $this->date = new \DateTimeImmutable();
+        $this->heure = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {

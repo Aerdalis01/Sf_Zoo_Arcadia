@@ -13,7 +13,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        api:
+        api_login:
             pattern: ^/api/login
             provider: app_user_provider
             json_login:
@@ -21,6 +21,15 @@ security:
                 username_path: email
                 password_path: password
                 success_handler: App\Security\LoginSuccessHandler
+
+
+        api:
+            pattern: ^/api/alimentation  # Toutes les routes /api/ sont protégées
+            
+            provider: app_user_provider
+            access_token:
+                token_handler: App\Security\AccessTokenHandler
+
 
         main:
             provider: app_user_provider
@@ -32,7 +41,7 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/admin/register/new, roles: ROLE_ADMIN }
         - { path: ^/veterinaire, roles: ROLE_VETERINAIRE }
-        
+        - { path: ^/api/alimentation/new, roles: ROLE_ADMIN }
         - { path: ^/employe, roles: ROLE_EMPLOYE }
         
         - { path: ^/profile, roles: IS_AUTHENTICATED_FULLY }

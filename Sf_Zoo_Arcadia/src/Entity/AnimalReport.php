@@ -6,6 +6,7 @@ use App\Repository\AnimalReportRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AnimalReportRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class AnimalReport
 {
     #[ORM\Id]
@@ -31,6 +32,19 @@ class AnimalReport
     #[ORM\Column(length: 100)]
     private ?string $createdBy = null;
 
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+    
     public function getId(): ?int
     {
         return $this->id;

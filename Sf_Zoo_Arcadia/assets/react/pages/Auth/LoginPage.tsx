@@ -17,7 +17,7 @@ export const getUserRoles = (): string[] => {
   }
   return [];
 };
-// Define the schema for the form using Zod
+
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z
@@ -35,7 +35,7 @@ export const LoginPage: React.FC = () => {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {}
   );
-  const [succes, setSuccess] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | undefined>();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,15 +60,6 @@ export const LoginPage: React.FC = () => {
         localStorage.setItem('jwt_token', token)
 
         const decodedToken: any = jwtDecode(token);
-      //   console.log("Token décodé complet :", decodedToken);
-      //   // Les rôles sont un tableau, donc vous pouvez les stocker comme une chaîne JSON dans le localStorage
-      //   const userRoles = decodedToken.roles || [];
-      //   localStorage.setItem("ROLE", JSON.stringify(userRoles));
-
-      //   console.log("Rôle(s) de l'utilisateur :", userRoles);
-      // } else {
-      //   setFormError("Failed to login. Please try again.");
-      // }
       console.log("Rôle(s) de l'utilisateur :", decodedToken.roles);
     } else {
       setFormError("Échec de la connexion. Veuillez réessayer.");

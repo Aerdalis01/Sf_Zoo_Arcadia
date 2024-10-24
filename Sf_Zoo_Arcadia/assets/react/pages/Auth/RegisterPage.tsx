@@ -13,7 +13,7 @@ const registerSchema = z.object({
       /[\W_]/,
       "Le mot de passe doit contenir au moins un caractère spécial."
     ),
-    role: z.string().nonempty({ message: "Un rôle doit être sélectionné." }), 
+    role: z.string().min(1, { message: "Un rôle doit être sélectionné." }), 
 });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;

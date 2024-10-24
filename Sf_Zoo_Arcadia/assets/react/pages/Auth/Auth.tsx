@@ -37,7 +37,6 @@ export const ProtectedRoute = ({ children, allowedRoles }) => {
   try {
     const decodedToken: any = jwtDecode(token);
     console.log('Payload du JWT :', decodedToken);
-
     // Extraire les rôles du token
     const userRoles = decodedToken.roles || [];
     console.log("Rôles de l'utilisateur :", userRoles);

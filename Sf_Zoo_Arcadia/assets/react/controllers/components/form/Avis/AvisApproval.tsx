@@ -1,5 +1,5 @@
 import React from "react";
-import { useRoleActions } from "../user-space/useRoleActions";
+import { useRoleActions } from "../../user-space/useRoleActions";
 
 export const AvisApproval: React.FC = () => {
   const { handleApprove, handleReject, avis } = useRoleActions();

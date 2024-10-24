@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Avis } from '../../../models/avisInterface'
-import { TextInputField } from "../form/TextInputField";
+import { Avis } from '../../../../models/avisInterface'
+import { TextInputField } from "../TextInputField";
 
 export const renderStars = (note) => {
   const totalStars = 5;

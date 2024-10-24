@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { renderStars, AvisForm } from '../controllers/components/form/AvisForm';
+import { renderStars, AvisForm } from '../controllers/components/form/Avis/AvisForm';
 
 
 

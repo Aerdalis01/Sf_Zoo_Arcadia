@@ -8,7 +8,9 @@ import { HabitatDeleteForm } from "../crud/HabitatDeleteForm";
 import { AnimalForm } from "../crud/AnimalFormCreate";
 import { AnimalFormUpdate } from "../crud/AnimalFormUpdate";
 import { AnimalDeleteForm } from "../crud/AnimalDeleteForm";
-import { AvisApproval } from "../form/AvisApproval";
+import { AvisApproval } from "../form/Avis/AvisApproval";
+import { AlimentationForm } from "../form/Alimentation/AlimentationForm"
+import { AlimentationReport } from "../form/Alimentation/AlimentationReportForm"
 export const Content: React.FC<{ section: string }> = ({ section }) => {
   const [crudAction, setCrudAction] = useState<string>("");
 
@@ -53,6 +55,10 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
         }
         case "avis":
         return <AvisApproval />;
+        case "alimentation":
+        return <AlimentationForm />;
+        case "rapport":
+        return <AlimentationReport />;
       default:
         return <p>Section non trouvée</p>;
     }
@@ -60,10 +66,12 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
 
   return (
     <div className="content p-3">
-      {section === "service" || section === "habitat" || section === "animal" || section === "avis" ? (
+      {section === "service" || section === "habitat" || section === "animal" || section === "avis" || section === "alimentation" || section === "rapport" ? (
         <>
-          <h2>Gestion de {section === "service" ? "Services" : section === "habitat" ? "Habitats" : section === "animal" ? "Animaux" : "Avis"}</h2>
-          {section !== "avis" && (
+          <h2>Gestion de {section === "service" ? "Services" : section === "habitat" ? "Habitats" : section === "animal" ? "Animaux" : section === "alimentation"
+            ? "Alimentation" : section === "rapport" ? "AlimentationReport"
+            : "Avis"}</h2>
+          {section !== "avis" && section !== "alimentation" && (
             <div className="mb-3">
               <label htmlFor="crudSelect" className="form-label">
                 Sélectionnez une action :
