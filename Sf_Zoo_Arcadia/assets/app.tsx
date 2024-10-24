@@ -14,7 +14,7 @@ import './sass/app.scss';
 
 // import {AuthPage} from './react/pages/Auth/AuthPage'
 
-// import HomePage from './react/pages/HomePage';
+import { HomePage } from './react/pages/HomePage';
 import { DashboardPage } from './react/pages/Dashboard';
 import {LoginPage} from './react/pages/Auth/LoginPage'
 import {RegisterPage} from './react/pages/Auth/RegisterPage'
@@ -32,8 +32,7 @@ import { ServiceDelete } from './react/pages/ServiceDelete';
 import { SousServiceCreate } from './react/pages/SousServiceCreate';
 import { SousServiceUpdate } from './react/pages/SousServiceUpdate';
 import { SousServiceDelete } from './react/pages/SousServiceDelete';
-// import {AnimalCreate} from './react/pages/AnimalCreate';
-// import {RaceCreate} from './react/pages/RaceCreate';
+
 
 
 const App: React.FC = () => {
@@ -41,8 +40,8 @@ const App: React.FC = () => {
         <Router>
             {/* <Header/> */}
             <Routes>
-                {/* <Route path="/auth" element={<AuthPage />} />
-                <Route path="/" element={<HomePage />} /> */}
+                
+                <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={
             <ProtectedRoute allowedRoles={['ROLE_ADMIN']}>

@@ -11,11 +11,12 @@
 // - layout
 // - components*/
 
-         // Ensuite, importez Bootstrap
+// Ensuite, importez Bootstrap
 
-@use "pages/home";
 // @use "pages/services";
+@use "vendors/_custom-bootstrap" as * ;
 
+@use "abstracts/_all";
 
 @use "base/_font";
 
@@ -23,16 +24,16 @@
 
 @use "components/allComponents";
 
+@use "themes/_allThemes";
 
-@use "abstracts/_all";
+
+@use "pages/dashboard";
+@use "pages/home";
 
 // @use "pages/_allPages";
 
-@use "themes/_allThemes";
 
-@use "vendors/_custom-bootstrap";
+
 // @use "pages/home";
 // @use "pages/services";
-@use "pages/dashboard";
-
 

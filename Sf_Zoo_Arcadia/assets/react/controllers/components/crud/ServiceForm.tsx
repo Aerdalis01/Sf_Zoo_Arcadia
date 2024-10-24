@@ -55,8 +55,8 @@ export function ServiceForm() {
     }
   };
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsCarteZoo(e.target.checked); // Mettre à jour l'état pour la carte du zoo
-    setFormData({ ...formData, carteZoo: e.target.checked ? true : false }); // Enregistrer la valeur booléenne dans formData
+    setIsCarteZoo(e.target.checked);
+    setFormData({ ...formData, carteZoo: e.target.checked ? true : false }); 
   };
 
   const handleChange = (

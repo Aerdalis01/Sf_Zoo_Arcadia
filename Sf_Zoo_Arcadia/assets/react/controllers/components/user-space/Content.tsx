@@ -8,7 +8,7 @@ import { HabitatDeleteForm } from "../crud/HabitatDeleteForm";
 import { AnimalForm } from "../crud/AnimalFormCreate";
 import { AnimalFormUpdate } from "../crud/AnimalFormUpdate";
 import { AnimalDeleteForm } from "../crud/AnimalDeleteForm";
-
+import { AvisApproval } from "../form/AvisApproval";
 export const Content: React.FC<{ section: string }> = ({ section }) => {
   const [crudAction, setCrudAction] = useState<string>("");
 
@@ -51,6 +51,8 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
           default:
             return <p>Veuillez sélectionner une action pour les animaux</p>;
         }
+        case "avis":
+        return <AvisApproval />;
       default:
         return <p>Section non trouvée</p>;
     }
@@ -58,28 +60,31 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
 
   return (
     <div className="content p-3">
-      {(section === "service" || section === "habitat" || section === "animal") && (
+      {section === "service" || section === "habitat" || section === "animal" || section === "avis" ? (
         <>
-        console.log(section);
-          <h2>Gestion de {section === "service" ? "Services" : section === "habitat" ? "Habitats" : "Animaux"}</h2>
-          <div className="mb-3">
-            <label htmlFor="crudSelect" className="form-label">
-              Sélectionnez une action :
-            </label>
-            <select
-              id="crudSelect"
-              className="form-select"
-              value={crudAction}
-              onChange={handleSelectChange}
-            >
-              <option value="">Choisissez une action</option>
-              <option value="create">Créer un {section}</option>
-              <option value="edit">Modifier un {section}</option>
-              <option value="delete">Supprimer un {section}</option>
-            </select>
-          </div>
+          <h2>Gestion de {section === "service" ? "Services" : section === "habitat" ? "Habitats" : section === "animal" ? "Animaux" : "Avis"}</h2>
+          {section !== "avis" && (
+            <div className="mb-3">
+              <label htmlFor="crudSelect" className="form-label">
+                Sélectionnez une action :
+              </label>
+              <select
+                id="crudSelect"
+                className="form-select"
+                value={crudAction}
+                onChange={handleSelectChange}
+              >
+                <option value="">Choisissez une action</option>
+                <option value="create">Créer un {section}</option>
+                <option value="edit">Modifier un {section}</option>
+                <option value="delete">Supprimer un {section}</option>
+              </select>
+            </div>
+          )}
           <div className="mt-3">{renderForm()}</div>
         </>
+      ) : (
+        <p>Section non trouvée</p>
       )}
     </div>
   );

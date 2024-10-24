@@ -1,4 +1,4 @@
-@import "../vendors/_bootstrap";
+@import "../vendors/custom-bootstrap";
 
 /* Section services */
 .services {
@@ -154,10 +154,8 @@
 }
 
 /* Section avis */
-.hr-avis {
-  width: 50px;
-  height: 1px;
-  background-color: $green;
+hr{
+  background-color: transparent;
 }
 
 .avis {
@@ -168,13 +166,20 @@
 .avis-title {
   opacity: 90%;
 }
-
+.card-avis {
+  color: white;
+  border: 1px solid $gray-600;
+  border-radius: 20px;
+  background-color: $green;
+  
+}
 .avis-img {
   display: none;
 
   @include media-breakpoint-up(lg) {
     display: block;
   }
+  
 }
 
 /* Modal avis */
@@ -190,13 +195,14 @@
   background-color: $green;
   font-family: 'Akaya_kanadaka', inter, sans-serif;
   color: $warning;
-  display: none;
+  display: flex;
 
   &--exit {
     position: absolute;
     top: 5px;
     right: 5px;
     width: 20px;
+    cursor: pointer;
   }
 }
 
@@ -208,10 +214,13 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(5px);
-  display: none;
+  display: flex;
   z-index: 1000;
 }
-
+.overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
 .open {
   position: fixed;
   z-index: 9999;
