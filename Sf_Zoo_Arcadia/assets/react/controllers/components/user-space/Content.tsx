@@ -71,7 +71,7 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
           <h2>Gestion de {section === "service" ? "Services" : section === "habitat" ? "Habitats" : section === "animal" ? "Animaux" : section === "alimentation"
             ? "Alimentation" : section === "rapport" ? "AlimentationReport"
             : "Avis"}</h2>
-          {section !== "avis" && section !== "alimentation" && (
+          {section !== "avis" && section !== "alimentation" && section != "rapport" &&(
             <div className="mb-3">
               <label htmlFor="crudSelect" className="form-label">
                 Sélectionnez une action :

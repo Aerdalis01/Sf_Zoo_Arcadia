@@ -9,29 +9,11 @@ export function AlimentationForm() {
     id: 0,
     nourriture: "",
     quantite: "",
-    // createdBy: "",
     idAnimal: "",
   });
   const [animal, setAnimal] = useState<Animal[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null); 
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem("jwt_token");
-  //   if (token) {
-  //     try {
-  //       const decodedToken: any = jwtDecode(token);
-  //       console.log("Token décodé :", decodedToken);
-        
-  //       setFormData((prevFormData) => ({
-  //         ...prevFormData,
-  //         createdBy: decodedToken.email,
-  //       }));
-  //     } catch (error) {
-  //       console.error("Erreur lors du décodage du token JWT", error);
-  //     }
-  //   }
-  // }, []);
 
   useEffect(() => {
     fetch("/api/animal/")
@@ -72,7 +54,6 @@ export function AlimentationForm() {
     const formAlimentation = new FormData();
     formAlimentation.append("nourriture", formData.nourriture);
     formAlimentation.append("quantite", formData.quantite);
-    // formAlimentation.append("createdBy", formData.createdBy);
     formAlimentation.append("idAnimal", formData.idAnimal);
 
     
@@ -98,7 +79,6 @@ export function AlimentationForm() {
           console.log("La réponse n'est pas JSON");
         }
       } else {
-        // Si la réponse n'est pas correcte, on vérifie le type de contenu
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
           setError(errorData.message || "Erreur lors de la soumission du formulaire.");

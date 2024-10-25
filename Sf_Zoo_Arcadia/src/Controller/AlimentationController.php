@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Alimentation;
 use App\Entity\Animal;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -37,21 +36,14 @@ class AlimentationController extends AbstractController
     {
         $alimentationReports = $this->em->getRepository(Alimentation::class)->findAll();
         
-        $data = [];
 
-        foreach ($alimentationReports as $report) {
-            $data[] = [
-                'id' => $report->getId(),
-                'nourriture' => $report->getNourriture(),
-                'quantite' => $report->getQuantite(),
-                'createdBy' => $report->getCreatedBy(),
-                'animal' => $report->getAnimal()->getNom(),
-                'date' => $report->getDate()->format('Y-m-d'),
-                'heure' => $report->getHeure()->format('H:i:s')
-            ];
-        }
-
-        return new JsonResponse($data, Response::HTTP_OK);
+        
+        return new JsonResponse(
+            $this->serializer->serialize($alimentationReports, 'json', ['groups' => 'alimentation']),
+            Response::HTTP_OK,
+            [],
+            true
+        );
     }
 
     #[Route('/{id}', name: 'show', methods: ['GET'])]

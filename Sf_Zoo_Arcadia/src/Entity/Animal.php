@@ -6,6 +6,7 @@ use App\Repository\AnimalRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AnimalRepository::class)]
@@ -15,11 +16,11 @@ class Animal
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('animal')]
+    #[Groups('animal', 'alimentation')]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
-    #[Groups('animal')]
+    #[Groups('animal', 'alimentation')]
     private ?string $nom = null;
 
     #[ORM\Column]
@@ -40,9 +41,6 @@ class Animal
     #[Groups('animal')]
     private ?Race $race = null;
 
-    #[ORM\OneToMany(targetEntity: AnimalReport::class, mappedBy: 'animal')]
-    #[Groups('animal')]
-    private Collection $animalReport;
 
     #[ORM\OneToOne(mappedBy: 'animal', cascade: ['persist', 'remove'] ,orphanRemoval: true)]
     #[Groups('animal')]
@@ -51,7 +49,6 @@ class Animal
     public function __construct()
     {
         $this->alimentation = new ArrayCollection();
-        $this->animalReport = new ArrayCollection();
     }
     #[ORM\PrePersist]
     public function setCreatedAt(): void
@@ -145,35 +142,6 @@ class Animal
         return $this;
     }
 
-    /**
-     * @return Collection<int, AnimalReport>
-     */
-    public function getAnimalReport(): Collection
-    {
-        return $this->animalReport;
-    }
-
-    public function addAnimalReport(AnimalReport $animalReport): static
-    {
-        if (!$this->animalReport->contains($animalReport)) {
-            $this->animalReport->add($animalReport);
-            $animalReport->setAnimal($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAnimalReport(AnimalReport $animalReport): static
-    {
-        if ($this->animalReport->removeElement($animalReport)) {
-            // set the owning side to null (unless already changed)
-            if ($animalReport->getAnimal() === $this) {
-                $animalReport->setAnimal(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getImage(): ?Image
     {

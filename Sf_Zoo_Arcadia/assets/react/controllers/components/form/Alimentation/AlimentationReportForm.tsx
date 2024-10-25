@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Alimentation } from "../../../../models/alimentationInterface";
 import { Link } from "react-router-dom";
+import { AnimalReportForm } from "./AnimalReportForm";
 
 export function AlimentationReport() {
   const [reports, setReports] = useState<Alimentation[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Récupérer les rapports d'alimentation depuis l'API
-    fetch("/api/alimentation/reports")
+    
+    fetch("/api/alimentation/")
       .then((response) => response.json())
       .then((data) => setReports(data))
       .catch((error) => setError("Erreur lors du chargement des rapports."));
@@ -27,6 +28,7 @@ export function AlimentationReport() {
             <th>Créé par</th>
             <th>Animal</th>
             <th>Date de création</th>
+            <th>Heure de création</th>
           </tr>
         </thead>
         <tbody>
@@ -44,9 +46,7 @@ export function AlimentationReport() {
         </tbody>
       </table>
       {/* Bouton pour créer un nouveau rapport */}
-      <Link to="/alimentation/new" className="btn btn-primary">
-        Créer un nouveau rapport
-      </Link>
+      <AnimalReportForm />
     </div>
   );
 }

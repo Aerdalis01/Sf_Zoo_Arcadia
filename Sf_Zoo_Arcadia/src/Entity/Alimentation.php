@@ -6,6 +6,7 @@ use App\Repository\AlimentationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AlimentationRepository::class)]
@@ -34,7 +35,7 @@ class Alimentation
     #[Groups('alimentation')]
     private ?string $quantite = null;
 
-    #[ORM\ManyToOne(inversedBy: 'alimentation')]
+    #[ORM\ManyToOne(targetEntity: Animal::class, inversedBy: 'alimentation', fetch: 'EAGER')]
     #[Groups('alimentation')]
     private ?Animal $animal = null;
 

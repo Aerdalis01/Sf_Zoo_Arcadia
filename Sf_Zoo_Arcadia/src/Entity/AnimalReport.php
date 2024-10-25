@@ -23,14 +23,11 @@ class AnimalReport
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'AnimalReport')]
-    private ?User $veterinaire = null;
-
-    #[ORM\ManyToOne(inversedBy: 'animalReport')]
-    private ?Animal $animal = null;
-
     #[ORM\Column(length: 100)]
     private ?string $createdBy = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Alimentation $alimentation = null;
 
 
     #[ORM\PrePersist]
@@ -86,30 +83,6 @@ class AnimalReport
         return $this;
     }
 
-    public function getVeterinaire(): ?User
-    {
-        return $this->veterinaire;
-    }
-
-    public function setVeterinaire(?User $veterinaire): static
-    {
-        $this->veterinaire = $veterinaire;
-
-        return $this;
-    }
-
-    public function getAnimal(): ?Animal
-    {
-        return $this->animal;
-    }
-
-    public function setAnimal(?Animal $animal): static
-    {
-        $this->animal = $animal;
-
-        return $this;
-    }
-
     public function getCreatedBy(): ?string
     {
         return $this->createdBy;
@@ -118,6 +91,18 @@ class AnimalReport
     public function setCreatedBy(string $createdBy): static
     {
         $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getAlimentation(): ?Alimentation
+    {
+        return $this->alimentation;
+    }
+
+    public function setAlimentation(?Alimentation $alimentation): static
+    {
+        $this->alimentation = $alimentation;
 
         return $this;
     }

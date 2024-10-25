@@ -1,7 +1,8 @@
 <?php
 
-namespace App\controller;
+namespace App\Controller;
 
+use App\Entity\Alimentation;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 
 #[Route('/api/animalReport', name: 'app_api_animalReport_')]
-class VeterinaryReportController extends AbstractController
+class AnimalReportController extends AbstractController
 {
     public function __construct(
       private EntityManagerInterface $em,
@@ -32,24 +33,24 @@ class VeterinaryReportController extends AbstractController
             
             $user = $this->getUser();
             $email = $user->getUserIdentifier();
-            $animalId = $request->get('idAnimal');
+            $alimentation = $request->get('alimenation');
             $etat = $request->get('etat');
             
-            if (!$animalId || !$etat) {
+            if (!$alimentation || !$etat) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Tous les champs sont requis'], 400);
             }
             
-            $animal = $this->em->getRepository(Animal::class)->find($animalId);
-            if (!$animal) {
-                return new JsonResponse(['status' => 'error', 'message' => 'Animal non trouvé'], 404);
+            $alimentation = $this->em->getRepository(Alimentation::class)->find($alimentation);
+            if (!$alimentation) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Rapport d\'alimenation non trouvé'], 404);
             }
 
             // Créer un nouveau rapport vétérinaire
             $animalReport = new AnimalReport();
-            $animalReport->setAnimal($animal);
+            $animalReport->setAlimentation($alimentation);
             $animalReport->setCreatedBy($email);
             $animalReport->setEtat($etat);
-            $animalReport->setVeterinaire($user); 
+            
 
             $this->em->persist($animalReport);
             $this->em->flush();
