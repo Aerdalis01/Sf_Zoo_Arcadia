@@ -50,9 +50,12 @@ export function AnimalReportForm() {
 
     const formReport = new FormData();
     formReport.append("etat", etat);
+    if (selectedReportId !== null) {
+      formReport.append("alimentation", selectedReportId.toString()); 
+    }
 
     try {
-      const response = await fetch("/api/alimentationReport/new", {
+      const response = await fetch("/api/animalReport/new", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

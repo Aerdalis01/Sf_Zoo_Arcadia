@@ -34,16 +34,32 @@ class AlimentationController extends AbstractController
     #[Route('/reports', name: 'reports', methods: ['GET'])]
     public function getAlimentationReports(): JsonResponse
     {
-        $alimentationReports = $this->em->getRepository(Alimentation::class)->findAll();
-        
+        $query = $this->em->createQueryBuilder()
+        ->select('a', 'an') // Sélectionne l'entité Alimentation et Animal
+        ->from(Alimentation::class, 'a')
+        ->leftJoin('a.animal', 'an') // Joins l'entité Animal associée
+        ->getQuery();
 
-        
-        return new JsonResponse(
-            $this->serializer->serialize($alimentationReports, 'json', ['groups' => 'alimentation']),
-            Response::HTTP_OK,
-            [],
-            true
-        );
+    $alimentationReports = $query->getArrayResult();
+
+    foreach ($alimentationReports as &$report) {
+        if (isset($report['date']) && $report['date'] instanceof \DateTime) {
+            $report['formattedDate'] = $report['date']->format('Y-m-d');
+        } else {
+            $report['formattedDate'] = null;
+        }
+
+        if (isset($report['heure']) && $report['heure'] instanceof \DateTime) {
+            $report['formattedHeure'] = $report['heure']->format('H:i:s');
+        } else {
+            $report['formattedHeure'] = null;
+        }
+    }
+
+
+    $data = $this->serializer->serialize($alimentationReports, 'json', ['groups' => 'alimentation']);
+
+    return new JsonResponse($data, 200, [], true); // `true` pour éviter de re-sérialiser
     }
 
     #[Route('/{id}', name: 'show', methods: ['GET'])]

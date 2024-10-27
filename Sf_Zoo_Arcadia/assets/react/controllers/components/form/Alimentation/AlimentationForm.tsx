@@ -1,8 +1,7 @@
 import { Alimentation } from "../../../../models/alimentationInterface";
 import { TextInputField } from "../TextInputField";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Animal } from "../../../../models/animalInterface";
-import { jwtDecode } from "jwt-decode";
 
 export function AlimentationForm() {
   const [formData, setFormData] = useState<Alimentation>({
@@ -11,18 +10,19 @@ export function AlimentationForm() {
     quantite: "",
     idAnimal: "",
   });
+  const formRef = useRef<HTMLFormElement | null>(null);
   const [animal, setAnimal] = useState<Animal[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null); 
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/animal/")
-    .then((response) => response.json())
-    .then((data) => setAnimal(data))
-    .catch((error) =>
-      console.error("Erreur lors du chargement des animaux", error)
-    );
-}, []);
+      .then((response) => response.json())
+      .then((data) => setAnimal(data))
+      .catch((error) =>
+        console.error("Erreur lors du chargement des animaux", error)
+      );
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -51,12 +51,11 @@ export function AlimentationForm() {
     }
     try {
       console.log("Formulaire en cours d'envoi...");
-    const formAlimentation = new FormData();
-    formAlimentation.append("nourriture", formData.nourriture);
-    formAlimentation.append("quantite", formData.quantite);
-    formAlimentation.append("idAnimal", formData.idAnimal);
+      const formAlimentation = new FormData();
+      formAlimentation.append("nourriture", formData.nourriture);
+      formAlimentation.append("quantite", formData.quantite);
+      formAlimentation.append("idAnimal", formData.idAnimal);
 
-    
       const response = await fetch("/api/alimentation/new", {
         method: "POST",
         headers: {
@@ -65,7 +64,6 @@ export function AlimentationForm() {
         body: formAlimentation,
       });
 
-      console.log("Réponse reçue :", response);
       const contentType = response.headers.get("content-type");
 
       if (response.ok) {
@@ -73,8 +71,12 @@ export function AlimentationForm() {
           const data = await response.json();
           console.log("Données JSON reçues :", data);
           setSuccessMessage("Rapport d'alimentation envoyé avec succès !");
+          formRef.current?.reset();
+          setFormData({ id: 0, nourriture: "", quantite: "", idAnimal: "" });
+          setTimeout(() => {
+            setSuccessMessage(null);
+          }, 5000);
         } else {
-          
           setSuccessMessage("Rapport envoyé, mais réponse non-JSON.");
           console.log("La réponse n'est pas JSON");
         }
@@ -91,48 +93,55 @@ export function AlimentationForm() {
       console.error(error);
     }
   };
-  
 
   return (
-    <form id="alimentation-form" className="row g-3" onSubmit={handleSubmit}>
-      {error && <div className="alert alert-danger">{error}</div>}
-      <div className="col-md-6">
-        <TextInputField
-          name="nourriture"
-          label="Nourriture"
-          value={formData.nourriture}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div className="col-12">
-        <TextInputField
-          name="quantite"
-          label="Quantité"
-          value={formData.quantite}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div>
-        <label htmlFor="animal">Animal :</label>
-        <select
-          id="animal"
-          name="idAnimal"
-          value={formData.idAnimal}
-          onChange={handleChange}
-        >
-          <option value="">Choisir un animal</option>
-          {animal.map((animal) => (
-            <option key={animal.id} value={animal.id}>
-              {animal.nom}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="col-12 d-flex justify-content-center">
-        <button type="submit" className="btn btn-warning rounded-5 fw-semibold">
-          Envoyer
-        </button>
-      </div>
-    </form>
+    <div>
+      {successMessage && (
+        <div className="alert alert-success">{successMessage}</div>
+      )}
+      <form id="alimentation-form" className="row g-3" onSubmit={handleSubmit}>
+        {error && <div className="alert alert-danger">{error}</div>}
+        <div className="col-md-6">
+          <TextInputField
+            name="nourriture"
+            label="Nourriture"
+            value={formData.nourriture}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="col-12">
+          <TextInputField
+            name="quantite"
+            label="Quantité"
+            value={formData.quantite}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="animal">Animal :</label>
+          <select
+            id="animal"
+            name="idAnimal"
+            value={formData.idAnimal}
+            onChange={handleChange}
+          >
+            <option value="">Choisir un animal</option>
+            {animal.map((animal) => (
+              <option key={animal.id} value={animal.id}>
+                {animal.nom}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="col-12 d-flex justify-content-center">
+          <button
+            type="submit"
+            className="btn btn-primary"
+          >
+            Envoyer
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

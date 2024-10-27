@@ -6,10 +6,43 @@ import { AnimalReportForm } from "./AnimalReportForm";
 export function AlimentationReport() {
   const [reports, setReports] = useState<Alimentation[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [showId, setShowId] = useState(true);
+  const [showNourriture, setShowNourriture] = useState(true);
+  const [showQuantite, setShowQuantite] = useState(true);
+  const [showCreatedBy, setShowCreatedBy] = useState(true);
+  const [showAnimal, setShowAnimal] = useState(true);
+  const [showFormattedDate, setShowFormattedDate] = useState(true);
+  const [showFormattedHeure, setShowFormattedHeure] = useState(true);
 
+  const toggleColumn = (column) => {
+    switch (column) {
+      case "id":
+        setShowId(!showId);
+        break;
+      case "animal":
+        setShowAnimal(!showAnimal);
+        break;
+      case "nourriture":
+        setShowNourriture(!showNourriture);
+        break;
+      case "quantite":
+        setShowQuantite(!showQuantite);
+        break;
+      case "date":
+        setShowFormattedDate(!showFormattedDate);
+        break;
+      case "heure":
+        setShowFormattedHeure(!showFormattedHeure);
+        break;
+      case "createdBy":
+        setShowCreatedBy(!showCreatedBy);
+        break;
+      default:
+        break;
+    }
+  };
   useEffect(() => {
-    
-    fetch("/api/alimentation/")
+    fetch("/api/alimentation/reports")
       .then((response) => response.json())
       .then((data) => setReports(data))
       .catch((error) => setError("Erreur lors du chargement des rapports."));
@@ -18,34 +51,66 @@ export function AlimentationReport() {
   return (
     <div className="container">
       <h1>Rapports d'Alimentation</h1>
+
+      <div>
+        <button onClick={() => toggleColumn("id")}>id</button>
+
+        <button onClick={() => toggleColumn("nourriture")}>Nourriture</button>
+        <button onClick={() => toggleColumn("quantite")}>Quantité</button>
+        <button onClick={() => toggleColumn("date")}>Date</button>
+        <button onClick={() => toggleColumn("heure")}>Heure</button>
+        <button onClick={() => toggleColumn("createdBy")}>Créé par</button>
+      </div>
+
       {error && <div className="alert alert-danger">{error}</div>}
-      <table className="table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nourriture</th>
-            <th>Quantité</th>
-            <th>Créé par</th>
-            <th>Animal</th>
-            <th>Date de création</th>
-            <th>Heure de création</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reports.map((report) => (
-            <tr key={report.id}>
-              <td>{report.id}</td>
-              <td>{report.nourriture}</td>
-              <td>{report.quantite}</td>
-              <td>{report.createdBy}</td>
-              <td>{report.animal}</td>
-              <td>{report.date}</td>
-              <td>{report.heure}</td>
+      <div className="alimentation-table">
+        <table className="table">
+          <thead>
+            <tr>
+              <th className={!showId ? "hidden" : ""}>Id</th>
+              <th className={!showAnimal ? "hidden" : ""}>Animal</th>
+              <th className={!showNourriture ? "hidden" : ""}>Nourriture</th>
+              <th className={!showQuantite ? "hidden" : ""}>Quantité</th>
+              <th className={!showFormattedDate ? "hidden" : ""}>
+                Date de création
+              </th>
+              <th className={!showFormattedHeure ? "hidden" : ""}>
+                Heure de création
+              </th>
+              <th className={!showCreatedBy ? "hidden" : ""}>Créé par</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      {/* Bouton pour créer un nouveau rapport */}
+          </thead>
+          <tbody>
+            {reports.map((report) => (
+              <tr key={report.id}>
+                <td className={!showId ? "hidden" : ""}>{report.id}</td>
+                <td className={!showAnimal ? "hidden" : ""}>
+                  {report.animal ? report.animal.nom : "N/A"}
+                </td>
+                <td className={!showNourriture ? "hidden" : ""}>
+                  {report.nourriture}
+                </td>
+                <td className={!showQuantite ? "hidden" : ""}>
+                  {report.quantite}
+                </td>
+                <td className={!showFormattedDate ? "hidden" : ""}>
+                  {report.formattedDate
+                    ? report.formattedDate
+                    : "Date inconnue"}
+                </td>
+                <td className={!showFormattedHeure ? "hidden" : ""}>
+                  {report.formattedHeure
+                    ? report.formattedHeure
+                    : "Heure inconnue"}
+                </td>
+                <td className={!showCreatedBy ? "hidden" : ""}>
+                  {report.createdBy}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <AnimalReportForm />
     </div>
   );

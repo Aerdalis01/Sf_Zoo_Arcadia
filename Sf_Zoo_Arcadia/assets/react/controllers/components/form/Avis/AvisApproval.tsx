@@ -1,12 +1,18 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { useRoleActions } from "../../user-space/useRoleActions";
 
 export const AvisApproval: React.FC = () => {
   const { handleApprove, handleReject, avis } = useRoleActions();
-
+  const [isLoaded, setIsLoaded] = useState(false);
   
+  useEffect(() => {
+    if (avis.length > 0) {
+      setIsLoaded(true);
+    }
+  }, [avis]);
+
   return (
-    <div>
+    <div className={`avis-table ${isLoaded ? 'loaded' : ''}`}>
       <h2>Approbation des avis</h2>
       <table className="table">
         <thead>

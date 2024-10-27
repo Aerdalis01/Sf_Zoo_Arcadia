@@ -24,8 +24,7 @@ security:
 
 
         api:
-            pattern: ^/api/alimentation  # Toutes les routes /api/ sont protégées
-            
+            pattern: ^/api/  # Toutes les routes /api/ sont protégées
             provider: app_user_provider
             access_token:
                 token_handler: App\Security\AccessTokenHandler
@@ -42,6 +41,7 @@ security:
         - { path: ^/admin/register/new, roles: ROLE_ADMIN }
         - { path: ^/veterinaire, roles: ROLE_VETERINAIRE }
         - { path: ^/api/alimentation/new, roles: ROLE_ADMIN }
+        - { path: ^/api/animalReport/new, roles: ROLE_ADMIN }
         - { path: ^/employe, roles: ROLE_EMPLOYE }
         
         - { path: ^/profile, roles: IS_AUTHENTICATED_FULLY }

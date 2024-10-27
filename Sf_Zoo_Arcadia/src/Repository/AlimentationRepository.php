@@ -24,9 +24,6 @@ class AlimentationRepository extends ServiceEntityRepository
             ->addSelect('animal')
             ->getQuery()
             ->getResult();
-            
-
-        dd($result); // Vérifiez que chaque objet Alimentation contient l'objet Animal
-        return $result;
+        
     }
 }

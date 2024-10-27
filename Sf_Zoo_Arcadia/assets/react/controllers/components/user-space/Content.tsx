@@ -9,15 +9,22 @@ import { AnimalForm } from "../crud/AnimalFormCreate";
 import { AnimalFormUpdate } from "../crud/AnimalFormUpdate";
 import { AnimalDeleteForm } from "../crud/AnimalDeleteForm";
 import { AvisApproval } from "../form/Avis/AvisApproval";
-import { AlimentationForm } from "../form/Alimentation/AlimentationForm"
-import { AlimentationReport } from "../form/Alimentation/AlimentationReportForm"
+import { AlimentationForm } from "../form/Alimentation/AlimentationForm";
+import { AlimentationReport } from "../form/Alimentation/AlimentationReportForm";
+import { AdminReports } from "../form/Alimentation/AdminReportsForm";
 export const Content: React.FC<{ section: string }> = ({ section }) => {
   const [crudAction, setCrudAction] = useState<string>("");
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setCrudAction(event.target.value);
   };
-  
+
+  const shouldShowHeader = !(
+    section === "alimentation" ||
+    section === "adminReport" ||
+    section === "rapport"
+  );
+
   const renderForm = () => {
     switch (section) {
       case "service":
@@ -53,12 +60,14 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
           default:
             return <p>Veuillez sélectionner une action pour les animaux</p>;
         }
-        case "avis":
+      case "avis":
         return <AvisApproval />;
-        case "alimentation":
+      case "alimentation":
         return <AlimentationForm />;
-        case "rapport":
+      case "rapport":
         return <AlimentationReport />;
+      case "adminReport":
+        return <AdminReports />;
       default:
         return <p>Section non trouvée</p>;
     }
@@ -66,29 +75,49 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
 
   return (
     <div className="content p-3">
-      {section === "service" || section === "habitat" || section === "animal" || section === "avis" || section === "alimentation" || section === "rapport" ? (
+      {section === "service" ||
+      section === "habitat" ||
+      section === "animal" ||
+      section === "avis" ||
+      section === "alimentation" ||
+      section === "rapport" ||
+      section === "adminReport" ? (
         <>
-          <h2>Gestion de {section === "service" ? "Services" : section === "habitat" ? "Habitats" : section === "animal" ? "Animaux" : section === "alimentation"
-            ? "Alimentation" : section === "rapport" ? "AlimentationReport"
-            : "Avis"}</h2>
-          {section !== "avis" && section !== "alimentation" && section != "rapport" &&(
-            <div className="mb-3">
-              <label htmlFor="crudSelect" className="form-label">
-                Sélectionnez une action :
-              </label>
-              <select
-                id="crudSelect"
-                className="form-select"
-                value={crudAction}
-                onChange={handleSelectChange}
-              >
-                <option value="">Choisissez une action</option>
-                <option value="create">Créer un {section}</option>
-                <option value="edit">Modifier un {section}</option>
-                <option value="delete">Supprimer un {section}</option>
-              </select>
-            </div>
+          {shouldShowHeader && (
+            <h2>
+              Gestion de{" "}
+              {section === "service"
+                ? "Services"
+                : section === "habitat"
+                ? "Habitats"
+                : section === "animal"
+                ? "Animaux"
+                : section === "avis"
+                ? "Avis"
+                : ""}
+            </h2>
           )}
+          {section !== "avis" &&
+            section !== "alimentation" &&
+            section != "rapport" &&
+            section != "adminReport" && (
+              <div className="mb-3">
+                <label htmlFor="crudSelect" className="form-label">
+                  Sélectionnez une action :
+                </label>
+                <select
+                  id="crudSelect"
+                  className="form-select"
+                  value={crudAction}
+                  onChange={handleSelectChange}
+                >
+                  <option value="">Choisissez une action</option>
+                  <option value="create">Créer un {section}</option>
+                  <option value="edit">Modifier un {section}</option>
+                  <option value="delete">Supprimer un {section}</option>
+                </select>
+              </div>
+            )}
           <div className="mt-3">{renderForm()}</div>
         </>
       ) : (

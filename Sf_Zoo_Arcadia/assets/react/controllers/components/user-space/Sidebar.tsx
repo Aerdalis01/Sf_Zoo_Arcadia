@@ -10,8 +10,8 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ onSectionChange }) => {
   const userRoles = getUserRoles();
   return (
-    <div className="sidebar bg-primary p-3">
-      <h3>Tableau de Bord</h3>
+    <div className="sidebar bg-primary p-3 text-center">
+      <h3 className="text-warning" >Tableau de Bord</h3>
       <ul className="nav flex-column">
         
         {userRoles.includes("ROLE_ADMIN") && (
@@ -61,6 +61,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onSectionChange }) => {
                     <li className="nav-item">
                       <Link className="nav-link" to="#" onClick={() => onSectionChange("reporting")}>
                         Reporting
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link className="nav-link" to="#" onClick={() => onSectionChange("adminReport")}>
+                        Compte Rendu vétérinaire
                       </Link>
                     </li>
                   </div>
