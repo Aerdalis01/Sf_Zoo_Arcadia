@@ -36,14 +36,12 @@ class SousService
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'sousService')]
+    #[ORM\ManyToOne(inversedBy: 'sousServices')]
     #[Groups('sousService_basic')]
-
     private ?Service $service = null;
 
     #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'sousService')]
     #[Groups('sousService_basic')]
-
     private Collection $image;
 
     public function __construct()

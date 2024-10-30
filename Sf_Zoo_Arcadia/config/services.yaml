@@ -23,15 +23,10 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # App\Service\MailerService:
-    #     arguments:
-    #         $zooEmail: '%env(ZOO_EMAIL)%'
-    #     autowire: true
-    #     autoconfigure: true
-
-    # App\Controller\ContactController:
-    #     arguments:
-    #         $mailer: '@App\Service\MailerService'
+    
+    App\Service\MailerService:
+        arguments:
+            $fromEmail: '%env(MAILER_FROM_EMAIL)%'
             
     
     
@@ -70,7 +65,9 @@ services:
     App\Service\ServiceService:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
-
+    App\Service\HoraireService:
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
     # App\Controller\AuthController:
     #     autowire: true
     #     autoconfigure: true

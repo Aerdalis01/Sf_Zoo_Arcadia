@@ -45,8 +45,7 @@ class Service
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true, onDelete: "CASCADE")]
+    #[ORM\OneToOne(mappedBy: 'service', cascade: ['persist', 'remove'])]
     #[Groups('service_basic')]
     private ?Image $image = null;
     

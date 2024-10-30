@@ -37,7 +37,7 @@ class Animal
     #[Groups('animal')]
     private Collection $alimentation;
 
-    #[ORM\ManyToOne(inversedBy: 'animal')]
+    #[ORM\ManyToOne(inversedBy: 'animals')]
     #[Groups('animal')]
     private ?Race $race = null;
 

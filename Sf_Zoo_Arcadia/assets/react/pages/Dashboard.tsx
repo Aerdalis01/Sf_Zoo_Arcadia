@@ -11,10 +11,8 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="dashboard-container d-flex">
-      {/* Sidebar */}
       <Sidebar onSectionChange={handleSectionChange} />
-
-      {/* Content */}
+      
       <Content section={currentSection} />
     </div>
   );

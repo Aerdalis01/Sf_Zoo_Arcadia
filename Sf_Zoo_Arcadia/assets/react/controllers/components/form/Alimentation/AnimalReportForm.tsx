@@ -17,7 +17,6 @@ export function AnimalReportForm() {
         return response.json();
       })
       .then((data) => {
-        console.log("Données reçues :", data);
         setAlimentationReports(data);
       })
       .catch((error) => setError(error.message));

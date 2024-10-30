@@ -106,6 +106,22 @@ class ServiceController extends AbstractController
             return new JsonResponse(['status' => 'error', 'message' => 'Une erreur est survenue : ' . $e->getMessage()], 500);
         }
     }
+
+    #[Route('/horaire', name: 'new', methods: ['POST'])]
+    public function addHoraires(Request $request): Response
+    {
+        $horairesData = $request->get('horaires');
+        if ($horairesData) {
+            $horaires = json_decode($horairesData, true);
+            // Logique pour sauvegarder les horaires dans la base de données
+            // Par exemple, vous pouvez les attacher à un service existant
+    
+            return $this->json(['status' => 'success', 'message' => 'Horaires ajoutés avec succès']);
+        }
+    
+        return $this->json(['status' => 'error', 'message' => 'Données horaires non fournies'], 400);
+    }
+
     #[Route('/{id}', name: 'update', methods: ['POST'])]
     public function updateService(int $id, Request $request): JsonResponse
     {

@@ -12,6 +12,11 @@ import { AvisApproval } from "../form/Avis/AvisApproval";
 import { AlimentationForm } from "../form/Alimentation/AlimentationForm";
 import { AlimentationReport } from "../form/Alimentation/AlimentationReportForm";
 import { AdminReports } from "../form/Alimentation/AdminReportsForm";
+import { HoraireForm } from "../form/Contact/HoraireForm";
+import { ContactResponseForm } from "../form/Contact/ContactResponseForm";
+
+
+
 export const Content: React.FC<{ section: string }> = ({ section }) => {
   const [crudAction, setCrudAction] = useState<string>("");
 
@@ -68,6 +73,10 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
         return <AlimentationReport />;
       case "adminReport":
         return <AdminReports />;
+        case "horaire":
+        return   <HoraireForm /> 
+        case "contact":
+          return <ContactResponseForm  />;
       default:
         return <p>Section non trouvée</p>;
     }
@@ -81,6 +90,8 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
       section === "avis" ||
       section === "alimentation" ||
       section === "rapport" ||
+      section === "horaire" ||
+      section === "contact" ||
       section === "adminReport" ? (
         <>
           {shouldShowHeader && (
@@ -94,13 +105,19 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
                 ? "Animaux"
                 : section === "avis"
                 ? "Avis"
+                : section === "horaire"
+                ? "Horaires"
+                : section === "contact"
+                ? "Contact"
                 : ""}
             </h2>
           )}
           {section !== "avis" &&
             section !== "alimentation" &&
             section != "rapport" &&
-            section != "adminReport" && (
+            section != "adminReport" && 
+            section != "contact" && 
+            section != "horaire" && (
               <div className="mb-3">
                 <label htmlFor="crudSelect" className="form-label">
                   Sélectionnez une action :
