@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,7 +16,9 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api/admin/register', name:'_app_api_admin_register_')]
 class RegistrationController extends AbstractController
 {
-
+    public function __construct(private MailerService $mailer)
+    {
+    }
     #[Route('/new', name:'new', methods:['POST'])]
     public function createUser(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
     {
@@ -52,6 +55,8 @@ class RegistrationController extends AbstractController
         // Persister l'utilisateur dans la base de données
         $entityManager->persist($user);
         $entityManager->flush();
+
+        $this->mailer->sendAccountCreationEmail($user->getEmail(), $user->getEmail());
 
         return new JsonResponse(['message' => 'Inscription réussie'], 201);
     }

@@ -28,4 +28,21 @@ class MailerService
 
         $this->mailer->send($email);
     }
+
+    public function sendAccountCreationEmail(string $userEmail, string $username): void
+{
+    $email = (new Email())
+        ->from('admin@votre-site.com')
+        ->to($userEmail)
+        ->subject('Création de votre compte')
+        ->html("
+            <p>Bonjour,</p>
+            <p>Votre compte a été créé avec succès.</p>
+            <p>Votre nom d'utilisateur est : <strong>{$username}</strong>.</p>
+            <p>Veuillez contacter votre administrateur pour obtenir votre mot de passe.</p>
+            <p>Cordialement,<br>L'équipe de gestion</p>
+        ");
+
+    $this->mailer->send($email);
+}
 }

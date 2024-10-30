@@ -64,6 +64,9 @@ export function ContactForm({ handleFormToggle, onFormSuccess }) {
         setFormData({ id: 0, email: '', titre: '', message: '' });
         setErrors({});
         onFormSuccess();
+        setTimeout(() => {
+          setSuccessMessage(null);
+      }, 3000); // délai de 3 secondes
       } else {
         throw new Error("Erreur lors de l'envoi du message");
       }
@@ -73,20 +76,26 @@ export function ContactForm({ handleFormToggle, onFormSuccess }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} ref={formRef}>
-      <div>
-        <label>Email</label>
+    <form onSubmit={handleSubmit} ref={formRef} 
+    className="col-10 d-flex flex-column  align-items-center my-auto h-100">
+      <div className="mb-3 col-10">
+        <label htmlFor="email" className="form-label fs-5">Email</label>
         <input
+        className={`form-control ${errors.email ? "is-invalid" : ""}`}
           type="email"
           name="email"
           value={formData.email}
           onChange={handleChange}
+          placeholder="Entrez votre email"
         />
-        {errors.email && <p>{errors.email}</p>}
+       {errors.email && (
+              <div className="invalid-feedback">{errors.email}</div>
+            )}
       </div>
-      <div>
-        <label>Titre</label>
+      <div className="mb-3 col-10">
+        <label className="form-label fs-5">Titre</label>
         <input
+          className="form-control"
           type="text"
           name="titre"
           value={formData.titre}
@@ -94,18 +103,20 @@ export function ContactForm({ handleFormToggle, onFormSuccess }) {
         />
         {errors.titre && <p>{errors.titre}</p>}
       </div>
-      <div>
+      <div className="mb-3 col-10">
         <label>Message</label>
         <textarea
+        className="form-control"
           name="message"
           value={formData.message}
           onChange={handleChange}
         />
         {errors.message && <p>{errors.message}</p>}
       </div>
-      <button type="submit">Envoyer</button>
+      <button className="btn btn-warning" type="submit">Envoyer</button>
       {errors.submit && <p>{errors.submit}</p>}
       {successMessage && <p>{successMessage}</p>}
+      <hr />
     </form>
-  );
+  )
 }

@@ -4,7 +4,6 @@ import { ContactForm } from "../controllers/components/form/Contact/ContactForm"
 export const InfoPage = () => {
   const [horaires, setHoraires] = useState<Horaire[]>([]);
   const handleFormToggle = () => {
-
     console.log("Form toggled");
   };
 
@@ -12,7 +11,6 @@ export const InfoPage = () => {
     console.log("Form submitted successfully");
   };
 
-  
   useEffect(() => {
     const fetchHoraires = async () => {
       try {
@@ -75,12 +73,19 @@ export const InfoPage = () => {
           </div>
         </div>
       </div>
-      <div>
-        <ContactForm
-          handleFormToggle={handleFormToggle}
-          onFormSuccess={onFormSuccess}
-        />
-        ;
+      <div className="row w-100 text-center d-flex justify-content-center g-0">
+        <div className="col d-flex justify-content-center p-md-3 p-lg-4 p-xl-5">
+          <div className="train--card-body bg-primary col-10 rounded-5 h-100 d-flex">
+            <div className="contact-form d-flex flex-column  align-items-center text-warning w-100">
+              <h2>Laissez un message à nos équipes</h2>
+              <ContactForm
+                
+                handleFormToggle={handleFormToggle}
+                onFormSuccess={onFormSuccess}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
