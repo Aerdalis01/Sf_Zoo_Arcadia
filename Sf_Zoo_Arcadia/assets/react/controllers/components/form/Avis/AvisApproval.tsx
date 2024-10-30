@@ -13,7 +13,6 @@ export const AvisApproval: React.FC = () => {
 
   return (
     <div className={`avis-table ${isLoaded ? 'loaded' : ''}`}>
-      <h2>Approbation des avis</h2>
       <table className="table">
         <thead>
           <tr>

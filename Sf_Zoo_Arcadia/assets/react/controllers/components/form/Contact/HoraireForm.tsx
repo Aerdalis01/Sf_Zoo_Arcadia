@@ -71,6 +71,7 @@ export const HoraireForm: React.FC = () => {
 
     return (
         <form onSubmit={handleSubmit}>
+          <h2>Gestion des horaires</h2>
             <label>
                 Jour :
                 <select

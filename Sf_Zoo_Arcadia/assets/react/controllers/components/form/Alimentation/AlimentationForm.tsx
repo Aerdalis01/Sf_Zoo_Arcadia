@@ -96,13 +96,16 @@ export function AlimentationForm() {
 
   return (
     <div>
+      <h2>Formulaire de l'alimentation des animaux</h2>
       {successMessage && (
         <div className="alert alert-success">{successMessage}</div>
       )}
-      <form id="alimentation-form" className="row g-3" onSubmit={handleSubmit}>
+      <div className="container-fluid connexion d-flex flex-column  align-items-center py-5">
+      <form id="alimentation-form" className="col-10 d-flex flex-column  align-items-center my-auto" onSubmit={handleSubmit}>
         {error && <div className="alert alert-danger">{error}</div>}
-        <div className="col-md-6">
+        <div className="mb-3 col-9">
           <TextInputField
+            form-label fs-5
             name="nourriture"
             label="Nourriture"
             value={formData.nourriture}
@@ -117,6 +120,7 @@ export function AlimentationForm() {
             onChange={handleInputChange}
           />
         </div>
+        <hr />
         <div>
           <label htmlFor="animal">Animal :</label>
           <select
@@ -133,6 +137,7 @@ export function AlimentationForm() {
             ))}
           </select>
         </div>
+        <hr />
         <div className="col-12 d-flex justify-content-center">
           <button
             type="submit"
@@ -142,6 +147,7 @@ export function AlimentationForm() {
           </button>
         </div>
       </form>
+      </div>
     </div>
   );
 }

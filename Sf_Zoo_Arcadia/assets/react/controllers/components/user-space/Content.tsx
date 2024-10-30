@@ -77,6 +77,10 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
         return   <HoraireForm /> 
         case "contact":
           return <ContactResponseForm  />;
+        case "serviceUpdate":
+          return <ServiceFormUpdate />;
+        case "horaireUpdate":
+          return <HoraireForm/>;
       default:
         return <p>Section non trouvée</p>;
     }
@@ -92,11 +96,16 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
       section === "rapport" ||
       section === "horaire" ||
       section === "contact" ||
+      section === "serviceUpdate" ||
+      section === "horaireUpdate" ||
       section === "adminReport" ? (
         <>
           {shouldShowHeader && (
+            section !== "contact" &&
+            section !== "serviceUpdate" &&
+            section !== "horaireUpdate" &&
             <h2>
-              Gestion de{" "}
+              Gestion des{" "}
               {section === "service"
                 ? "Services"
                 : section === "habitat"
@@ -107,8 +116,6 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
                 ? "Avis"
                 : section === "horaire"
                 ? "Horaires"
-                : section === "contact"
-                ? "Contact"
                 : ""}
             </h2>
           )}
@@ -117,6 +124,8 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
             section != "rapport" &&
             section != "adminReport" && 
             section != "contact" && 
+            section != "serviceUpdate" && 
+            section != "horaireUpdate" && 
             section != "horaire" && (
               <div className="mb-3">
                 <label htmlFor="crudSelect" className="form-label">

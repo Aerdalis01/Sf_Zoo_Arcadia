@@ -8,6 +8,8 @@ interface TextInputFieldProps {
 export const TextInputField: React.FC<TextInputFieldProps> = ({ name, value, label, onChange }) => (
   <div>
     <label>{label}</label>
-    <input type="text" name={name} value={value} onChange={onChange} />
+    <input 
+    className="form-control"
+    type="text" name={name} value={value} onChange={onChange} />
   </div>
 );
