@@ -9,6 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\AnimalReport;
 use App\Entity\Animal;
+use App\Entity\HabitatComment;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,6 +37,8 @@ class AnimalReportController extends AbstractController
             $queryBuilder = $this->em->getRepository(AnimalReport::class)->createQueryBuilder('report')
                 ->leftJoin('report.alimentation', 'alimentation')
                 ->leftJoin('alimentation.animal', 'animal')
+                ->leftJoin('animal.habitat', 'habitat')
+                ->leftJoin('habitat.habitatComment', 'habitatComment')
                 ->addSelect('animal, alimentation, report');
 
             // Appliquer le filtre par animal si fourni
@@ -84,6 +87,16 @@ class AnimalReportController extends AbstractController
 
                 $report['createdBy'] = isset($report['createdBy']) ? $report['createdBy'] : 'Inconnu';
             }
+            $report['habitatComments'] = [];
+            if (isset($report['alimentation']['animal']['habitat']['habitatComment'])) {
+                foreach ($report['alimentation']['animal']['habitat']['habitatComment'] as $comment) {
+                    $report['habitatComments'][] = [
+                        'id' => $comment['id'],
+                        'content' => $comment['content'] ?? 'Commentaire vide',
+                        'createdAt' => isset($comment['createdAt']) ? $comment['createdAt']->format('Y-m-d H:i:s') : null,
+                    ];
+                }
+            }
             return new JsonResponse($reports);
         } catch (\Exception $e) {
             return new JsonResponse(['status' => 'error', 'message' => 'Erreur : ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -102,6 +115,7 @@ class AnimalReportController extends AbstractController
             $email = $user->getUserIdentifier();
             $alimentationId = (int) $request->get('alimentation');
             $etat = $request->get('etat');
+            $commentairesHabitat = $request->get('habitatComments', []);
 
             if (!$etat) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Tous les champs sont requis'], 400);
@@ -118,7 +132,16 @@ class AnimalReportController extends AbstractController
             $animalReport->setCreatedBy($email);
             $animalReport->setEtat($etat);
 
+            $habitat = $alimentation->getAnimal()->getHabitat();
 
+            foreach ($commentairesHabitat as $commentaireData) {
+                $commentaire = new HabitatComment();
+                $commentaire->setComment($commentaireData['comment'] ?? ''); 
+                $commentaire->setHabitat($habitat);
+                $this->em->persist($commentaire);
+                $habitat->addHabitatComment($commentaire);
+            }
+            
             $this->em->persist($animalReport);
             $this->em->flush();
 

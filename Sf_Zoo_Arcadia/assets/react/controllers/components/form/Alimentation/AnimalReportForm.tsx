@@ -5,6 +5,8 @@ export function AnimalReportForm() {
   const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
   const [reportData, setReportData] = useState<any | null>(null);
   const [etat, setEtat] = useState("");
+  const [habitat, setHabitat] = useState("");
+  const [commentaireHabitat, setCommentaireHabitat] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -49,6 +51,8 @@ export function AnimalReportForm() {
 
     const formReport = new FormData();
     formReport.append("etat", etat);
+    formReport.append("habitat", habitat);
+    formReport.append("habitatComments[]", JSON.stringify([{ comment: commentaireHabitat }]));
     if (selectedReportId !== null) {
       formReport.append("alimentation", selectedReportId.toString()); 
     }
@@ -110,6 +114,17 @@ export function AnimalReportForm() {
           id="etat"
           value={etat}
           onChange={(e) => setEtat(e.target.value)}
+          required
+        />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="commentaireHabitat" className="form-label">État de l'habitat</label>
+        <input
+          type="text"
+          className="form-control"
+          id="commentaireHabitat"
+          value={commentaireHabitat}
+          onChange={(e) => setCommentaireHabitat(e.target.value)}
           required
         />
       </div>

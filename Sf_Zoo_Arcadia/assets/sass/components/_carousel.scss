@@ -45,11 +45,11 @@
   opacity: 75%;
 
   @include media-breakpoint-up(sm) {
-    content: url("../../../public/uploads/images/carousel/marais-md.webp");
+    content: url("../../../public/uploads/images/carousel/Marais-md.webp");
   }
 
   @include media-breakpoint-up(md) {
-    content: url("../../../public/uploads/images/carousel/marais-lg.webp");
+    content: url("../../../public/uploads/images/carousel/Marais-lg.webp");
     overflow: hidden;
   }
 }

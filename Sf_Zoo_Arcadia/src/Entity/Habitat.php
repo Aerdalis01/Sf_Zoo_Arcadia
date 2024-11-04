@@ -121,9 +121,9 @@ class Habitat
 
     public function removeHabitatComment(HabitatComment $habitatComment): static
     {
-        if (!$this->habitatComment->removeElement($habitatComment)) {
+        if ($this->habitatComment->removeElement($habitatComment)) {
             if ($habitatComment->getHabitat() === $this) {
-                $habitatComment->setHabitat($this);
+                $habitatComment->setHabitat(null);
             }
         }
 

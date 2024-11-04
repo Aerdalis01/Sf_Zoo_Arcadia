@@ -12,9 +12,9 @@ services:
         bind:
             $passwordHasher: '@security.password_hasher'
     
-    App\Controller\:
-        resource: '../src/controller'
-        tags: ['controller.service_arguments']
+    # App\Controller\:
+    #     resource: '../src/controller'
+    #     tags: ['controller.service_arguments']
 
     App\:
         resource: '../src/'

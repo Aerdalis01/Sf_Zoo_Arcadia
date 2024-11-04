@@ -6,6 +6,7 @@ use App\Repository\HabitatCommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: HabitatCommentRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class HabitatComment
 {
     #[ORM\Id]
@@ -24,6 +25,12 @@ class HabitatComment
 
     #[ORM\ManyToOne(inversedBy: 'habitatComment')]
     private ?Habitat $habitat = null;
+
+    #[ORM\PrePersist]
+    public function setCreatedAt(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -45,13 +52,6 @@ class HabitatComment
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
