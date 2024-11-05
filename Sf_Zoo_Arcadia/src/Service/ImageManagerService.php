@@ -23,7 +23,8 @@ class ImageManagerService
         if ($imageFile instanceof UploadedFile) { 
             $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
             $safeFilename = $this->sluggerInterface->slug($originalFilename);
-            $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+            $timestamp = (new \DateTime())->format('YmdHis');
+            $newFilename = $safeFilename . '-' . $timestamp . '-' . uniqid() . '.' . $imageFile->guessExtension();
             
             $uploadDirectory = $this->parameterBag->get('images_directory') . '/' . $imageSubDirectory;
             
@@ -45,8 +46,8 @@ class ImageManagerService
 
         // Stocker le chemin du fichier dans l'entité Image
         $image = new Image();
-        $image->setNom($safeFilename);
-        $image->setImagePath($imageSubDirectory . '/' . $newFilename);
+        $image->setNom($nom ? $nom : $safeFilename . '-' . $timestamp);
+        $image->setImagePath('/uploads/images/' . $imageSubDirectory . '/' . $newFilename);
         $image->setImageSubDirectory($imageSubDirectory);
 
         $this->entityManager->persist($image);
@@ -60,27 +61,28 @@ class ImageManagerService
     
 
     public function deleteImage(int $imageId): void
-    {$image = $this->entityManager->getRepository(Image::class)->find($imageId);
+    {
+        $image = $this->entityManager->getRepository(Image::class)->find($imageId);
     
         if ($image) {
             $filePath = $this->parameterBag->get('kernel.project_dir') . '/public' . $image->getImagePath();
             if (file_exists($filePath)) {
-                unlink($filePath);
-            }
+                try {
+                    unlink($filePath);
+                } catch (\Exception $e) {
+                    $this->loggerInterface->error("Erreur lors de la suppression du fichier : " . $e->getMessage());
+                }
     
             $this->entityManager->remove($image);
             $this->entityManager->flush();
-            
-            $this->loggerInterface->info("Image supprimée avec succès via l'ID : " . $imageId);
-        } else {
-            $this->loggerInterface->error("Image non trouvée pour l'ID : " . $imageId);
+            }
         }
     }
 
     public function handleImageUpload(?UploadedFile $imageFile, ?string $subDirectory): ?Image
     {
         if ($imageFile instanceof UploadedFile) {
-            $imageName = $this->generateImageName($imageFile); // Logique déplacée dans le service
+            $imageName = $this->generateImageName($imageFile);
             return $this->createImage($imageName, $subDirectory, $imageFile);
         }
         return null;

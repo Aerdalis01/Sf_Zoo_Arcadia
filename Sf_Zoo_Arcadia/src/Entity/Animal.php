@@ -5,9 +5,8 @@ namespace App\Entity;
 use App\Repository\AnimalRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\MaxDepth;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AnimalRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -16,11 +15,11 @@ class Animal
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('animal', 'alimentation')]
+    #[Groups(['animal', 'alimentation', 'habitat'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 25)]
-    #[Groups('animal', 'alimentation')]
+    #[ORM\Column(length: 50)]
+    #[Groups(['animal', 'alimentation', 'habitat'])]
     private ?string $nom = null;
 
     #[ORM\Column]
@@ -29,27 +28,27 @@ class Animal
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'animal')]
+    #[ORM\ManyToOne(targetEntity: Habitat::class, inversedBy: 'animals')]
     #[Groups('animal')]
     private ?Habitat $habitat = null;
 
     #[ORM\OneToMany(targetEntity: Alimentation::class, mappedBy: 'animal')]
-    #[Groups('animal')]
+    #[Groups('animal', 'habitat')]
     private Collection $alimentation;
 
     #[ORM\ManyToOne(inversedBy: 'animals')]
-    #[Groups('animal')]
+    #[Groups(['animal', 'habitat'])]
     private ?Race $race = null;
 
-
-    #[ORM\OneToOne(mappedBy: 'animal', cascade: ['persist', 'remove'] ,orphanRemoval: true)]
-    #[Groups('animal')]
+    #[ORM\OneToOne(mappedBy: 'animal', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[Groups(['animal', 'habitat'])]
     private ?Image $image = null;
 
     public function __construct()
     {
         $this->alimentation = new ArrayCollection();
     }
+
     #[ORM\PrePersist]
     public function setCreatedAt(): void
     {
@@ -63,6 +62,7 @@ class Animal
             $this->updatedAt = new \DateTimeImmutable();
         }
     }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -84,8 +84,6 @@ class Animal
     {
         return $this->createdAt;
     }
-
-   
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
@@ -141,7 +139,6 @@ class Animal
 
         return $this;
     }
-
 
     public function getImage(): ?Image
     {

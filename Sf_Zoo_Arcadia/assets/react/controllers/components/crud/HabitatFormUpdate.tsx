@@ -48,11 +48,11 @@ export function HabitatFormUpdate() {
       .then((response) => response.json())
       .then((data) => {
         console.log("Données des habitats :", data);
-        const habitatData = data.find((habitat: Habitat) => habitat.id === selectedHabitat);
+      
         setFormData({
-          id: habitatData.id || 0,
-          nom: habitatData.nom || "",
-          description: habitatData.description || null,
+          id: data.id || 0,
+          nom: data.nom || "",
+          description: data.description || "",
         });
       })
       .catch((error) => {

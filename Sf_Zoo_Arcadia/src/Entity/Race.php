@@ -5,8 +5,8 @@ namespace App\Entity;
 use App\Repository\RaceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: RaceRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -15,11 +15,11 @@ class Race
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('race', 'animal')]
+    #[Groups(['race', 'animal'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
-    #[Groups('race', 'animal')] 
+    #[Groups(['race', 'animal'])]
     private ?string $nom = null;
 
     #[ORM\Column]
@@ -32,13 +32,14 @@ class Race
      * @var Collection<int, Animal>
      */
     #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'race')]
-    #[Groups('race', 'animal')]
+    #[Groups(['race', 'animal'])]
     private Collection $animals;
 
     public function __construct()
     {
         $this->animals = new ArrayCollection();
     }
+
     #[ORM\PrePersist]
     public function setCreatedAt(): void
     {
@@ -52,6 +53,7 @@ class Race
             $this->updatedAt = new \DateTimeImmutable();
         }
     }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -73,7 +75,6 @@ class Race
     {
         return $this->createdAt;
     }
-
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
@@ -109,6 +110,7 @@ class Race
 
         return $this;
     }
+
     public function toArray()
     {
         return [
@@ -119,7 +121,7 @@ class Race
                     'id' => $animal->getId(),
                     'nom' => $animal->getNom(),
                 ];
-            }, $this->animals->toArray())
+            }, $this->animals->toArray()),
         ];
     }
 }

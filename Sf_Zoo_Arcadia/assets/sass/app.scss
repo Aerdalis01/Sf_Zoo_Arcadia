@@ -14,11 +14,11 @@
 // Ensuite, importez Bootstrap
 
 // @use "pages/services";
-@use "vendors/_custom-bootstrap" as * ;
 
 @use "abstracts/_all";
 
 @use "base/_font";
+@use "vendors/_custom-bootstrap";
 
 @use "layout/_allLayout";
 
@@ -27,10 +27,11 @@
 @use "themes/_allThemes";
 
 
-@use "pages/dashboard";
-@use "pages/home";
+// @use "pages/dashboard";
+// @use "pages/home";
+// @use "pages/habitats";
 
-// @use "pages/_allPages";
+@use "pages/_allPages";
 
 
 

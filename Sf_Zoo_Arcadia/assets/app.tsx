@@ -3,8 +3,6 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import { createRoot } from "react-dom/client";
 import "bootstrap";
-// import { registerReactControllerComponents } from '@symfony/ux-react';
-// registerReactControllerComponents(require.context('./react/controllers', true, /\.(j|t)sx?$/));
 import "./sass/app.scss";
 
 // import Header  from './react/controllers/components/header';
@@ -13,6 +11,7 @@ import "./sass/app.scss";
 // import {AuthPage} from './react/pages/Auth/AuthPage'
 
 import { HomePage } from "./react/pages/HomePage";
+import { HabitatPage } from "./react/pages/HabitatPage";
 import { DashboardPage } from "./react/pages/Dashboard";
 import { InfoPage } from "./react/pages/InfoPage";
 import { LoginPage } from "./react/pages/Auth/LoginPage";
@@ -45,6 +44,7 @@ const App: React.FC = () => {
               </ProtectedRoute>
             }
           />
+          <Route path="/habitat" element={<HabitatPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/info" element={<InfoPage />} />
           <Route path="/habitat/create" element={<HabitatCreate />} />

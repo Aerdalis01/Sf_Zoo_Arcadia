@@ -1,126 +1,69 @@
-@import "../vendors/_bootstrap";
+@import "../vendors/custom-bootstrap";
 
-.habitats-container {
+.habitats {
   position: relative;
 }
-
 .habitats-accueil {
   position: relative;
   z-index: 9991;
 }
 
-.vague {
-  position: absolute;
-  top: -10px;
-  z-index: 999;
-
-  @include media-breakpoint-up(md) {
-    top: -20px;
-    content: url("/assets/img/habitats/vagVerLg.svg");
-  }
-}
-
-.vague-orange {
+.habitats-container {
   position: relative;
-  z-index: 0;
-
-  @include media-breakpoint-up(sm) {
-    content: url("/assets/img/habitats/vagOrmd.svg");
-  }
-
-  @include media-breakpoint-up(md) {
-    top: -5px;
-    content: url("/assets/img/habitats/vagOrLg.svg");
-  }
+  height: auto;
 }
 
 .vague-bottom--lg {
-  position: absolute;
+  position: relative;
   bottom: 0;
   z-index: 1;
-  display: none;
 }
 
-.habitat--marais, .habitat--savane, .habitat--jungle {
-  position: relative;
-  z-index: 9991;
+.img-circular {
+  width: 300px;
+  max-height: 300px;
+  border-radius: 50%;
+  object-fit: cover;
+}
 
-  @include media-breakpoint-up(sm) {
-    height: 75svh;
+.habitat-detail {
+  height: auto;
+
+  .habitat-text {
+    position: absolute;
+    width: 80%;
+    bottom: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba($white, 0.5);
+    border-radius: 30%;
+    z-index: 1;
   }
-
-  @include media-breakpoint-up(md) {
-    height: 90svh;
-  }
-
-  @include media-breakpoint-up(md) {
+  .habitat-img {
+    width: 100%;
     height: 100svh;
+    object-fit: cover;
+    object-position: center;
   }
-}
 
-.title-savane {
-  position: relative;
-  z-index: 9999;
-}
-
-.vague-savane {
-  position: absolute;
-  top: -20px;
-  left: 0;
-  z-index: 2;
-
-  @include media-breakpoint-up(md) {
-    top: -30px;
-    content: url("/assets/img/habitats/vagVermd.svg");
+  @media (min-width: 576px) {
+    /* Taille moyenne */
+    .habitat-img {
+      height: 100svh;
+    }
   }
-}
 
-.vagueOr-savane {
-  position: absolute;
-  top: 0;
-  z-index: 1;
-
-  @include media-breakpoint-up(sm) {
-    content: url("/assets/img/habitats/vagOrmd.svg");
+  @media (min-width: 992px) {
+    /* Taille large */
+    .habitat-img {
+      height: 100svh;
+    }
   }
-}
 
-.vague-jungle {
-  position: absolute;
-  top: -20px;
-  left: 0;
-  z-index: 1;
-
-  @include media-breakpoint-up(md) {
-    top: -30px;
-    content: url("/assets/img/habitats/vagVermd.svg");
+  ul {
+    list-style: none;
   }
-}
-
-.vagueOr-jungle {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  overflow: hidden;
-
-  @include media-breakpoint-up(sm) {
-    content: url("/assets/img/habitats/vagOrmd.svg");
-  }
-}
-
-.title-jungle {
-  position: relative;
-  z-index: 9999;
-}
-
-.bandeau--bottom {
-  position: absolute;
-  left: -9999px;
-  bottom: -100px;
-  z-index: 0;
-
-  @include media-breakpoint-up(lg) {
-    left: 0;
+  .animal-img {
+    max-width: 300px;
   }
 }

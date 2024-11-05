@@ -1,4 +1,6 @@
-
+// @import "~bootstrap/scss/_functions";
+// @import "~bootstrap/scss/_variables";
+// @import "~bootstrap/scss/_mixins";
 
 
 $blue:    #0d6efd;
@@ -12,6 +14,7 @@ $green:   #0E5835;
 $teal:    #20c997;
 $cyan:    #17a2b8;
 $white:   #fff;
+$black:   #0000;
 
 $primary:       $green;
 $secondary:     $white;
@@ -23,5 +26,12 @@ $danger:        $orange;
 
 $card-bg: transparent;
 $card-border-color: transparent;
+
+// @import "../../../node_modules/bootstrap/scss/buttons";
+// @import "../../../node_modules/bootstrap/scss/accordion";
+// @import "../../../node_modules/bootstrap/scss/card";
+// @import "../../../node_modules/bootstrap/scss/alert";
+// @import "../../../node_modules/bootstrap/scss/carousel";
+// @import "../../../node_modules/bootstrap/scss/navbar";
 
 @import "../../../node_modules/bootstrap/scss/bootstrap.scss";

@@ -154,13 +154,14 @@
 }
 
 /* Section avis */
-hr{
-  color: transparent;
-}
+
 
 .avis {
   height: auto;
   position: relative;
+  hr{
+    color: transparent;
+  }
 }
 
 .avis-title {

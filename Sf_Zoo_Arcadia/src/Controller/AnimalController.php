@@ -2,15 +2,16 @@
 
 namespace App\Controller;
 
-use Psr\Log\LoggerInterface;
 use App\Entity\Animal;
 use App\Entity\Habitat;
 use App\Entity\Race;
+use App\Service\AnimalService;
 use App\Service\ImageManagerService;
 use App\Service\RaceService;
-use App\Service\AnimalService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,11 +42,12 @@ class AnimalController extends AbstractController
             ->getQuery();
 
         $animals = $query->getArrayResult();
-        ;
+
         $data = $serializer->serialize($animals, 'json', ['groups' => 'animal']);
 
         return new JsonResponse($data, JsonResponse::HTTP_OK, [], true);
     }
+
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(int $id, EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
     {
@@ -65,13 +67,13 @@ class AnimalController extends AbstractController
         }
 
         $data = $serializer->serialize($animal, 'json', ['groups' => 'animal']);
+
         return new JsonResponse(json_decode($data), JsonResponse::HTTP_OK);
     }
 
     #[Route('/new', name: 'new', methods: ['POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-
         try {
             $nom = $request->request->get('nom');
             $idHabitat = $request->request->get('idHabitat');
@@ -81,7 +83,7 @@ class AnimalController extends AbstractController
             if (!$nom || !$idHabitat || (!$idRace && !$nomRace)) {
                 return new JsonResponse([
                     'status' => 'error',
-                    'message' => 'Tous les champs (nom, habitat, race) sont requis'
+                    'message' => 'Tous les champs (nom, habitat, race) sont requis',
                 ], Response::HTTP_BAD_REQUEST);
             }
 
@@ -96,7 +98,7 @@ class AnimalController extends AbstractController
                 if (!$race) {
                     return new JsonResponse([
                         'status' => 'error',
-                        'message' => 'Race non trouvée'
+                        'message' => 'Race non trouvée',
                     ], Response::HTTP_BAD_REQUEST);
                 }
             } elseif ($nomRace) {
@@ -107,20 +109,30 @@ class AnimalController extends AbstractController
             $animal->setHabitat($habitat);
             $animal->setRace($race);
 
+            $imageFile = $request->files->get('file');
+            if ($imageFile instanceof UploadedFile) {
+                $imageSubDirectory = $request->request->get('image_sub_directory', '/services');
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $timestamp = time();
+                $extension = $imageFile->guessExtension();
+                $imageName = sprintf('%s-%s.%s', $originalFilename, $timestamp, $extension);
+
+                $image = $this->imageManager->createImage($imageName, $imageSubDirectory, $imageFile);
+                $animal->setImage($image);
+            }
+
             $this->entityManager->persist($animal);
             $this->entityManager->flush();
 
             return new JsonResponse([
                 'status' => 'success',
                 'message' => 'Animal créé avec succès',
-                'animalId' => $animal->getId()
+                'animalId' => $animal->getId(),
             ], Response::HTTP_CREATED);
-
         } catch (\Exception $e) {
-
             return new JsonResponse([
                 'status' => 'error',
-                'message' => 'Erreur : ' . $e->getMessage()
+                'message' => 'Erreur : '.$e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -129,7 +141,6 @@ class AnimalController extends AbstractController
     public function update(int $id, Request $request): JsonResponse
     {
         try {
-
             $animal = $this->entityManager->getRepository(Animal::class)->find($id);
             if (!$animal) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Animal non trouvé'], 404);
@@ -143,12 +154,10 @@ class AnimalController extends AbstractController
             $imageSubDirectory = $request->request->get('image_sub_directory');
             $image = $this->imageManager->handleImageUpload($imageFile, $imageSubDirectory);
 
-
             $race = $animal->getRace();
             if (!$race) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Race non trouvée'], 404);
             }
-
 
             if ($nomRace && $nomRace !== $race->getNom()) {
                 $race->setNom($nomRace);
@@ -170,13 +179,14 @@ class AnimalController extends AbstractController
             $this->entityManager->flush();
 
             return new JsonResponse(['status' => 'success', 'id' => $animal->getId()], 200);
-
         } catch (\Exception $e) {
             // Logger l'erreur pour un suivi détaillé
-            $this->logger->error('Erreur lors de la mise à jour de l\'animal : ' . $e->getMessage());
-            return new JsonResponse(['status' => 'error', 'message' => 'Une erreur est survenue : ' . $e->getMessage()], 500);
+            $this->logger->error('Erreur lors de la mise à jour de l\'animal : '.$e->getMessage());
+
+            return new JsonResponse(['status' => 'error', 'message' => 'Une erreur est survenue : '.$e->getMessage()], 500);
         }
     }
+
     #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
     public function deleteService(int $id): JsonResponse
     {
@@ -193,7 +203,7 @@ class AnimalController extends AbstractController
 
             return new JsonResponse(['status' => 'success', 'message' => 'Service supprimé avec succès'], 200);
         } catch (\Exception $e) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Erreur lors de la suppression : ' . $e->getMessage()], 500);
+            return new JsonResponse(['status' => 'error', 'message' => 'Erreur lors de la suppression : '.$e->getMessage()], 500);
         }
     }
 }

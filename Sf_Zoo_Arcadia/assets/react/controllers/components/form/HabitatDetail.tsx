@@ -1,0 +1,81 @@
+// HabitatDetail.tsx
+import React, { useEffect, useState } from 'react';
+import { Habitat } from '../../../models/habitatInterface';
+import { AnimalDetail } from './AnimalDetail';
+
+interface HabitatDetailProps {
+  habitatId: number;
+  onBack: () => void;
+}
+
+export const HabitatDetail: React.FC<HabitatDetailProps> = ({ habitatId, onBack }) => {
+  const [habitat, setHabitat] = useState<Habitat | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedAnimalId, setSelectedAnimalId] = useState<number | null>(null);
+
+  
+  useEffect(() => {
+    const fetchHabitat = async () => {
+      try {
+        const response = await fetch(`/api/habitat/${habitatId}`);
+        if (!response.ok) throw new Error('Erreur lors de la récupération de l\'habitat.');
+
+        const data = await response.json();
+        console.log("Données de l'habitat:", data);
+        setHabitat(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHabitat();
+  }, [habitatId]);
+
+
+  const handleAnimalClick = (id: number) => {
+    console.log("Animal cliqué avec ID :", id);
+    setSelectedAnimalId(id);
+  };
+
+  const handleBack = () => {
+    setSelectedAnimalId(null);
+  };
+  if (selectedAnimalId) {
+    return <AnimalDetail animalId={selectedAnimalId} onBack={handleBack} />;
+  }
+  if (loading) return <p>Chargement...</p>;
+
+  if (!habitat) return <p>Habitat non trouvé</p>;
+
+  return (
+    <div className='habitat-detail d-flex flex-column align-items-center'>
+      <div className='habitat-text text-center align-items-center rounded-5'>
+        <h2>{habitat.nom}</h2>
+        <p>{habitat.description}</p>
+      </div>
+      {habitat.image && <img className='habitat-img' src={`http://127.0.0.1:8000${habitat.image.imagePath}`} alt={habitat.nom} />}
+      <button onClick={onBack}>Retour à la liste</button>
+      <h3>Animaux dans cet habitat :</h3>
+      <ul className='row w-100 list-unstyled m-0 p-0'>
+        {habitat.animals?.map((animal, index) => (
+          <li className='col-12 col-md-6 col-lg-4 d-flex flex-column align-items-center text-center mb-4'
+            key={animal.id ?? index}
+            onClick={() => handleAnimalClick(animal.id)}
+            style={{ cursor: 'pointer' }}
+          >
+            <p className='fs-4'>{animal.nom}</p>
+            {animal.image && (
+              <img
+                src={`http://127.0.0.1:8000${animal.image.imagePath}`}
+                alt={animal.nom}
+                className="img-fluid animal-img"
+              />
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};

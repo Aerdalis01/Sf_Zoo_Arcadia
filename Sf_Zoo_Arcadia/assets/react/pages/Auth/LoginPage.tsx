@@ -44,7 +44,7 @@ export const LoginPage: React.FC = () => {
     const result = loginSchema.safeParse(formValues);
 
     if (result.success) {
-      const response = await fetch("http://symfony.local/api/login", {
+      const response = await fetch("/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

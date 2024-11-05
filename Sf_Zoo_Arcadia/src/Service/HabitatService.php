@@ -2,21 +2,15 @@
 
 namespace App\Service;
 
-use App\Entity\Image;
 use App\Entity\Habitat;
+use App\Entity\Image;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class HabitatService
 {
-    private EntityManagerInterface $entityManager;
-    private ImageManagerService $imageManager;
-    private ParameterBagInterface $parameterBag;
-
-    public function __construct(EntityManagerInterface $entityManager, ImageManagerService $imageManager)
+    public function __construct(private EntityManagerInterface $entityManager, private ImageManagerService $imageManager, private ParameterBagInterface $parameterBag)
     {
-        $this->entityManager = $entityManager;
-        $this->imageManager = $imageManager;
     }
 
     public function createUpdateHabitat(?Habitat $entity, array $data, ?Image $image): object
@@ -34,36 +28,41 @@ class HabitatService
 
             $currentImage = $entity->getImage();
             if ($currentImage !== null) {
+                // Dissociation de l'image
+                $currentImage->setHabitat(null);
+                $this->entityManager->flush();
+
+                // Suppression de l'image
                 $imagePath = $currentImage->getImagePath();
-                $filePath = $this->parameterBag->get('kernel.project_dir') . '/public' . $imagePath;
+                $filePath = $this->parameterBag->get('kernel.project_dir').'/public'.$imagePath;
                 if (file_exists($filePath)) {
-                    unlink($filePath); 
+                    unlink($filePath);
                 }
-                $this->imageManager->deleteImage($imagePath);
-                $this->entityManager->remove($currentImage);   
+                $this->imageManager->deleteImage($currentImage->getId());
+                $this->entityManager->remove($currentImage);
             }
 
             $entity->setImage($image);
             $image->setHabitat($entity);
             $this->entityManager->persist($image);
         }
+
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
-    
+
         return $entity;
     }
 
     public function deleteHabitat(object $entity): void
     {
-        
         foreach ($entity->getImages() as $image) {
             $this->imageManager->deleteImage($image->getImagePath());
             $this->entityManager->remove($image);
         }
 
         // Si c'est un Service, supprimer ses SousServices
-        if ($entity instanceof habitat) {
-            foreach ($entity->getAnimal() as $animal) {
+        if ($entity instanceof Habitat) {
+            foreach ($entity->getAnimals() as $animal) {
                 $this->$entity->removeAnimal($animal);
             }
         }
@@ -71,5 +70,4 @@ class HabitatService
         $this->entityManager->remove($entity);
         $this->entityManager->flush();
     }
-    
 }
