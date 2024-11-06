@@ -5,9 +5,8 @@ namespace App\Entity;
 use App\Repository\AnimalRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\MaxDepth;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AnimalRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -19,7 +18,7 @@ class Animal
     #[Groups('animal', 'alimentation')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 25)]
+    #[ORM\Column(length: 50)]
     #[Groups('animal', 'alimentation')]
     private ?string $nom = null;
 
@@ -41,8 +40,7 @@ class Animal
     #[Groups('animal')]
     private ?Race $race = null;
 
-
-    #[ORM\OneToOne(mappedBy: 'animal', cascade: ['persist', 'remove'] ,orphanRemoval: true)]
+    #[ORM\OneToOne(mappedBy: 'animal', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups('animal')]
     private ?Image $image = null;
 
@@ -50,6 +48,7 @@ class Animal
     {
         $this->alimentation = new ArrayCollection();
     }
+
     #[ORM\PrePersist]
     public function setCreatedAt(): void
     {
@@ -63,6 +62,7 @@ class Animal
             $this->updatedAt = new \DateTimeImmutable();
         }
     }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -84,8 +84,6 @@ class Animal
     {
         return $this->createdAt;
     }
-
-   
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
@@ -141,7 +139,6 @@ class Animal
 
         return $this;
     }
-
 
     public function getImage(): ?Image
     {

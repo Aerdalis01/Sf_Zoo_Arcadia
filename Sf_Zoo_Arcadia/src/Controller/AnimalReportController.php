@@ -3,16 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\Alimentation;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\AnimalReport;
 use App\Entity\Animal;
+use App\Entity\AnimalReport;
 use App\Entity\HabitatComment;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api/animalReport', name: 'app_api_animalReport_')]
 class AnimalReportController extends AbstractController
@@ -22,24 +22,23 @@ class AnimalReportController extends AbstractController
         private Security $security
     ) {
     }
+
     #[Route('/view', name: 'admin_reports', methods: ['GET'])]
     public function getAnimalReports(Request $request): JsonResponse
     {
         try {
-
             $animalId = $request->query->get('animalId');
             $date = $request->query->get('date');
 
             $sortBy = $request->query->get('sortBy', 'createdAt');
             $sortOrder = $request->query->get('sortOrder', 'ASC');
 
-
             $queryBuilder = $this->em->getRepository(AnimalReport::class)->createQueryBuilder('report')
                 ->leftJoin('report.alimentation', 'alimentation')
                 ->leftJoin('alimentation.animal', 'animal')
                 ->leftJoin('animal.habitat', 'habitat')
                 ->leftJoin('habitat.habitatComment', 'habitatComment')
-                ->addSelect('animal, alimentation, report');
+                ->addSelect('animal, alimentation, report, habitatComment');
 
             // Appliquer le filtre par animal si fourni
             if ($animalId) {
@@ -61,7 +60,6 @@ class AnimalReportController extends AbstractController
             }
 
             $reports = $queryBuilder->getQuery()->getArrayResult();
-            
 
             foreach ($reports as &$report) {
                 // Formater createdAt pour obtenir la date et l'heure de création du rapport
@@ -84,22 +82,29 @@ class AnimalReportController extends AbstractController
                     $report['quantite'] = 'Quantité inconnue';
                 }
 
-
                 $report['createdBy'] = isset($report['createdBy']) ? $report['createdBy'] : 'Inconnu';
             }
             $report['habitatComments'] = [];
-            if (isset($report['alimentation']['animal']['habitat']['habitatComment'])) {
-                foreach ($report['alimentation']['animal']['habitat']['habitatComment'] as $comment) {
+
+            // Filtrer les commentaires d'habitat pour supprimer les valeurs null
+            if (isset($report['alimentation']['animal']['habitat']['habitatComments'])) {
+                $filteredComments = array_filter(
+                    $report['alimentation']['animal']['habitat']['habitatComments'],
+                    fn ($comment) => $comment !== null
+                );
+
+                foreach ($filteredComments as $comment) {
                     $report['habitatComments'][] = [
                         'id' => $comment['id'],
-                        'content' => $comment['content'] ?? 'Commentaire vide',
+                        'content' => $comment['comment'] ?? 'Commentaire vide',
                         'createdAt' => isset($comment['createdAt']) ? $comment['createdAt']->format('Y-m-d H:i:s') : null,
                     ];
                 }
             }
+
             return new JsonResponse($reports);
         } catch (\Exception $e) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Erreur : ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse(['status' => 'error', 'message' => 'Erreur : '.$e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -136,12 +141,12 @@ class AnimalReportController extends AbstractController
 
             foreach ($commentairesHabitat as $commentaireData) {
                 $commentaire = new HabitatComment();
-                $commentaire->setComment($commentaireData['comment'] ?? ''); 
+                $commentaire->setComment($commentaireData['comment'] ?? '');
                 $commentaire->setHabitat($habitat);
                 $this->em->persist($commentaire);
                 $habitat->addHabitatComment($commentaire);
             }
-            
+
             $this->em->persist($animalReport);
             $this->em->flush();
 
@@ -149,7 +154,7 @@ class AnimalReportController extends AbstractController
         } catch (\Exception $e) {
             return new JsonResponse([
                 'status' => 'error',
-                'message' => 'Erreur : ' . $e->getMessage()
+                'message' => 'Erreur : '.$e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

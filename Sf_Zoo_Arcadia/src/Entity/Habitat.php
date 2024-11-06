@@ -4,9 +4,9 @@ namespace App\Entity;
 
 use App\Repository\HabitatRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: HabitatRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -22,7 +22,7 @@ class Habitat
     #[Groups('habitat', 'animal')]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type : 'text')]
     #[Groups('habitat', 'animal')]
     private ?string $description = null;
 
@@ -40,8 +40,7 @@ class Habitat
     #[Groups('habitat')]
     private ?Image $image = null;
 
-
-    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'habitat', cascade:['remove'] ,orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'habitat', cascade: ['remove'], orphanRemoval: true)]
     #[Groups('habitat')]
     private Collection $animal;
 
@@ -50,6 +49,7 @@ class Habitat
         $this->habitatComment = new ArrayCollection();
         $this->animal = new ArrayCollection();
     }
+
     #[ORM\PrePersist]
     public function setCreatedAt(): void
     {
@@ -59,10 +59,11 @@ class Habitat
     #[ORM\PreUpdate]
     public function setUpdatedAt(): void
     {
-        if ($this->createdAt !== null) {  // Vérifie que l'entité n'est pas nouvellement créée
+        if ($this->createdAt !== null) {
             $this->updatedAt = new \DateTimeImmutable();
         }
     }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -107,8 +108,6 @@ class Habitat
         return $this->habitatComment;
     }
 
-    
-
     public function addHabitatComment(HabitatComment $habitatComment): static
     {
         if (!$this->habitatComment->contains($habitatComment)) {
@@ -141,7 +140,6 @@ class Habitat
 
         return $this;
     }
-
 
     public function getAnimal(): Collection
     {

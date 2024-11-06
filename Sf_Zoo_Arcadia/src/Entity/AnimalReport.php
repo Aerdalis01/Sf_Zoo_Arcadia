@@ -29,6 +29,8 @@ class AnimalReport
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Alimentation $alimentation = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $etatDetail = null;
 
     #[ORM\PrePersist]
     public function onPrePersist(): void
@@ -41,7 +43,7 @@ class AnimalReport
     {
         $this->updatedAt = new \DateTimeImmutable();
     }
-    
+
     public function getId(): ?int
     {
         return $this->id;
@@ -103,6 +105,18 @@ class AnimalReport
     public function setAlimentation(?Alimentation $alimentation): static
     {
         $this->alimentation = $alimentation;
+
+        return $this;
+    }
+
+    public function getEtatDetail(): ?string
+    {
+        return $this->etatDetail;
+    }
+
+    public function setEtatDetail(?string $etatDetail): static
+    {
+        $this->etatDetail = $etatDetail;
 
         return $this;
     }
