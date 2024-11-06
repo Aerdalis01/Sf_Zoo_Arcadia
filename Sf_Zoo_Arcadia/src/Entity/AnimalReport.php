@@ -13,11 +13,11 @@ class AnimalReport
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['animal'])]
+    #[Groups(['animal', 'animaReport'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['animal'])]
+    #[Groups(['animal', 'animaReport'])]
     private ?string $etat = null;
 
     #[ORM\Column]
@@ -28,12 +28,16 @@ class AnimalReport
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['animal'])]
+    #[Groups(['animal', 'animaReport'])]
     private ?string $createdBy = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[Groups(['animal'])]
+    #[Groups(['animal', 'animaReport'])]
     private ?Alimentation $alimentation = null;
+
+    #[ORM\Column(type: 'text')]
+    #[Groups(['animal', 'animaReport'])]
+    private ?string $etatDetail = null;
 
     #[ORM\PrePersist]
     public function onPrePersist(): void
@@ -108,6 +112,18 @@ class AnimalReport
     public function setAlimentation(?Alimentation $alimentation): static
     {
         $this->alimentation = $alimentation;
+
+        return $this;
+    }
+
+    public function getEtatDetail(): ?string
+    {
+        return $this->etatDetail;
+    }
+
+    public function setEtatDetail(?string $etatDetail): static
+    {
+        $this->etatDetail = $etatDetail;
 
         return $this;
     }

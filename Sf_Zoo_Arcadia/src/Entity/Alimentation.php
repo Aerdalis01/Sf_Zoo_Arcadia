@@ -42,6 +42,10 @@ class Alimentation
     #[Groups('alimentation')]
     private ?string $createdBy = null;
 
+    #[ORM\Column(type : 'boolean')]
+    #[Groups('alimentation')]
+    private $isUsed = false;
+
     #[ORM\PrePersist]
     public function setDefaults(): void
     {
@@ -122,6 +126,18 @@ class Alimentation
     public function setCreatedBy(string $createdBy): static
     {
         $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getIsUsed(): bool
+    {
+        return $this->isUsed;
+    }
+
+    public function setIsUsed(bool $isUsed): self
+    {
+        $this->isUsed = $isUsed;
 
         return $this;
     }

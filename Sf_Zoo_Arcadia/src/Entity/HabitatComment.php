@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\HabitatCommentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: HabitatCommentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -12,15 +13,19 @@ class HabitatComment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['animalReport', 'habitat'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['animalReport', 'habitat'])]
     private ?string $comment = null;
 
     #[ORM\Column]
+    #[Groups(['animalReport', 'habitat'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['animalReport', 'habitat'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'habitatComment')]

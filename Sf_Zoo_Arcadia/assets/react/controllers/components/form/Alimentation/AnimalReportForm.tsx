@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
 
-export function AnimalReportForm() {
+type AnimalReportFormProps = {
+  onSubmit: (reportId: number) => void;
+};
+
+export function AnimalReportForm({ onSubmit }: AnimalReportFormProps) {
   const [alimentationReports, setAlimentationReports] = useState([]);
   const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
   const [reportData, setReportData] = useState<any | null>(null);
   const [etat, setEtat] = useState("");
+  const [etatDetail, setEtatDetail] = useState("");
   const [habitat, setHabitat] = useState("");
   const [commentaireHabitat, setCommentaireHabitat] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -24,23 +29,50 @@ export function AnimalReportForm() {
       .catch((error) => setError(error.message));
   }, []);
 
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSelectChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const reportId = parseInt(e.target.value, 10);
 
     if (isNaN(reportId)) {
-        setError("ID de rapport invalide.");
-        return;
+      setError("ID de rapport invalide.");
+      return;
     }
 
     const selectedReport = alimentationReports.find(report => report.id === reportId);
     if (selectedReport) {
-        setReportData(selectedReport);
-    } else {
-        setError("Rapport d'alimentation non trouvé.");
-    }
+      setReportData(selectedReport);
+      setSelectedReportId(reportId);
+      setError(null);
 
-    setSelectedReportId(reportId);
-};
+      try {
+        const response = await fetch(`/api/animalReport/view/${reportId}`);
+
+        if (response.ok) {
+          const animalReport = await response.json(); // Récupérez directement le JSON
+          const lastComment = animalReport.habitatComments.find(comment => comment.content) || animalReport.habitatComments[0];
+          setCommentaireHabitat(lastComment.content || "");
+          // Assurez-vous que les données existent avant de les définir
+          setEtat(animalReport.etat || "");
+          setEtatDetail(animalReport.etatDetail || "");
+          const lastNonEmptyComment = animalReport.habitatComments.reverse().find(comment => comment.content);
+          setCommentaireHabitat(lastNonEmptyComment ? lastNonEmptyComment.content : "");
+        } else {
+          const errorText = await response.text(); // Récupérez le texte en cas d'erreur
+          console.error('Erreur:', errorText); // Affichez l'erreur dans la console
+          setError("Erreur lors de la vérification des rapports animaux.");
+        }
+      } catch (error) {
+        console.error("Erreur de requête:", error);
+        setError("Erreur lors de la vérification des rapports animaux.");
+      }
+    } else {
+      setError("Rapport d'alimentation non trouvé.");
+      // Réinitialiser les champs si le rapport n'est pas trouvé
+      setEtat("");
+      setEtatDetail("");
+      setCommentaireHabitat("");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const token = localStorage.getItem("jwt_token");
@@ -51,10 +83,16 @@ export function AnimalReportForm() {
 
     const formReport = new FormData();
     formReport.append("etat", etat);
+    formReport.append("etatDetail", etatDetail);
     formReport.append("habitat", habitat);
-    formReport.append("habitatComments[]", JSON.stringify([{ comment: commentaireHabitat }]));
+    formReport.append("habitatComments", commentaireHabitat);
+
+
+    formReport.forEach((value, key) => {
+      console.log(key, value); // Affiche chaque clé et valeur
+    });
     if (selectedReportId !== null) {
-      formReport.append("alimentation", selectedReportId.toString()); 
+      formReport.append("alimentation", selectedReportId.toString());
     }
 
     try {
@@ -70,6 +108,11 @@ export function AnimalReportForm() {
         const data = await response.json();
         console.log(data);
         setSuccessMessage(data.message);
+        setError(null);
+
+        if (selectedReportId !== null) {
+          onSubmit(selectedReportId);
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Erreur lors de la soumission du formulaire.");
@@ -83,8 +126,8 @@ export function AnimalReportForm() {
     <form onSubmit={handleSubmit}>
       {error && <div className="alert alert-danger">{error}</div>}
       {successMessage && <div className="alert alert-success">{successMessage}</div>}
-      <h2>Créer un rapport vétérinaire</h2>
-      
+      <h2>{selectedReportId ? "Modifier le rapport vétérinaire" : "Créer un rapport vétérinaire"}</h2>
+
       <label htmlFor="alimentationReportSelect">Sélectionner un rapport d'alimentation :</label>
       <select id="alimentationReportSelect" onChange={handleSelectChange} value={selectedReportId || ""}>
         <option value="">Choisir un rapport</option>
@@ -95,7 +138,7 @@ export function AnimalReportForm() {
         ))}
       </select>
 
-      
+
       {reportData && (
         <div>
           <h4>Rapport sélectionné :</h4>
@@ -105,7 +148,7 @@ export function AnimalReportForm() {
         </div>
       )}
 
-      
+
       <div className="mb-3">
         <label htmlFor="etat" className="form-label">État de l'animal</label>
         <input
@@ -117,6 +160,20 @@ export function AnimalReportForm() {
           required
         />
       </div>
+
+      <div className="mb-3">
+        <label htmlFor="detailEtat" className="form-label">
+          Détail de l'état de l'animal (facultatif)
+        </label>
+        <input
+          type="text"
+          className="form-control"
+          id="etatDetail"
+          value={etatDetail}
+          onChange={(e) => setEtatDetail(e.target.value)}
+        />
+      </div>
+
       <div className="mb-3">
         <label htmlFor="commentaireHabitat" className="form-label">État de l'habitat</label>
         <input
@@ -130,7 +187,7 @@ export function AnimalReportForm() {
       </div>
 
       <button type="submit" className="btn btn-primary">
-        Soumettre le rapport vétérinaire
+        {selectedReportId ? "Mettre à jour le rapport vétérinaire" : "Soumettre le rapport vétérinaire"}
       </button>
     </form>
   );
