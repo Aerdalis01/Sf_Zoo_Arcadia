@@ -3,6 +3,8 @@ import { Alimentation } from "../../../../models/alimentationInterface";
 import { Link } from "react-router-dom";
 import { AnimalReportForm } from "./AnimalReportForm";
 
+
+
 export function AlimentationReport() {
   const [reports, setReports] = useState<Alimentation[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -13,6 +15,7 @@ export function AlimentationReport() {
   const [showAnimal, setShowAnimal] = useState(true);
   const [showFormattedDate, setShowFormattedDate] = useState(true);
   const [showFormattedHeure, setShowFormattedHeure] = useState(true);
+  const [showIsUsed, setShowIsUsed] = useState(true);
 
   const toggleColumn = (column) => {
     switch (column) {
@@ -37,6 +40,9 @@ export function AlimentationReport() {
       case "createdBy":
         setShowCreatedBy(!showCreatedBy);
         break;
+      case "isUsed":
+        setShowIsUsed(!showIsUsed);
+        break;
       default:
         break;
     }
@@ -48,6 +54,13 @@ export function AlimentationReport() {
       .catch((error) => setError("Erreur lors du chargement des rapports."));
   }, []);
 
+  const handleAnimalReportSubmit = (reportId) => {
+    setReports((prevReports) =>
+      prevReports.map((report) =>
+        report.id === reportId ? { ...report, isUsed: true } : report
+      )
+    );
+  };
   return (
     <div className="container">
       <h1>Rapports d'Alimentation</h1>
@@ -60,6 +73,7 @@ export function AlimentationReport() {
         <button onClick={() => toggleColumn("date")}>Date</button>
         <button onClick={() => toggleColumn("heure")}>Heure</button>
         <button onClick={() => toggleColumn("createdBy")}>Créé par</button>
+        <button onClick={() => toggleColumn("isUsed")}>Utilisé</button>
       </div>
 
       {error && <div className="alert alert-danger">{error}</div>}
@@ -72,12 +86,13 @@ export function AlimentationReport() {
               <th className={!showNourriture ? "hidden" : ""}>Nourriture</th>
               <th className={!showQuantite ? "hidden" : ""}>Quantité</th>
               <th className={!showFormattedDate ? "hidden" : ""}>
-                Date de création
+              Date de création
               </th>
               <th className={!showFormattedHeure ? "hidden" : ""}>
                 Heure de création
               </th>
               <th className={!showCreatedBy ? "hidden" : ""}>Créé par</th>
+              <th className={!showIsUsed ? "hidden" : ""}>Utilisé</th>
             </tr>
           </thead>
           <tbody>
@@ -106,12 +121,15 @@ export function AlimentationReport() {
                 <td className={!showCreatedBy ? "hidden" : ""}>
                   {report.createdBy}
                 </td>
+                <td className={!showIsUsed ? "hidden" : ""}>
+                  <input type="checkbox" checked={report.isUsed || false} readOnly />
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <AnimalReportForm />
+      <AnimalReportForm onSubmit={handleAnimalReportSubmit} />
     </div>
   );
 }

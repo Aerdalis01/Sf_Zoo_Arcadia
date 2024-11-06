@@ -6,7 +6,6 @@ use App\Repository\AlimentationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
-use Symfony\Component\Serializer\Annotation\MaxDepth;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AlimentationRepository::class)]
@@ -42,6 +41,10 @@ class Alimentation
     #[ORM\Column(length: 100)]
     #[Groups('alimentation')]
     private ?string $createdBy = null;
+
+    #[ORM\Column(type : 'boolean')]
+    #[Groups('alimentation')]
+    private $isUsed = false;
 
     #[ORM\PrePersist]
     public function setDefaults(): void
@@ -123,6 +126,18 @@ class Alimentation
     public function setCreatedBy(string $createdBy): static
     {
         $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getIsUsed(): bool
+    {
+        return $this->isUsed;
+    }
+
+    public function setIsUsed(bool $isUsed): self
+    {
+        $this->isUsed = $isUsed;
 
         return $this;
     }

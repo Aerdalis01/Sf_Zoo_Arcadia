@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\AnimalReportRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AnimalReportRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -12,9 +13,11 @@ class AnimalReport
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['animalReport'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['animalReport'])]
     private ?string $etat = null;
 
     #[ORM\Column]
@@ -24,12 +27,15 @@ class AnimalReport
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['animalReport'])]
     private ?string $createdBy = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups(['animalReport'])]
     private ?Alimentation $alimentation = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['animalReport'])]
     private ?string $etatDetail = null;
 
     #[ORM\PrePersist]

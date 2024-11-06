@@ -10,6 +10,7 @@ export interface Alimentation {
   };
   date?: string;
   heure?: string;
-  formattedDate?: string; // Ajouter cette propriété
-  formattedHeure?: string; // Ajouter cette propriété
+  formattedDate?: string;
+  formattedHeure?: string; 
+  isUsed?: boolean;
 }

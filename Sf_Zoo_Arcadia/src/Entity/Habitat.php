@@ -34,7 +34,7 @@ class Habitat
 
     #[ORM\OneToMany(targetEntity: HabitatComment::class, mappedBy: 'habitat')]
     #[Groups('habitat', 'animal')]
-    private Collection $habitatComment;
+    private Collection $habitatComments;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[Groups('habitat')]
@@ -46,7 +46,7 @@ class Habitat
 
     public function __construct()
     {
-        $this->habitatComment = new ArrayCollection();
+        $this->habitatComments = new ArrayCollection();
         $this->animal = new ArrayCollection();
     }
 
@@ -105,13 +105,13 @@ class Habitat
 
     public function getHabitatComment(): Collection
     {
-        return $this->habitatComment;
+        return $this->habitatComments;
     }
 
     public function addHabitatComment(HabitatComment $habitatComment): static
     {
-        if (!$this->habitatComment->contains($habitatComment)) {
-            $this->habitatComment->add($habitatComment);
+        if (!$this->habitatComments->contains($habitatComment)) {
+            $this->habitatComments->add($habitatComment);
             $habitatComment->setHabitat($this);
         }
 
@@ -120,7 +120,7 @@ class Habitat
 
     public function removeHabitatComment(HabitatComment $habitatComment): static
     {
-        if ($this->habitatComment->removeElement($habitatComment)) {
+        if ($this->habitatComments->removeElement($habitatComment)) {
             if ($habitatComment->getHabitat() === $this) {
                 $habitatComment->setHabitat(null);
             }

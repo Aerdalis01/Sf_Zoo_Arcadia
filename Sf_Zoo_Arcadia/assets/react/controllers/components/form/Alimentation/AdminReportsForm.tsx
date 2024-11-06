@@ -78,18 +78,28 @@ export function AdminReports() {
             <th>Nourriture</th>
             <th>Quantité</th>
             <th>État</th>
+            <th>Detail État</th>
+            <th>Commentaire habitat</th>
             <th>Date de création</th>
             <th>Heure de création</th>
             <th>Créé par</th>
           </tr>
         </thead>
         <tbody>
-        {reports.map((report, index) => (
+          {reports.map((report, index) => (
             <tr key={report.id}>
               <td>{report.animalNom}</td>
               <td>{report.nourriture}</td>
               <td>{report.quantite}</td>
               <td>{report.etat}</td>
+              <td>{report.etatDetail}</td>
+              <td>
+                {report.habitatComments && report.habitatComments.length > 0
+                  ? report.habitatComments.map((comment, index) => (
+                    <p key={index}>{comment.content}</p>
+                  ))
+                  : "Aucun commentaire"}
+              </td>
               <td>{report.dateCreated ? report.dateCreated : 'Date inconnue'}</td>
               <td>{report.heureCreated ? report.heureCreated : 'Heure inconnue'}</td>
               <td>{report.createdBy}</td>
