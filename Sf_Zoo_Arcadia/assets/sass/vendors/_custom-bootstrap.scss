@@ -26,12 +26,12 @@ $danger:        $orange;
 
 $card-bg: transparent;
 $card-border-color: transparent;
+table {
+  --bs-table-color: #333; /* Couleur sombre pour le texte */
+  --bs-table-bg: #fff; /* Fond clair */
+  --bs-border-width: 1px;
+  --bs-table-accent-bg: transparent; /* Pour éviter les superpositions */
+}
 
-// @import "../../../node_modules/bootstrap/scss/buttons";
-// @import "../../../node_modules/bootstrap/scss/accordion";
-// @import "../../../node_modules/bootstrap/scss/card";
-// @import "../../../node_modules/bootstrap/scss/alert";
-// @import "../../../node_modules/bootstrap/scss/carousel";
-// @import "../../../node_modules/bootstrap/scss/navbar";
 
 @import "../../../node_modules/bootstrap/scss/bootstrap.scss";

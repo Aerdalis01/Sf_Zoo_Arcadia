@@ -46,7 +46,7 @@ export function AdminReports() {
   };
 
   return (
-    <div className="container">
+    <div className="container table-admin">
       <h1>Comptes Rendus Vétérinaires</h1>
       {error && <div className="alert alert-danger">{error}</div>}
 
