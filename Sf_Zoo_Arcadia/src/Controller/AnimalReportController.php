@@ -121,7 +121,6 @@ class AnimalReportController extends AbstractController
             $habitat = $animalReport->getAlimentation()->getAnimal()->getHabitat();
             $habitatComments = $habitat ? $habitat->getHabitatComment() : [];
 
-            // Formater la réponse avec les commentaires
             $response = [
                 'id' => $animalReport->getId(),
                 'etat' => $animalReport->getEtat(),
