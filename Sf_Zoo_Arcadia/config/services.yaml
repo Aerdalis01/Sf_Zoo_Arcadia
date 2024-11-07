@@ -3,6 +3,8 @@ parameters:
     images_directory: '%kernel.project_dir%/public/uploads/images'
     carousel_directory: '%kernel.project_dir%/public/uploads/images/carousel'
     env(ZOO_EMAIL): '%env(ZOO_EMAIL)%'
+    env(MONGODB_URL): ''
+    env(MONGODB_DB): ''
     
 services:
     

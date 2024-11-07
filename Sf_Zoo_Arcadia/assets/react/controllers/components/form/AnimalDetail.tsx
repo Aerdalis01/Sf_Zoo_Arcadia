@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Animal } from '../../../models/animalInterface';
-
+import { HabitatDetail } from './HabitatDetail';
 
 
 interface AnimalDetailProps {
@@ -9,8 +9,9 @@ interface AnimalDetailProps {
 }
 
 export const AnimalDetail: React.FC<AnimalDetailProps> = ({ animalId, onBack }) => {
-  const [animal, setAnimal] = useState<Animal | null>(null);
+  const [animals, setAnimals] = useState<Animal[]>([]);
   const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchAnimal = async () => {
@@ -20,7 +21,10 @@ export const AnimalDetail: React.FC<AnimalDetailProps> = ({ animalId, onBack }) 
 
         const data = await response.json();
         console.log("Données de l'animal:", data);
-        setAnimal(data);
+
+
+
+        setAnimals(Array.isArray(data) ? data : [data]);
       } catch (error) {
         console.error(error);
       } finally {
@@ -33,24 +37,65 @@ export const AnimalDetail: React.FC<AnimalDetailProps> = ({ animalId, onBack }) 
 
   if (loading) return <p>Chargement...</p>;
 
-  if (!animal) return <p>Animal non trouvé</p>;
+  if (!animals) return <p>Animal non trouvé</p>;
 
+  
   return (
+    <div className='animal-details-container'>
+      {animals.map((animal, index) => {
+      const alimentationParDate = animal.alimentation?.reduce((acc, aliment) => {
+        const date = new Date(aliment.date).toLocaleDateString();
+        if (!acc[date]) acc[date] = [];
+        acc[date].push(aliment);
+        return acc;
+      }, {} as Record<string, typeof animal.alimentation>);
+        return (
+          <div key={index} className="animal-detail d-flex flex-column align-items-center">
+            <button onClick={onBack}>Retour à l'habitat</button>
+            <div className="animal-text text-center align-items-center rounded-5 p-3">
+              <h2>{animal.nom}</h2>
+              {animal.image && animal.image.imagePath ? (
+                <img
+                  className="img-fluid rounded-circle mt-3 detail-animal--img"
+                  src={`http://127.0.0.1:8000${animal.image.imagePath}`}
+                  alt={animal.nom}
+                />
+              ) : (
+                <p><em>Pas d'image disponible</em></p>
+              )}
+              <p><strong>Race:</strong> {animal.race ? animal.race.nom : "Race inconnue"}</p>
 
-    <div className='animal-detail d-flex flex-column align-items-center'>
-    <div className='animal-text text-center align-items-center rounded-5 p-3'>
-      <h2>{animal.nom}</h2>
-      <p><strong>Race:</strong> {animal.nomRace}</p>
-      <p><strong>État de santé:</strong> {animal.animalReport || "Aucun rapport disponible"}</p>
+              {animal.alimentation && animal.alimentation.length > 0 ? (
+                <div>
+                   {Object.entries(alimentationParDate).map(([date, alimentations], dateIndex) => (
+                    <div key={dateIndex} className="alimentation-date-group mt-3">
+                      <h4>{date}</h4>
+                      {alimentations.map((aliment, alimentIndex) => (
+                        <div key={alimentIndex} className="aliment-info mt-2">
+                          <p><strong>Heure:</strong> {new Date(aliment.heure).toLocaleTimeString()}</p>
+                          <p><strong>Nourriture:</strong> {aliment.nourriture}</p>
+                          <p><strong>Quantité:</strong> {aliment.quantite}</p>
+
+                          {aliment.animalReport ? (
+                            <div>
+                              <p><strong>État de santé:</strong> {aliment.animalReport.etat}</p>
+                              <p><strong>Détails de l'état:</strong> {aliment.animalReport.etatDetail}</p>
+                            </div>
+                          ) : (
+                            <p><em>Aucun rapport de santé disponible</em></p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p><em>Aucune information d'alimentation disponible</em></p>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
-    {animal.image && (
-      <img 
-        className='animal-img img-fluid rounded-circle mt-3' 
-        src={`http://127.0.0.1:8000${animal.image.imagePath}`} 
-        alt={animal.nom} 
-      />
-    )}
-    <button className="btn btn-primary mt-4" onClick={onBack}>Retour à la liste</button>
-  </div>
-);
+  );
 };

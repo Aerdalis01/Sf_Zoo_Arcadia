@@ -106,13 +106,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onSectionChange }) => {
                         Rapports Vétérinaires
                       </Link>
                     </li>
-                    <li className="nav-item">
-                      <Link
-                        className="nav-link"
-                        to="#" onClick={() => onSectionChange("comment")}>
-                        Commentaires Habitats
-                      </Link>
-                    </li>
                   </div>
                 </div>
               </div>

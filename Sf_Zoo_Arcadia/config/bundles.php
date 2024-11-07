@@ -10,4 +10,5 @@ return [
     Symfony\Bundle\TwigBundle\TwigBundle::class => ['all' => true],
     Symfony\UX\StimulusBundle\StimulusBundle::class => ['all' => true],
     Symfony\UX\React\ReactBundle::class => ['all' => true],
+    Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle::class => ['all' => true],
 ];

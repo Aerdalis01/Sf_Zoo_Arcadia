@@ -52,16 +52,16 @@ class AnimalController extends AbstractController
     public function show(int $id, EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
     {
         $query = $entityManager->createQueryBuilder('a')
-            ->select('a', 'h', 'r', 'al', 'ar')
+            ->select('a', 'h', 'r', 'al', 'ar', 'i')
             ->from(Animal::class, 'a')
             ->leftJoin('a.habitat', 'h')
             ->leftJoin('a.race', 'r')
             ->leftJoin('a.alimentation', 'al')
             ->leftJoin('al.animalReport', 'ar')
+            ->leftJoin('a.image', 'i')
             ->where('a.id = :id')
             ->setParameter('id', $id)
             ->getQuery();
-
         $animal = $query->getArrayResult();
 
         if (!$animal) {

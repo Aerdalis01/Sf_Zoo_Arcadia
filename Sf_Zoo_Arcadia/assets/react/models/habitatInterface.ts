@@ -1,4 +1,4 @@
-
+import { Animal } from "./animalInterface";
 export interface Habitat {
   id: number;
   nom: string;
@@ -8,14 +8,6 @@ export interface Habitat {
     nom: string;
     imagePath: string;
   };
-  animals?: {
-    id: number;
-    nom: string;
-    etat?: string;
-    image?: {
-      id: number;
-      nom: string;
-      imagePath: string;
-    };
-  }[];
+  animals?: Animal[] ;
+    
 }

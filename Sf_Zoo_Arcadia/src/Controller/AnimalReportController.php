@@ -157,6 +157,7 @@ class AnimalReportController extends AbstractController
             $etat = $request->get('etat');
             $etatDetail = $request->get('etatDetail');
             $commentaireHabitat = $request->get('habitatComments');
+            $animalId = $request->get('id');
 
             if (!$etat) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Tous les champs sont requis'], 400);
@@ -176,10 +177,15 @@ class AnimalReportController extends AbstractController
             // Mettre à jour l'attribut `isUsed` de l'alimentation
             $alimentation->setIsUsed(true);
 
+            $animal = $this->em->getRepository(Animal::class)->find($animalId);
+            if (!$animal) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Animal introuvable'], 404);
+            }
             // Mise à jour ou création des valeurs du rapport
             $animalReport->setCreatedBy($email);
             $animalReport->setEtat($etat);
             $animalReport->setEtatDetail($etatDetail);
+            $animalReport->setAnimal($animal);
 
             // Gestion des commentaires d'habitat
             $habitat = $animalReport->getAlimentation()->getAnimal()->getHabitat();

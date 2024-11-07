@@ -15,36 +15,40 @@ class Alimentation
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('alimentation')]
+    #[Groups(['animal', 'alimentation'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups('alimentation')]
+    #[Groups(['animal', 'alimentation'])]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups('alimentation')]
+    #[Groups(['animal', 'alimentation'])]
     private ?\DateTimeInterface $heure = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('alimentation')]
+    #[Groups(['animal', 'alimentation'])]
     private ?string $nourriture = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('alimentation')]
+    #[Groups(['animal', 'alimentation'])]
     private ?string $quantite = null;
 
     #[ORM\ManyToOne(targetEntity: Animal::class, inversedBy: 'alimentation', fetch: 'EAGER')]
-    #[Groups('alimentation')]
+    #[Groups(['animal', 'alimentation'])]
     private ?Animal $animal = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups('alimentation')]
+    #[Groups(['animal', 'alimentation'])]
     private ?string $createdBy = null;
 
     #[ORM\Column(type : 'boolean')]
-    #[Groups('alimentation')]
+    #[Groups(['animal', 'alimentation'])]
     private $isUsed = false;
+
+    #[ORM\OneToOne(mappedBy: 'alimentation', cascade: ['persist', 'remove'])]
+    #[Groups(['animal', 'alimentation'])]
+    private ?AnimalReport $animalReport = null;
 
     #[ORM\PrePersist]
     public function setDefaults(): void
@@ -138,6 +142,18 @@ class Alimentation
     public function setIsUsed(bool $isUsed): self
     {
         $this->isUsed = $isUsed;
+
+        return $this;
+    }
+
+    public function getAnimalReport(): ?AnimalReport
+    {
+        return $this->animalReport;
+    }
+
+    public function setAnimalReport(?AnimalReport $animalReport): static
+    {
+        $this->animalReport = $animalReport;
 
         return $this;
     }

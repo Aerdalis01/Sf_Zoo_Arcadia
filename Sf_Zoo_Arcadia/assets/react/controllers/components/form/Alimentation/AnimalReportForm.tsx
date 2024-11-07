@@ -14,6 +14,7 @@ export function AnimalReportForm({ onSubmit }: AnimalReportFormProps) {
   const [commentaireHabitat, setCommentaireHabitat] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [animalId, setAnimalId] =useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/alimentation/reports")
@@ -45,7 +46,12 @@ export function AnimalReportForm({ onSubmit }: AnimalReportFormProps) {
 
       try {
         const response = await fetch(`/api/animalReport/view/${reportId}`);
-
+        if (selectedReport.animal && selectedReport.animal.id) {
+          setAnimalId(selectedReport.animal.id);
+        } else {
+          setAnimalId(null);
+          setError("Animal non trouvé pour ce rapport d'alimentation.");
+        }
         if (response.ok) {
           const animalReport = await response.json(); // Récupérez directement le JSON
           const lastComment = animalReport.habitatComments.find(comment => comment.content) || animalReport.habitatComments[0];
@@ -55,11 +61,8 @@ export function AnimalReportForm({ onSubmit }: AnimalReportFormProps) {
           setEtatDetail(animalReport.etatDetail || "");
           const lastNonEmptyComment = animalReport.habitatComments.reverse().find(comment => comment.content);
           setCommentaireHabitat(lastNonEmptyComment ? lastNonEmptyComment.content : "");
-        } else {
-          const errorText = await response.text(); // Récupérez le texte en cas d'erreur
-          console.error('Erreur:', errorText); // Affichez l'erreur dans la console
-          setError("Erreur lors de la vérification des rapports animaux.");
-        }
+          setAnimalId(animalReport.animalId || null);
+        } 
       } catch (error) {
         console.error("Erreur de requête:", error);
         setError("Erreur lors de la vérification des rapports animaux.");
@@ -70,6 +73,7 @@ export function AnimalReportForm({ onSubmit }: AnimalReportFormProps) {
       setEtat("");
       setEtatDetail("");
       setCommentaireHabitat("");
+      setAnimalId(null);
     }
   };
 
@@ -84,8 +88,10 @@ export function AnimalReportForm({ onSubmit }: AnimalReportFormProps) {
     const formReport = new FormData();
     formReport.append("etat", etat);
     formReport.append("etatDetail", etatDetail);
-    formReport.append("habitat", habitat);
     formReport.append("habitatComments", commentaireHabitat);
+    if (animalId !== null) {
+      formReport.append("id", animalId.toString());
+    }
 
 
     formReport.forEach((value, key) => {
@@ -126,7 +132,7 @@ export function AnimalReportForm({ onSubmit }: AnimalReportFormProps) {
     <form onSubmit={handleSubmit}>
       {error && <div className="alert alert-danger">{error}</div>}
       {successMessage && <div className="alert alert-success">{successMessage}</div>}
-      <h2>{selectedReportId ? "Modifier le rapport vétérinaire" : "Créer un rapport vétérinaire"}</h2>
+      <h2>{selectedReportId && reportData?.isUsed ? "Modifier le rapport vétérinaire" : "Créer un rapport vétérinaire"}</h2>
 
       <label htmlFor="alimentationReportSelect">Sélectionner un rapport d'alimentation :</label>
       <select id="alimentationReportSelect" onChange={handleSelectChange} value={selectedReportId || ""}>
@@ -187,7 +193,7 @@ export function AnimalReportForm({ onSubmit }: AnimalReportFormProps) {
       </div>
 
       <button type="submit" className="btn btn-primary">
-        {selectedReportId ? "Mettre à jour le rapport vétérinaire" : "Soumettre le rapport vétérinaire"}
+      {selectedReportId && reportData?.isUsed ? "Mettre à jour le rapport vétérinaire" : "Soumettre le rapport vétérinaire"}
       </button>
     </form>
   );

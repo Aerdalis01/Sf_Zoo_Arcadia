@@ -44,9 +44,14 @@ class Animal
     #[Groups(['animal', 'habitat'])]
     private ?Image $image = null;
 
+    #[ORM\OneToMany(targetEntity: AnimalReport::class, mappedBy: 'animal')]
+    #[Groups(['animal', 'habitat'])]
+    private Collection $animalReport;
+
     public function __construct()
     {
         $this->alimentation = new ArrayCollection();
+        $this->animalReport = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -158,6 +163,36 @@ class Animal
         }
 
         $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AnimalReport>
+     */
+    public function getAnimalReport(): Collection
+    {
+        return $this->animalReport;
+    }
+
+    public function addAnimalReport(AnimalReport $animalReport): static
+    {
+        if (!$this->animalReport->contains($animalReport)) {
+            $this->animalReport->add($animalReport);
+            $animalReport->setAnimal($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnimalReport(AnimalReport $animalReport): static
+    {
+        if ($this->animalReport->removeElement($animalReport)) {
+            // set the owning side to null (unless already changed)
+            if ($animalReport->getAnimal() === $this) {
+                $animalReport->setAnimal(null);
+            }
+        }
 
         return $this;
     }
