@@ -2,8 +2,6 @@
 
 namespace App\Service;
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
@@ -30,12 +28,12 @@ class MailerService
     }
 
     public function sendAccountCreationEmail(string $userEmail, string $username): void
-{
-    $email = (new Email())
-        ->from('admin@votre-site.com')
-        ->to($userEmail)
-        ->subject('Création de votre compte')
-        ->html("
+    {
+        $email = (new Email())
+            ->from('no-reply@demomailtrap.com')
+            ->to('zooarcadia930@gmail.com')
+            ->subject('Création de votre compte')
+            ->html("
             <p>Bonjour,</p>
             <p>Votre compte a été créé avec succès.</p>
             <p>Votre nom d'utilisateur est : <strong>{$username}</strong>.</p>
@@ -43,6 +41,6 @@ class MailerService
             <p>Cordialement,<br>L'équipe de gestion</p>
         ");
 
-    $this->mailer->send($email);
-}
+        $this->mailer->send($email);
+    }
 }

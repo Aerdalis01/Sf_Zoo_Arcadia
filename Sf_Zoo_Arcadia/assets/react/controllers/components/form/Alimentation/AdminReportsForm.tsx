@@ -71,7 +71,7 @@ export function AdminReports() {
         </label>
       </div>
 
-      <table className="table">
+      <table className="table admin-table scroll-container overflow-auto">
         <thead>
           <tr>
             <th>Animal</th>

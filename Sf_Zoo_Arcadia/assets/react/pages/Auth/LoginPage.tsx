@@ -2,14 +2,14 @@ import { jwtDecode } from "jwt-decode";
 import React from "react";
 import { useState } from "react";
 import { z } from "zod";
-
-
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 export const getUserRoles = (): string[] => {
   const token = localStorage.getItem("jwt_token");
   if (token) {
     try {
       const decodedToken: any = jwtDecode(token);
-      return decodedToken.roles || []; // Les rôles sont extraits ici
+      return decodedToken.roles || []; 
     } catch (error) {
       console.error("Erreur lors du décodage du token JWT", error);
       return [];
@@ -35,8 +35,11 @@ export const LoginPage: React.FC = () => {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {}
   );
-  const [success, setSuccess] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | undefined>();
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,25 +59,26 @@ export const LoginPage: React.FC = () => {
       });
       if (response.ok) {
         const { token } = await response.json();
-        setSuccess("Login successful! Token: " + token);
-        localStorage.setItem('jwt_token', token)
+        login(token);
+        setSuccessMessage("Connexion réussie !");
+        localStorage.setItem("jwt_token", token);
 
-        const decodedToken: any = jwtDecode(token);
-      console.log("Rôle(s) de l'utilisateur :", decodedToken.roles);
+        // Attendre 2 secondes pour afficher le message de succès, puis rediriger
+        setTimeout(() => {
+          setSuccessMessage(null); // Effacer le message
+          navigate("/"); // Rediriger après l'affichage du message
+        }, 2000);
+      } else {
+        setFormError("Échec de la connexion. Veuillez réessayer.");
+      }
     } else {
-      setFormError("Échec de la connexion. Veuillez réessayer.");
-    }
-    } else {
-      // Gestion des erreurs de validation
       const fieldErrors: { [key: string]: string } = {};
       result.error.errors.forEach((error) => {
         fieldErrors[error.path[0]] = error.message;
       });
       setErrors(fieldErrors);
     }
-    
   };
-  
 
   // Handle input changes
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,6 +141,10 @@ export const LoginPage: React.FC = () => {
               Se connecter
             </button>
           </div>
+          {formError && <p className="text-danger">{formError}</p>}
+          {successMessage && (
+        <div className="alert alert-success">{successMessage}</div>
+      )}
         </form>
       </div>
     </section>

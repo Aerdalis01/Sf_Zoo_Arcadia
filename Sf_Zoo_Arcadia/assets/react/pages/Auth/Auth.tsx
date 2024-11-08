@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 
-const fetchAuth = async (url, options = {}) => {
+export const fetchAuth = async (url: string,  options: RequestInit = {}) => {
   const token = localStorage.getItem('jwt_token');
   console.log("Token récupéré :", token);  
 
@@ -11,18 +11,27 @@ const fetchAuth = async (url, options = {}) => {
     throw new Error("Utilisateur non authentifié");
   }
 
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  });
+
+  if (options.headers) {
+    const additionalHeaders = options.headers as Record<string, string>;
+    Object.entries(additionalHeaders).forEach(([key, value]) => {
+      headers.append(key, value);
+    });
+  }
+
   const response = await fetch(url, {
     ...options,
-    headers: {
-      ...options,
-      'Authorization': `Bearer ${token}`,
-    },
+    headers, // Utilisation de l'instance de Headers
   });
 
   if (response.status === 401) {
-    // Gérer l'accès non autorisé
     throw new Error("Accès non autorisé");
   }
+  
   return response.json();
 };
 

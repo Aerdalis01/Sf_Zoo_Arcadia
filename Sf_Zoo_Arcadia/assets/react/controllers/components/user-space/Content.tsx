@@ -14,7 +14,7 @@ import { AlimentationReport } from "../form/Alimentation/AlimentationReportForm"
 import { AdminReports } from "../form/Alimentation/AdminReportsForm";
 import { HoraireForm } from "../form/Contact/HoraireForm";
 import { ContactResponseForm } from "../form/Contact/ContactResponseForm";
-
+import { RegisterPage } from "../../../pages/Auth/RegisterPage";
 
 
 export const Content: React.FC<{ section: string }> = ({ section }) => {
@@ -81,6 +81,8 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
           return <ServiceFormUpdate />;
         case "horaireUpdate":
           return <HoraireForm/>;
+        case "register":
+          return <RegisterPage/>;
       default:
         return <p>Section non trouvée</p>;
     }
@@ -98,6 +100,7 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
       section === "contact" ||
       section === "serviceUpdate" ||
       section === "horaireUpdate" ||
+      section === "register" ||
       section === "adminReport" ? (
         <>
           {shouldShowHeader && (
@@ -126,6 +129,7 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
             section != "contact" && 
             section != "serviceUpdate" && 
             section != "horaireUpdate" && 
+            section != "register" && 
             section != "horaire" && (
               <div className="mb-3">
                 <label htmlFor="crudSelect" className="form-label">

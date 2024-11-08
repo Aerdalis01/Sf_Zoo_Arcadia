@@ -59,7 +59,7 @@ export const RegisterPage = () => {
     }
     console.log("Données envoyées : ", formValues);
     try {
-      const response = await fetch("http://symfony.local/api/admin/register/new", {
+      const response = await fetch("http://127.0.0.1:8000/api/admin/register/new", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

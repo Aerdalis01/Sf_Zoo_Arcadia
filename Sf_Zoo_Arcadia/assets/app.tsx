@@ -5,10 +5,12 @@ import { createRoot } from "react-dom/client";
 import "bootstrap";
 import "./sass/app.scss";
 
-// import Header  from './react/controllers/components/header';
-// import Footer  from './react/controllers/components/footer';
+import { AuthProvider } from "./react/pages/Auth/AuthContext";
 
-// import {AuthPage} from './react/pages/Auth/AuthPage'
+import Header from './react/components/header';
+import Footer from './react/components/footer';
+import { ProtectedRoute } from "./react/pages/Auth/Auth";
+
 
 import { HomePage } from "./react/pages/HomePage";
 import { HabitatPage } from "./react/pages/HabitatPage";
@@ -16,7 +18,7 @@ import { DashboardPage } from "./react/pages/Dashboard";
 import { InfoPage } from "./react/pages/InfoPage";
 import { LoginPage } from "./react/pages/Auth/LoginPage";
 import { RegisterPage } from "./react/pages/Auth/RegisterPage";
-import { ProtectedRoute } from "./react/pages/Auth/Auth";
+
 import { HabitatCreate } from "./react/pages/HabitatCreate";
 import { HabitatUpdate } from "./react/pages/HabitatUpdate";
 import { HabitatDelete } from "./react/pages/HabitatDelete";
@@ -33,36 +35,41 @@ import { SousServiceDelete } from "./react/pages/SousServiceDelete";
 const App: React.FC = () => {
   return (
     <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/register"
-            element={
-              <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
-                <RegisterPage />{" "}
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/habitat" element={<HabitatPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/info" element={<InfoPage />} />
-          <Route path="/habitat/create" element={<HabitatCreate />} />
-          <Route path="/habitat/update" element={<HabitatUpdate />} />
-          <Route path="/habitat/delete" element={<HabitatDelete />} />
-          <Route path="/animal/create" element={<AnimalCreate />} />
-          <Route path="/animal/delete" element={<AnimalDelete />} />
-          <Route path="/animal/update" element={<AnimalUpdate />} />
-          <Route path="/service" element={<ServicePage />} />
-          <Route path="/service/create" element={<ServiceCreate />} />
-          <Route path="/service/update" element={<ServiceUpdate />} />
-          <Route path="/service/delete" element={<ServiceDelete />} />
-          <Route path="/sousService/create" element={<SousServiceCreate />} />
-          <Route path="/sousService/update" element={<SousServiceUpdate />} />
-          <Route path="/sousService/delete" element={<SousServiceDelete />} />
-          {/* <Route path="/animaux/create" element={<AnimalCreate />} />
+      <AuthProvider>
+      <Header />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/register"
+          element={
+            <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
+              <RegisterPage />{" "}
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/habitat" element={<HabitatPage />} />
+        
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/info" element={<InfoPage />} />
+        <Route path="/habitat/create" element={<HabitatCreate />} />
+        <Route path="/habitat/update" element={<HabitatUpdate />} />
+        <Route path="/habitat/delete" element={<HabitatDelete />} />
+        <Route path="/animal/create" element={<AnimalCreate />} />
+        <Route path="/animal/delete" element={<AnimalDelete />} />
+        <Route path="/animal/update" element={<AnimalUpdate />} />
+        <Route path="/service" element={<ServicePage />} />
+        <Route path="/service/create" element={<ServiceCreate />} />
+        <Route path="/service/update" element={<ServiceUpdate />} />
+        <Route path="/service/delete" element={<ServiceDelete />} />
+        <Route path="/sousService/create" element={<SousServiceCreate />} />
+        <Route path="/sousService/update" element={<SousServiceUpdate />} />
+        <Route path="/sousService/delete" element={<SousServiceDelete />} />
+        {/* <Route path="/animaux/create" element={<AnimalCreate />} />
                 <Route path="/race/create" element={<RaceCreate />} /> */}
-        </Routes>
+      </Routes>
+      <Footer />
+    </AuthProvider>
     </Router>
   );
 };

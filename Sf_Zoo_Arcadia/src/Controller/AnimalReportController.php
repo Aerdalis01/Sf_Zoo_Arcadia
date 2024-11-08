@@ -93,13 +93,24 @@ class AnimalReportController extends AbstractController
                         fn ($comment) => $comment !== null
                     );
 
-                    foreach ($filteredComments as $comment) {
-                        $report['habitatComments'][] = [
-                            'id' => $comment['id'],
-                            'content' => $comment['comment'] ?? 'Commentaire vide',
-                            'createdAt' => isset($comment['createdAt']) ? $comment['createdAt']->format('Y-m-d H:i:s') : null,
+                    usort($filteredComments, fn ($a, $b) => $b['createdAt'] <=> $a['createdAt']);
+
+                    // Ajouter seulement le dernier commentaire (le plus récent)
+                    $lastComment = $filteredComments[0] ?? null;
+                    if ($lastComment) {
+                        $report['habitatComments'] = [
+                            [
+                                'id' => $lastComment['id'],
+                                'content' => $lastComment['comment'] ?? 'Commentaire vide',
+                                'createdAt' => isset($lastComment['createdAt']) ? $lastComment['createdAt']->format('Y-m-d H:i:s') : null,
+                            ],
                         ];
+                    } else {
+                        // Pas de commentaire disponible
+                        $report['habitatComments'] = [];
                     }
+                } else {
+                    $report['habitatComments'] = [];
                 }
             }
 
