@@ -4,5 +4,10 @@ export interface SousService {
   nom: string;
   description: string;
   menu: boolean;
-  idService: string;
+  idService?: string;
+  image?:{
+    id: number;
+    nom: string;
+    imagePath: string;
+  }
 }

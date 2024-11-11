@@ -1,7 +1,7 @@
 @forward "./_home" as home*;
 @forward "./_habitats" as habitats*;
-// @forward "./_services" as services*;
-// @forward "./_contact" as contact*;
+@forward "./_services" as services*;
+@forward "./_contact" as contact*;
 // @forward "./_animaux" as animaux*;
 @forward "./auth/_connexion" as connexion*;
 @forward "./_dashboard" as dashboard*;

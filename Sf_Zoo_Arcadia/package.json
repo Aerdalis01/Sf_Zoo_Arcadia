@@ -40,6 +40,7 @@
     "dependencies": {
         "bootstrap": "^5.3.3",
         "jwt-decode": "^4.0.0",
+        "react-bootstrap": "^2.10.5",
         "react-router-dom": "^6.27.0",
         "zod": "^3.23.8"
     }

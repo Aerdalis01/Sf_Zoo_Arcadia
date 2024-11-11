@@ -15,6 +15,7 @@ export function ServiceForm() {
     carteZoo: false,
   });
   const [resetImage, setResetImage] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
   const formRef = useRef(null);
   const [isCarteZoo, setIsCarteZoo] = useState(false);
   const [horaireNom1, setHoraireNom1] = useState("");
@@ -31,6 +32,17 @@ export function ServiceForm() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+
+  const resetForm = () => {
+    setFormData(formData); 
+    setHoraires1([]);       
+  setHoraires2([]);
+  setFile(null);            
+  setResetImage(true);      
+  setIsCarteZoo(false);     
+  setError(null);           
+  setSuccessMessage(null);
+};
   const ajouterHoraire1 = () => {
     if (horaireInput1 && horaireNom1) {
       setHoraires1((prevHoraires) => [
@@ -49,11 +61,7 @@ export function ServiceForm() {
       setHoraireInput2("");
     }
   };
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
-  };
+ 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsCarteZoo(e.target.checked);
     setFormData({ ...formData, carteZoo: e.target.checked ? true : false }); 
@@ -72,6 +80,7 @@ export function ServiceForm() {
     e.preventDefault();
     const formService = new FormData();
     formService.append("nom", formData.nom);
+
     if (horaires1.length > 0 || horaires2.length > 0) {
       const horaires = {
         horaire1: horaires1.length > 0 ? horaires1 : null,
@@ -92,69 +101,55 @@ export function ServiceForm() {
     if (file) {
       // Récupérer le nom original du fichier téléchargé sans l'extension
       const originalFilename = file.name.split(".").slice(0, -1).join(".");
-      // Récupérer l'extension du fichier
       const extension = file.name.split(".").pop();
-      //Appel du timestamp pour générer un nom d'image unique
       const timestamp = new Date().getTime();
-      //utilisation du timestamp dans le nom de l'image
       const imageNameGenerated = `${originalFilename}-${timestamp}.${extension}`;
       const imageSubDirectory = `/services`;
 
       formService.append("file", file);
       formService.append("nomImage", imageNameGenerated);
       formService.append("image_sub_directory", imageSubDirectory);
-      console.log("Nom de l'image généré :", imageNameGenerated);
     }
     formService.forEach((value, key) => {
       console.log(`${key}: ${value}`);
     });
+    console.log("Envoi de la requête avec FormData :", Array.from((formService as any).entries()));
     fetch("/api/service/new", {
       method: "POST",
       body: formService,
     })
-      .then(async (response) => {
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
-        }
-        const contentType = response.headers.get("content-type");
+    .then(async (response) => {
+      const contentType = response.headers.get("content-type");
+  
+      if (!response.ok) {
+        const errorText = contentType && contentType.includes("application/json")
+          ? (await response.json()).message
+          : await response.text();
+        throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
+      }
+  
+      if (contentType && contentType.includes("application/json")) {
+        return response.json();
+      } else {
+        throw new Error("Réponse non JSON reçue.");
+      }
+    })
+    .then((data) => {
+      if (data && data.status === "success") {
+        setSuccessMessage("Service ajouté avec succès !");
+        resetForm();
+      } else {
+        throw new Error("Erreur : Réponse inattendue.");
+      }
+    })
+    .catch((error) => {
+      console.error("Erreur lors de la soumission du formulaire:", error);
+      setError("Erreur lors de l'ajout du service.");
+      setSuccessMessage(null);
+    });
+  }
 
-        return contentType && contentType.includes("application/json")
-          ? response.json()
-          : Promise.reject("Réponse non JSON reçue.");
-      })
-      .then((data) => {
-        if (data && data.status === "success") {
-          setSuccessMessage("Service ajouté avec succès !");
-          setFormData({
-            id: 0,
-            nom: "",
-            titre: "",
-            description: "",
-            horaire: "",
-            carteZoo: false,
-          });
-          setHoraires1([]);
-          setHoraires2([]);
-          setFile(null);
-          setError(null);
-          setResetImage(true);
-
-          setTimeout(() => {
-            setSuccessMessage(null);
-          }, 5000);
-        } else {
-          throw new Error("Erreur : Réponse inattendue.");
-        }
-      })
-
-      .catch((error) => {
-        console.error("Erreur lors de la soumission du formulaire:", error);
-        setError("Erreur lors de l'ajout du service.");
-        setSuccessMessage(null);
-      });
-      formRef.current.reset();
-  };
+    
   return (
     <form ref={formRef} onSubmit={handleSubmit}>
       <TextInputField

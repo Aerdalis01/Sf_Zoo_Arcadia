@@ -1,8 +1,8 @@
 
   @use "../base/_font";
-
-
-
+html{
+  font-size: clamp(1rem, 1vw + 1rem, 2rem);
+}
   hr{
     background-color: transparent;
     border: none;

@@ -39,7 +39,6 @@ security:
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY}
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/admin/register/new, roles: ROLE_ADMIN }
-        - { path: ^/veterinaire, roles: ROLE_VETERINAIRE }
         - { path: ^/api/alimentation/new, roles: ROLE_ADMIN }
         - { path: ^/api/animalReport/new, roles: ROLE_ADMIN }
         - { path: ^/employe, roles: ROLE_EMPLOYE }

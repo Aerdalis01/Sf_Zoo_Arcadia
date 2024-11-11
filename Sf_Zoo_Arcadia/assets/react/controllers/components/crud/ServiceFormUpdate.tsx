@@ -149,6 +149,7 @@ export function ServiceFormUpdate() {
     }
     const formService = new FormData();
     console.log("Service Data:", serviceData);
+
     formService.append("nom", serviceData.nom);
 
     if (horaires1.length === 0 && horaires2.length === 0) {
@@ -160,6 +161,11 @@ export function ServiceFormUpdate() {
       };
       formService.append("horaire", JSON.stringify(horaires));
     }
+
+    if (serviceData.carteZoo !== null && serviceData.carteZoo !== undefined) {
+      formService.append("carteZoo", serviceData.carteZoo ? "true" : "false");
+  }
+
     if (serviceData.description !== "") {
       formService.append("description", serviceData.description);
     }
@@ -178,8 +184,6 @@ export function ServiceFormUpdate() {
       const extension = file.name.split(".").pop();
       const timestamp = new Date().getTime();
       const imageNameGenerated = `${originalFilename}-${timestamp}.${extension}`;
-      
-      const imagePathGenerated = `/${serviceData.nom.toLowerCase()}`;
       const imageSubDirectory = `/services`;
 
       formService.append("file", file);
@@ -195,14 +199,14 @@ export function ServiceFormUpdate() {
       Array.from((formService as any).entries())
     );
 
-    fetch(`/api/service/${selectedServiceId}`, {
+    fetch(`/api/service/update/${selectedServiceId}`, {
       method: "POST",
       body: formService,
     })
       .then((response) => {
         if (!response.ok) {
           return response.text().then((text) => {
-            console.error("Réponse brute du serveur (HTML) :", text); // Affichez le texte brut
+            console.error("Réponse brute du serveur :", text);
             throw new Error("Erreur lors de la mise à jour du service");
           });
         }
@@ -217,8 +221,10 @@ export function ServiceFormUpdate() {
     console.error("Erreur:", error);
     setError("Erreur lors de la mise à jour du sous-service.");
     setSuccessMessage(null);
+    formRef.current?.reset(); // Réinitialiser après le succès de la requête
+        setFile(null); // Réinitialiser l'image
   });
-  formRef.current.reset();
+
   };
 
   return (
@@ -280,11 +286,7 @@ export function ServiceFormUpdate() {
         label="Ajouter Horaire 2"
       />
 
-      <CheckBoxField
-        label="Si le service modifié contient une carte zoo cliqué"
-        checked={isCarteZoo}
-        onChange={handleCheckboxChange}
-      />
+       <CheckBoxField label="Si carte zoo, le fichier doit se nommer: " checked={serviceData.carteZoo} onChange={(e) => setServiceData({ ...serviceData, carteZoo: e.target.checked })} />
 
       <ImageForm serviceName={serviceData.nom} onImageSelect={setFile} resetImage={resetImage}/>
       <div>

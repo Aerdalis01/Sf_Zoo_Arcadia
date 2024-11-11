@@ -4,9 +4,9 @@ namespace App\Entity;
 
 use App\Repository\SousServiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: SousServiceRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -15,20 +15,20 @@ class SousService
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('sousService_basic')]
+    #[Groups(['sousService_basic', 'service_basic'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
-    #[Groups('sousService_basic')]
+    #[Groups(['sousService_basic', 'service_basic'])]
     private ?string $nom = null;
 
-    #[Groups('sousService_basic')]
     #[ORM\Column(length: 255)]
+    #[Groups(['sousService_basic', 'service_basic'])]
     private ?string $description = null;
 
-    #[ORM\Column(type: "boolean")]
-    #[Groups('sousService_basic')]
-    private  $menu = false;
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['sousService_basic', 'service_basic'])]
+    private $menu = false;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -37,11 +37,10 @@ class SousService
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'sousServices')]
-    #[Groups('sousService_basic')]
     private ?Service $service = null;
 
     #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'sousService')]
-    #[Groups('sousService_basic')]
+    #[Groups(['sousService_basic', 'service_basic'])]
     private Collection $image;
 
     public function __construct()
@@ -95,8 +94,10 @@ class SousService
     public function setMenu(bool $menu): static
     {
         $this->menu = $menu;
+
         return $this;
     }
+
     public function getMenu(): ?bool
     {
         return $this->menu;
@@ -106,6 +107,7 @@ class SousService
     {
         return $this->menu;
     }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -115,7 +117,6 @@ class SousService
     {
         return $this->updatedAt;
     }
-    
 
     public function getService(): ?Service
     {

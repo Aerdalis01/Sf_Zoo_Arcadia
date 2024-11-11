@@ -15,6 +15,9 @@ import { AdminReports } from "../form/Alimentation/AdminReportsForm";
 import { HoraireForm } from "../form/Contact/HoraireForm";
 import { ContactResponseForm } from "../form/Contact/ContactResponseForm";
 import { RegisterPage } from "../../../pages/Auth/RegisterPage";
+import { SousServiceForm } from "../crud/SousServiceForm";
+import { SousServiceFormUpdate } from "../crud/SousServiceFormUpdate";
+import { SousServiceDeleteForm } from "../crud/SousServiceDeleteForm";
 
 
 export const Content: React.FC<{ section: string }> = ({ section }) => {
@@ -42,6 +45,17 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
             return <ServiceDeleteForm />;
           default:
             return <p>Veuillez sélectionner une action pour les services</p>;
+        }
+        case "sousService":
+        switch (crudAction) {
+          case "create":
+            return <SousServiceForm />;
+          case "update":
+            return <SousServiceFormUpdate />;
+          case "delete":
+            return <SousServiceDeleteForm />;
+          default:
+            return <p>Veuillez sélectionner une action pour les sous services</p>;
         }
       case "habitat":
         switch (crudAction) {
@@ -84,13 +98,14 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
         case "register":
           return <RegisterPage/>;
       default:
-        return <p>Section non trouvée</p>;
+        return <p>Bienvenue dans votre espace de travail</p>;
     }
   };
 
   return (
     <div className="content p-3">
       {section === "service" ||
+      section === "sousService" ||
       section === "habitat" ||
       section === "animal" ||
       section === "avis" ||
@@ -111,6 +126,8 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
               Gestion des{" "}
               {section === "service"
                 ? "Services"
+                : section === "sousService"
+                ? "Sous service"
                 : section === "habitat"
                 ? "Habitats"
                 : section === "animal"
@@ -151,7 +168,7 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
           <div className="mt-3">{renderForm()}</div>
         </>
       ) : (
-        <p>Section non trouvée</p>
+        <h1>Bienvenue dans votre espace de travail</h1>
       )}
     </div>
   );

@@ -4,10 +4,9 @@ namespace App\Entity;
 
 use App\Repository\ServiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -23,7 +22,7 @@ class Service
     #[Groups('service_basic')]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 25, nullable: true)]
+    #[ORM\Column(length: 50, nullable: true)]
     #[Groups('service_basic')]
     private ?string $titre = null;
 
@@ -35,9 +34,9 @@ class Service
     #[Groups('service_basic')]
     private ?string $horaire = null;
 
-    #[ORM\Column(type: "boolean")]
+    #[ORM\Column(type: 'boolean')]
     #[Groups('service_basic')]
-    private  $carteZoo = false;
+    private $carteZoo = false;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
@@ -48,15 +47,16 @@ class Service
     #[ORM\OneToOne(mappedBy: 'service', cascade: ['persist', 'remove'])]
     #[Groups('service_basic')]
     private ?Image $image = null;
-    
+
     #[ORM\OneToMany(targetEntity: SousService::class, mappedBy: 'service', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true, onDelete: "CASCADE")]
+    #[Groups('service_basic')]
     private Collection $sousServices;
 
     public function __construct()
     {
         $this->sousServices = new ArrayCollection();
     }
+
     #[ORM\PrePersist]
     public function setCreatedAt(): void
     {
@@ -113,9 +113,9 @@ class Service
     }
 
     public function getHoraire(): ?array
-{
-    return $this->horaire ? json_decode($this->horaire, true) : null;
-}
+    {
+        return $this->horaire ? json_decode($this->horaire, true) : null;
+    }
 
     public function setHoraire(?string $horaire): static
     {
@@ -127,6 +127,7 @@ class Service
     public function setCarteZoo(bool $carteZoo): self
     {
         $this->carteZoo = $carteZoo;
+
         return $this;
     }
 
@@ -156,20 +157,21 @@ class Service
 
         return $this;
     }
+
     public function removeImage(): static
-{
-    
-    if ($this->image !== null) {
-        $this->image->setService(null);
-        $this->image = null;
+    {
+        if ($this->image !== null) {
+            $this->image->setService(null);
+            $this->image = null;
+        }
+
+        return $this;
     }
 
-    return $this;
-}
     /**
      * @return Collection<int, SousService>
      */
-    public function getSousService(): Collection
+    public function getSousServices(): Collection
     {
         return $this->sousServices;
     }

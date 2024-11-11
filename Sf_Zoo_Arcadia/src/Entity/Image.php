@@ -13,19 +13,19 @@ class Image
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['habitat', 'animal'])]
+    #[Groups(['habitat', 'animal', 'service_basic'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['habitat', 'animal'])]
+    #[Groups(['habitat', 'animal', 'service_basic'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['habitat', 'animal'])]
+    #[Groups(['habitat', 'animal', 'service_basic'])]
     private ?string $imagePath = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['habitat', 'animal'])]
+    #[Groups(['habitat', 'animal', 'service_basic'])]
     private ?string $imageSubDirectory = null;
 
     #[ORM\OneToOne(inversedBy: 'image', cascade: ['persist', 'remove'])]
