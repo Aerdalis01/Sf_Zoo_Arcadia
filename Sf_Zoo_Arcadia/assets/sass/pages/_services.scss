@@ -3,47 +3,77 @@
 .les-services {
   background:transparent;
   position: relative;
+  height: auto;
   
-  .sous-services-container{
-    position: absolute;
-    top: 0;
-    height: 80svh;
-    @include media-breakpoint-up(md) {
-      min-height: 100svh;
-    }
-    @include media-breakpoint-up(lg) {
-      min-height: 120svh;
-    }
-    z-index: 1000;
-    
-    .sousService-img,
-    .sous-service-card{
-      aspect-ratio: 1;
-      @include media-breakpoint-down(sm) {
-        min-height: 100px;
-        max-height: 150px;
-        max-width: 150px;
-      }
-      
-    }
-    
-  }
-  .service-section {
-    min-height: 80svh;
+  
+  .first-service-section {
+    min-height: 120vh;
     position: relative;
     z-index: 1000;
+    display: flex;
+    justify-content: center;
+    
+    .service-title {
+      position: relative;
+      z-index: 1000;
+      top: 2%;
+    }
+    .first-section-top-decoration
+     {
+      z-index: 999;
+      top: 0;
+      position: absolute;
+    }
+
+    .first-section-bottom-decoration
+    {
+      z-index: 999;
+      bottom: 0;
+      position: absolute;
+    }
+    .sous-services-container{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); 
+      max-height: 100%;
+      z-index: 1000;
+      
+      .sousService-img{
+        z-index: 1000;
+        }
+      
+    }
+  }
+  .middle-service-section,
+  .last-service-section{
+    min-height: 100svh;
+    position: relative;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
     @include media-breakpoint-up(md) {
       min-height: 100svh;
     }
     @include media-breakpoint-up(lg) {
       min-height: 120svh;
+    }
+    .other-section-top-decoration,
+    .last-section-top-decoration {
+      z-index: 999;
+      top: 0;
+      position: absolute;
+    }
+    .other-section-bottom-decoration,
+    .last-section-bottom-decoration {
+      z-index: 999;
+      bottom: 0;
+      position: absolute;
     }
     .service-title {
       position: relative;
       z-index: 1000;
-      margin-bottom: 20px;
     }
-
     .card-container {
       position: absolute;
       top: 0;
@@ -58,40 +88,31 @@
       .visite--card-body {
         aspect-ratio: 1;
       }
-
-      
       .service-description,
       .service-img {
         z-index: 1000;
         position: relative;
       }
-    }
+    } 
     .horaire-container{
       position: absolute;
       top: 0;
-      height: 100svh;
-      width: 100svb;
-    }
-    .first-section-top-decoration,
-    .other-section-top-decoration,
-    .last-section-top-decoration {
-      z-index: 999;
-      top: 0;
-      position: absolute;
-    }
-
-    .first-section-bottom-decoration,
-    .other-section-bottom-decoration,
-    .last-section-bottom-decoration {
-      z-index: 999;
-      bottom: 0;
-      position: absolute;
+      min-height: 80svh;
+      z-index: 1000;
+      @include media-breakpoint-up(md) {
+        min-height: 100svh;
+      }
+      @include media-breakpoint-up(lg) {
+        min-height: 120svh;
+      }
     }
   }
-
   .btn-carte-zoo {
     position: absolute;
-    bottom: 5%;
+    bottom: 1%;
     z-index: 1000;
+  }
+  .close-button-custom{
+    color: black;
   }
 }

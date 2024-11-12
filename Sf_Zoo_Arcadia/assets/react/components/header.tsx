@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../pages/Auth/AuthContext";
+import { BoxArrowRight } from 'react-bootstrap-icons';
+import { Tooltip, OverlayTrigger, Button } from 'react-bootstrap';
+
 
 
 const Header: React.FC = () => {
@@ -35,7 +38,7 @@ const Header: React.FC = () => {
         if (decodedToken.exp * 5000 <= Date.now()) {
           localStorage.removeItem('jwt_token');
           handleLogout();
-          
+
         }
       } catch (err) {
         console.error('Erreur lors du décodage du jwt_token:', err);
@@ -50,9 +53,22 @@ const Header: React.FC = () => {
   const handleLoginDirection = () => {
     setSuccessMessage(null);
     navigate('/login');
-  
-  };
 
+  };
+  const LogoutButton = () => {
+    const renderTooltip = (props: any) => (
+      <Tooltip id="button-tooltip" {...props}>
+        Déconnexion
+      </Tooltip>
+    );
+    return (
+      <OverlayTrigger placement="bottom" overlay={renderTooltip}>
+        <Button variant="outline-secondary border-warning" onClick={handleLogout}>
+          <BoxArrowRight className="text-warning " />
+        </Button>
+      </OverlayTrigger>
+    );
+  };
   return (
 
     <header id="header" className="header">
@@ -137,8 +153,8 @@ const Header: React.FC = () => {
                       {userRoles.includes('ROLE_ADMIN') && (
                         <a
                           className="nav-link text-warning fw-semibold fs-5"
-                           href="/dashboard"
-                          
+                          href="/dashboard"
+
                         >
                           Espace admin
                         </a>)}
@@ -155,14 +171,7 @@ const Header: React.FC = () => {
                   onClick={handleLoginDirection}
                 />
               ) : (
-                <button
-                  id="btn2NavbarDeco"
-                  className="btn btn-navbar--deco text-dark btn-warning fw-semibold"
-                  type="button"
-                  onClick={handleLogout}
-                >
-                  Se déconnecter
-                </button>)}
+                <LogoutButton />)}
             </div>
 
             <div className="container-btn--navbar  col-md-2  col-xl-2 d-flex align-items-center justify-content-end">
@@ -178,7 +187,7 @@ const Header: React.FC = () => {
               ) : (
                 <button
                   id="btnNavbarDeco"
-                  className="btn btn-navbar--deco btn-warning text-dark fw-semibold px-2"
+                  className="btn col-10 btn-navbar--deco btn-warning text-dark fw-semibold px-2 "
                   type="button"
                   onClick={handleLogout}
                 >
@@ -197,29 +206,29 @@ const Header: React.FC = () => {
           <img className="menu-exit" src="/uploads/images/svgDeco/croix.svg" alt="Image d'une croix"
             onClick={toggleModal} />
         </div>
-        <ul className="navbar-nav text-center d-flex align-items-center mb-5 w-100">
-          <li className="nav-item col-3 mb-5">
+        <ul className="navbar-nav text-center d-flex align-items-center mb-1 w-100">
+          <li className="nav-item col-3 mb-1">
             <a className="nav-link fs-1 active fw-semibold" aria-current="page" href="/">
               Accueil
             </a>
           </li>
-          <li className="nav-item col-3 mb-5">
+          <li className="nav-item col-3 mb-1">
             <a className="nav-link fs-1 fw-semibold" href="/service">
               Service
             </a>
           </li>
-          <li className="nav-item col-3 mb-5">
+          <li className="nav-item col-3 mb-1">
             <a className="nav-link fs-1 fw-semibold" href="/habitat">
               Habitats
             </a>
           </li>
-          <li className="nav-item col-3 mb-5">
+          <li className="nav-item col-3 mb-1">
             <a className="nav-link fs-1 fw-semibold" href="/contact">
               Contact
             </a>
           </li>
           {connected && (
-            <li className="nav-item col-3 mb-5">
+            <li className="nav-item col-3 mb-1">
               {userRoles.includes('ROLE_EMPLOYE') && (
                 <a className="nav-link fs-1 fw-semibold" href="/dashboard">
                   Espace employé
