@@ -113,10 +113,9 @@ export function ContactForm({ handleFormToggle, onFormSuccess }) {
         />
         {errors.message && <p>{errors.message}</p>}
       </div>
-      <button className="btn btn-warning" type="submit">Envoyer</button>
+      <button className="btn btn-primary" type="submit">Envoyer</button>
       {errors.submit && <p>{errors.submit}</p>}
       {successMessage && <p>{successMessage}</p>}
-      <hr />
     </form>
   )
 }

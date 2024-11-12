@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Horaire;
-use App\Form\HoraireType;
 use App\Service\HoraireService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,7 +21,6 @@ class HoraireController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(): JsonResponse
     {
-        // dd("Bienvenue dans le controler");
         $horaires = $this->horaireService->getAll();
         $data = $this->serializer->serialize($horaires, 'json', ['groups' => 'horaire']);
 
@@ -33,14 +31,13 @@ class HoraireController extends AbstractController
     public function show(string $jour): JsonResponse
     {
         $horaire = $this->horaireService->findByDay($jour);
-      if (!$horaire) {
-          return new JsonResponse(['error' => 'Horaire non trouvé'], Response::HTTP_NOT_FOUND);
-      }
-      
-      
-      $data = $this->serializer->serialize($horaire, 'json', ['groups' => 'horaire']);
-      
-      return new JsonResponse($data, Response::HTTP_OK, [], true);
+        if (!$horaire) {
+            return new JsonResponse(['error' => 'Horaire non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = $this->serializer->serialize($horaire, 'json', ['groups' => 'horaire']);
+
+        return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
     #[Route('/new', name: 'new', methods: ['POST'])]
@@ -53,10 +50,10 @@ class HoraireController extends AbstractController
         $existingHoraire = $this->horaireService->findByDay($jour);
 
         if ($existingHoraire) {
-
             $existingHoraire->setHeureOuverture($heureOuverture);
             $existingHoraire->setHeureFermeture($heureFermeture);
             $this->horaireService->save($existingHoraire);
+
             return new JsonResponse($existingHoraire, Response::HTTP_OK);
         } else {
             // Si aucun horaire n'existe, créez-en un nouveau
@@ -66,10 +63,10 @@ class HoraireController extends AbstractController
             $horaire->setHeureFermeture($heureFermeture);
 
             $this->horaireService->save($horaire);
+
             return new JsonResponse($horaire, Response::HTTP_CREATED);
         }
     }
-
 
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]
     public function update(int $id, Request $request): Response
@@ -84,6 +81,7 @@ class HoraireController extends AbstractController
         $horaire->setHeureFermeture(new \DateTime($request->request->get('heureFermeture')));
 
         $this->horaireService->save($horaire);
+
         return new JsonResponse($horaire, Response::HTTP_OK);
     }
 
@@ -93,6 +91,7 @@ class HoraireController extends AbstractController
         $horaire = $this->horaireService->getById($id);
         if ($horaire) {
             $this->horaireService->delete($horaire);
+
             return new JsonResponse(['success' => 'Horaire supprimé avec succès'], Response::HTTP_OK);
         } else {
             return new JsonResponse(['error' => 'Horaire non trouvé'], Response::HTTP_NOT_FOUND);
