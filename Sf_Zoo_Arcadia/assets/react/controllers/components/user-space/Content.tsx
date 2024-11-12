@@ -18,7 +18,7 @@ import { RegisterPage } from "../../../pages/Auth/RegisterPage";
 import { SousServiceForm } from "../crud/SousServiceForm";
 import { SousServiceFormUpdate } from "../crud/SousServiceFormUpdate";
 import { SousServiceDeleteForm } from "../crud/SousServiceDeleteForm";
-
+import { Reporting } from "../form/Reporting";
 
 export const Content: React.FC<{ section: string }> = ({ section }) => {
   const [crudAction, setCrudAction] = useState<string>("");
@@ -97,6 +97,8 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
           return <HoraireForm/>;
         case "register":
           return <RegisterPage/>;
+        case "reporting":
+          return <Reporting/>;
       default:
         return <p>Bienvenue dans votre espace de travail</p>;
     }
@@ -116,6 +118,7 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
       section === "serviceUpdate" ||
       section === "horaireUpdate" ||
       section === "register" ||
+      section === "reporting" ||
       section === "adminReport" ? (
         <>
           {shouldShowHeader && (
@@ -147,6 +150,7 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
             section != "serviceUpdate" && 
             section != "horaireUpdate" && 
             section != "register" && 
+            section != "reporting" && 
             section != "horaire" && (
               <div className="mb-3">
                 <label htmlFor="crudSelect" className="form-label">

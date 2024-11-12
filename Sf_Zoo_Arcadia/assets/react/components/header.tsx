@@ -187,11 +187,11 @@ const Header: React.FC = () => {
               ) : (
                 <button
                   id="btnNavbarDeco"
-                  className="btn col-10 btn-navbar--deco btn-warning text-dark fw-semibold px-2 "
+                  className="btn col-12 btn-navbar--deco btn-warning text-dark fw-semibold px-2 "
                   type="button"
                   onClick={handleLogout}
                 >
-                  Se déconnecter
+                  Déco
                 </button>)}
             </div>
           </div>

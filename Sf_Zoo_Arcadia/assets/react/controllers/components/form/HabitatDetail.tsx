@@ -13,16 +13,15 @@ export const HabitatDetail: React.FC<HabitatDetailProps> = ({ habitatId, onBack 
   const [habitat, setHabitat] = useState<Habitat | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedAnimalId, setSelectedAnimalId] = useState<number | null>(null);
-  
-  
+  const [selectedAnimalName, setSelectedAnimalName] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchHabitat = async () => {
       try {
         const response = await fetch(`/api/habitat/${habitatId}`);
-        if (!response.ok) throw new Error('Erreur lors de la récupération de l\'habitat.');
+        if (!response.ok) throw new Error("Erreur lors de la récupération de l'habitat.");
 
         const data = await response.json();
-        console.log("Données de l'habitat:", data);
         setHabitat(data);
       } catch (error) {
         console.error(error);
@@ -35,10 +34,25 @@ export const HabitatDetail: React.FC<HabitatDetailProps> = ({ habitatId, onBack 
   }, [habitatId]);
 
 
-  const handleAnimalClick = (id: number) => {
-    console.log("Animal cliqué avec ID :", id);
+
+  const handleAnimalClick = async (id: number, nom: string) => {
+    console.log("Animal cliqué avec ID :", id, "et nom", nom);
     setSelectedAnimalId(id);
+    setSelectedAnimalName(nom);
+    try {
+      const response = await fetch(`/api/animalVisite/${id}/${nom}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      console.log(data.message); 
+    } catch (error) {
+      console.error("Erreur lors de l'incrémentation de la visite", error);
+    }
   };
+
 
   const handleBack = () => {
     setSelectedAnimalId(null);
@@ -72,7 +86,7 @@ export const HabitatDetail: React.FC<HabitatDetailProps> = ({ habitatId, onBack 
             <li
               className="col-12 col-md-6 col-lg-4 d-flex flex-column align-items-center text-center mb-4"
               key={animal.id ?? index}
-              onClick={() => handleAnimalClick(animal.id)}
+              onClick={() => handleAnimalClick(animal.id, animal.nom)}
               style={{ cursor: 'pointer' }}
             >
               <p className="fs-4">
