@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 const Footer: React.FC = () => {
   return (
     <footer id="footer" className="footer">
@@ -32,50 +34,24 @@ const Footer: React.FC = () => {
               </div>
             </div>
             <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
-              <h6 className="text-uppercase fw-bold">Services</h6>
-              <hr className="mb-4 mt-0 d-inline-block mx-auto" />
-              <p>
-                <a href="#restaurations" className="text-white">
-                  Restaurations
-                </a>
-              </p>
-              <p>
-                <a href="#visite" className="text-white">
-                  Visite guidée
-                </a>
-              </p>
-              <p>
-                <a href="#train" className="text-white">
-                  Visite en petit train
-                </a>
-              </p>
+            <Link to="/service" className="text-white">
+                  Services
+                </Link>
+              
             </div>
-
             <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
-              <h6 className="text-uppercase fw-bold">Habitats</h6>
-              <hr className="mb-4 mt-0 d-inline-block mx-auto" />
-
-              <p>
-                <a href="/marais" className="text-white">
-                  Marais
-                </a>
-              </p>
-              <p>
-                <a href="/savane" className="text-white">
-                  Savane
-                </a>
-              </p>
-              <p>
-                <a href="/jungle" className="text-white">
-                  Jungle
-                </a>
-              </p>
+            <Link to="/habitat" className="text-white">
+                  Habitats
+                </Link>
+            </div>
+            <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+            <Link to="/contact" className="text-white">
+                  Nous contacter
+                </Link>
             </div>
             <div className="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
-              <h6 className="text-uppercase fw-bold">Nous contacter</h6>
               <hr className="mb-4 mt-0 d-inline-block mx-auto" />
-              <p className="text-white"> Borcéliande, 13 rue du zooq, France</p>
-              <p className="text-white"> info@example.com</p>
+              <p className="text-white"> Borcéliande, 13 rue du zoo, France</p>
               <p className="text-white"> + 01 234 567 88</p>
               <p className="text-white"> + 01 234 567 89</p>
             </div>
