@@ -12,17 +12,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-
-#[Route('/api/admin/register', name:'_app_api_admin_register_')]
+#[Route('/api/admin/register', name: '_app_api_admin_register_')]
 class RegistrationController extends AbstractController
 {
     public function __construct(private MailerService $mailer)
     {
     }
-    #[Route('/new', name:'new', methods:['POST'])]
+
+    #[Route('/new', name: 'new', methods: ['POST'])]
     public function createUser(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
     {
-        
         $data = json_decode($request->getContent(), true);
 
         if (!$data || empty($data['email']) || empty($data['password']) || empty($data['role'])) {
@@ -33,10 +32,9 @@ class RegistrationController extends AbstractController
         if (!in_array($data['role'], $validRoles)) {
             return new JsonResponse(['errors' => ['Rôle invalide']], 400);
         }
-        
+
         $user = new User();
         $user->setEmail($data['email']);
-
         switch ($data['role']) {
             case 'admin':
                 $user->setRoles(['ROLE_ADMIN']);
@@ -50,14 +48,23 @@ class RegistrationController extends AbstractController
             default:
                 return new JsonResponse(['errors' => 'Rôle invalide'], 400);
         }
-        $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
-        $user->setPassword($hashedPassword);
-        // Persister l'utilisateur dans la base de données
-        $entityManager->persist($user);
-        $entityManager->flush();
+        try {
+            $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
+            $user->setPassword($hashedPassword);
 
-        $this->mailer->sendAccountCreationEmail($user->getEmail(), $user->getEmail());
+            // Persister l'utilisateur dans la base de données
+            $entityManager->persist($user);
+            $entityManager->flush();
 
-        return new JsonResponse(['message' => 'Inscription réussie'], 201);
+            // Envoi de l'e-mail de création de compte
+            $this->mailer->sendAccountCreationEmail($user->getEmail(), $user->getEmail());
+
+            return new JsonResponse(['message' => 'Inscription réussie'], 201);
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            error_log($e->getMessage());
+
+            return new JsonResponse(['errors' => 'Erreur interne lors de la création de l\'utilisateur'], 500);
+        }
     }
 }

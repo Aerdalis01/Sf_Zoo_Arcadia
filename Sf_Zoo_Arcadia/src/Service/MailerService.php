@@ -29,18 +29,25 @@ class MailerService
 
     public function sendAccountCreationEmail(string $userEmail, string $username): void
     {
-        $email = (new Email())
-            ->from('no-reply@demomailtrap.com')
-            ->to('zooarcadia930@gmail.com')
-            ->subject('Création de votre compte')
-            ->html("
-            <p>Bonjour,</p>
-            <p>Votre compte a été créé avec succès.</p>
-            <p>Votre nom d'utilisateur est : <strong>{$username}</strong>.</p>
-            <p>Veuillez contacter votre administrateur pour obtenir votre mot de passe.</p>
-            <p>Cordialement,<br>L'équipe de gestion</p>
-        ");
+        try {
+            $email = (new Email())
+                ->from($this->fromEmail)
+                ->to($userEmail)
+                ->subject('Création de votre compte')
+                ->html(sprintf(
+                    "<p>Bonjour,</p>
+                    <p>Votre compte a été créé avec succès.</p>
+                    <p>Votre nom d'utilisateur est : <strong>%s</strong>.</p>
+                    <p>Veuillez contacter votre administrateur pour obtenir votre mot de passe.</p>
+                    <p>Cordialement,<br>L'équipe de gestion</p>",
+                    htmlspecialchars($username, ENT_QUOTES, 'UTF-8')
+                ));
 
-        $this->mailer->send($email);
+            $this->mailer->send($email);
+        } catch (\Exception $e) {
+            error_log('Erreur lors de l\'envoi de l\'e-mail de création de compte : '.$e->getMessage());
+
+            throw new \RuntimeException('Erreur lors de l\'envoi de l\'e-mail de création de compte');
+        }
     }
 }
