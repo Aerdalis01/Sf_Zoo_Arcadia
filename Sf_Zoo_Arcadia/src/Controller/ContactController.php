@@ -6,13 +6,15 @@ use App\Entity\Contact;
 use App\Repository\ContactRepository;
 use App\Service\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/contact', name: '_app_api_contact_')]
+#[IsGranted('ROLE_ADMIN', ['ROLE_EMPLOYE'])]
 class ContactController extends AbstractController
 {
     public function __construct(
@@ -45,6 +47,7 @@ class ContactController extends AbstractController
             foreach ($errors as $error) {
                 $errorMessages[$error->getPropertyPath()] = $error->getMessage();
             }
+
             return new JsonResponse(['errors' => $errorMessages], JsonResponse::HTTP_BAD_REQUEST);
         }
 
@@ -55,6 +58,7 @@ class ContactController extends AbstractController
         // Réponse de succès
         return new JsonResponse(['message' => 'Votre message a été envoyé avec succès.'], JsonResponse::HTTP_OK);
     }
+
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(ContactRepository $contactRepository): JsonResponse
     {
@@ -71,7 +75,7 @@ class ContactController extends AbstractController
                 'isResponded' => $contact->isResponded(),
                 'sendAt' => $contact->getSendAt()->format('Y-m-d H:i:s'),
                 'responseMessage' => $contact->getResponseMessage(),
-                'respondedAt' => $contact->getRespondedAt()?->format('Y-m-d H:i:s')
+                'respondedAt' => $contact->getRespondedAt()?->format('Y-m-d H:i:s'),
             ];
         }, $messages);
 
@@ -111,7 +115,7 @@ class ContactController extends AbstractController
 
         $mailService->sendEmail(
             $contact->getEmail(),               // Récupération automatique de l'email du visiteur
-            'Réponse à votre message : ' . $contact->getTitre(),
+            'Réponse à votre message : '.$contact->getTitre(),
             $responseMessage
         );
 

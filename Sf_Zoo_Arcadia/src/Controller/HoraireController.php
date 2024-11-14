@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/horaire', name: 'app_api_horaire_')]
@@ -41,6 +42,7 @@ class HoraireController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function newAndUpdate(Request $request): Response
     {
         $jour = $request->request->get('jour');
@@ -69,6 +71,7 @@ class HoraireController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', ['ROLE_EMPLOYE'])]
     public function update(int $id, Request $request): Response
     {
         $horaire = $this->horaireService->getById($id);
@@ -86,6 +89,7 @@ class HoraireController extends AbstractController
     }
 
     #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(int $id): Response
     {
         $horaire = $this->horaireService->getById($id);

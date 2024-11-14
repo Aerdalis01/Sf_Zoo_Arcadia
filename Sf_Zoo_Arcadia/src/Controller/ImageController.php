@@ -7,29 +7,28 @@ use App\Form\ImageType;
 use App\Repository\ImageRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
-
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/api/admin/images', name: '_api_app_admin_images_')]
 class ImageController extends AbstractController
 {
-
     public function __construct(private EntityManagerInterface $entityManager, private SerializerInterface $serializer)
     {
         $this->entityManager = $entityManager;
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
-        $this->serializer = new Serializer($normalizers, $encoders,);
+        $this->serializer = new Serializer($normalizers, $encoders);
     }
 
     #[Route('/', name: 'index', methods: ['GET'])]
@@ -49,10 +48,12 @@ class ImageController extends AbstractController
             return $this->json(['error' => 'Image not found'], Response::HTTP_NOT_FOUND);
         }
         dd($image);
+
         return $this->json($image, Response::HTTP_OK);
     }
 
     #[Route('/new', name: 'add_image_json', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', ['ROLE_EMPLOYE'])]
     public function addImageJson(Request $request, SluggerInterface $slugger, EntityManagerInterface $entityManager): JsonResponse
     {
         $nom = $request->request->get('nomImage');
@@ -62,14 +63,14 @@ class ImageController extends AbstractController
         if (!$nom || !$imageSubDirectory || !$file) {
             return new JsonResponse(['error' => 'Tous les champs sont requis.'], JsonResponse::HTTP_BAD_REQUEST);
         }
-        
+
         if ($file instanceof UploadedFile) {
             $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $safeFilename = $slugger->slug($originalFilename);
-            $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
+            $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
 
             // Créer le chemin complet avec images_directory et image_sub_directory
-            $uploadDirectory = $this->getParameter('images_directory') . '/' . $imageSubDirectory;
+            $uploadDirectory = $this->getParameter('images_directory').'/'.$imageSubDirectory;
 
             // Créez le sous-dossier s'il n'existe pas
             if (!is_dir($uploadDirectory)) {
@@ -86,7 +87,7 @@ class ImageController extends AbstractController
             // Stocker le chemin du fichier dans l'entité Image
             $image = new Image();
             $image->setNom($nom);
-            $image->setImagePath($imageSubDirectory . '/' . $newFilename);
+            $image->setImagePath($imageSubDirectory.'/'.$newFilename);
             $image->setImageSubDirectory($imageSubDirectory);
 
             $entityManager->persist($image);
@@ -98,9 +99,8 @@ class ImageController extends AbstractController
         return new JsonResponse(['error' => 'Aucun fichier détecté.'], JsonResponse::HTTP_BAD_REQUEST);
     }
 
-
-
     #[Route('/{id}', name: 'edit', methods: ['PUT'])]
+    #[IsGranted('ROLE_ADMIN', ['ROLE_EMPLOYE'])]
     public function edit(Request $request, Image $image): Response
     {
         $form = $this->createForm(ImageType::class, $image);
@@ -119,6 +119,7 @@ class ImageController extends AbstractController
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_ADMIN', ['ROLE_EMPLOYE'])]
     public function delete(int $id, ImageRepository $imagesRepository): Response
     {
         $image = $imagesRepository->find($id);
@@ -128,7 +129,7 @@ class ImageController extends AbstractController
         }
 
         // Suppression du fichier du système de fichiers
-        $imagePath = $this->getParameter('upload_directory') . '/' . $image->getImagePath();
+        $imagePath = $this->getParameter('upload_directory').'/'.$image->getImagePath();
         if (file_exists($imagePath)) {
             unlink($imagePath);
         }
@@ -138,5 +139,5 @@ class ImageController extends AbstractController
         $this->entityManager->flush();
 
         return $this->json(['message' => 'Image supprimée avec succès'], Response::HTTP_OK);
-    }   
+    }
 }

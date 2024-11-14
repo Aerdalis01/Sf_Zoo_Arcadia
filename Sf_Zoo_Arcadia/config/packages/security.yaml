@@ -21,6 +21,7 @@ security:
                 username_path: email
                 password_path: password
                 success_handler: App\Security\LoginSuccessHandler
+                failure_handler: App\Security\LoginFailureHandler
 
 
         api:
@@ -36,9 +37,7 @@ security:
                 token_handler: App\Security\AccessTokenHandler
 
     access_control:
-        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY}
-        - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/admin/register/new, roles: ROLE_ADMIN }
+        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/alimentation/new, roles: ROLE_ADMIN }
         - { path: ^/api/animalReport/new, roles: ROLE_ADMIN }
         - { path: ^/employe, roles: ROLE_EMPLOYE }

@@ -4,9 +4,9 @@ namespace App\Security;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 
 class UserProvider implements UserProviderInterface
 {
@@ -20,11 +20,12 @@ class UserProvider implements UserProviderInterface
     // Charger un utilisateur par son email
     public function loadUserByIdentifier(string $identifier): UserInterface
     {
+        dd('bonjour');
         $user = $this->entityManager->getRepository(User::class)
             ->findOneBy(['email' => $identifier]);
 
         if (!$user) {
-            throw new \Exception("Utilisateur non trouvé");
+            throw new \Exception('Utilisateur non trouvé');
         }
 
         return $user;
@@ -43,6 +44,6 @@ class UserProvider implements UserProviderInterface
     // Vérifie si la classe donnée est supportée par ce provider
     public function supportsClass(string $class): bool
     {
-        return User::class === $class || is_subclass_of($class, User::class);
+        return is_a($class, User::class, true);
     }
 }

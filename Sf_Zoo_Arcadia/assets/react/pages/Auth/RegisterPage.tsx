@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
-import { hashPassword } from "./hashPassword";
+// import { hashPassword } from "./hashPassword";
 
 const registerSchema = z.object({
   email: z.string().email({ message: "Email invalide" }),
@@ -47,7 +47,7 @@ export const RegisterPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    const token = localStorage.getItem("jwt_token");
     const result = registerSchema.safeParse(formValues);
     if (!result.success) {
         const errors = result.error.issues.map((issue) => issue.message);
@@ -61,13 +61,13 @@ export const RegisterPage = () => {
 
     try {
         // Hacher le mot de passe avant de l'envoyer
-        const hashedPassword = await hashPassword(formValues.password);
-        console.log("Mot de passe haché:", hashedPassword);
+        // const hashedPassword = await hashPassword(formValues.password);
+        // console.log("Mot de passe haché:", hashedPassword);
 
         // Créer un nouvel objet avec le mot de passe haché
         const formDataToSend = {
             ...formValues,
-            password: hashedPassword,
+            // password: hashedPassword,
         };
 
         console.log("Données envoyées :", formDataToSend); // Vérifiez que le mot de passe haché est utilisé ici
@@ -76,6 +76,7 @@ export const RegisterPage = () => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
             },
             body: JSON.stringify(formDataToSend),
         });

@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/service', name: '_app_api_service_')]
@@ -52,6 +53,7 @@ class ServiceController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function createService(Request $request, ImageManagerService $imageManagerService): JsonResponse
     {
         try {
@@ -106,6 +108,7 @@ class ServiceController extends AbstractController
     }
 
     #[Route('/horaire', name: 'newHoraire', methods: ['POST'])]
+    #[IsGranted(['ROLE_ADMIN', 'ROLE_EMPLOYE'])]
     public function addHoraires(Request $request): Response
     {
         $horairesData = $request->get('horaires');
@@ -121,6 +124,7 @@ class ServiceController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]
+    #[IsGranted(['ROLE_ADMIN', 'ROLE_EMPLOYE'])]
     public function updateService(int $id, Request $request): JsonResponse
     {
         try {
@@ -160,6 +164,7 @@ class ServiceController extends AbstractController
     }
 
     #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function deleteService(int $id): JsonResponse
     {
         $service = $this->entityManager->getRepository(Service::class)->find($id);

@@ -11,8 +11,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/admin/register', name: '_app_api_admin_register_')]
+#[IsGranted('ROLE_ADMIN')]
 class RegistrationController extends AbstractController
 {
     public function __construct(private MailerService $mailer)
@@ -23,6 +25,11 @@ class RegistrationController extends AbstractController
     public function createUser(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
     {
         $data = json_decode($request->getContent(), true);
+
+        $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $data['email']]);
+        if ($existingUser) {
+            return new JsonResponse(['errors' => 'Cet email est déjà utilisé.'], 400);
+        }
 
         if (!$data || empty($data['email']) || empty($data['password']) || empty($data['role'])) {
             return new JsonResponse(['errors' => 'Email, mot de passe ou rôle requis'], 400);

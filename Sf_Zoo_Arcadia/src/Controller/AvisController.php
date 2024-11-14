@@ -4,36 +4,37 @@ namespace App\Controller;
 
 use App\Entity\Avis;
 use App\Repository\AvisRepository;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/avis', name: 'app_api_avis_')]
 class AvisController extends AbstractController
 {
-        public function __construct(
-            private EntityManagerInterface $entityManager,
-            private SerializerInterface $serializer
-        ) 
-        {
-        }
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private SerializerInterface $serializer
+    ) {
+    }
+
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(): JsonResponse
     {
         $avis = $this->entityManager->getRepository(Avis::class)->findAll();
 
         $data = $this->serializer->serialize($avis, 'json', ['groups' => 'avis']);
-        
+
         return new JsonResponse($data, JsonResponse::HTTP_OK, [], true);
     }
+
     #[Route('/new', name: 'new', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        
         try {
             $nom = $request->request->get('nom');
             $avisText = $request->request->get('avis');
@@ -49,22 +50,21 @@ class AvisController extends AbstractController
             $avis->setAvis($avisText);
             $avis->setNote($note);
             $avis->setValid(false);
-        
-        $this->entityManager->persist($avis);
-        $this->entityManager->flush();
 
-        return new JsonResponse(['message' => 'Avis créé avec succès'], Response::HTTP_CREATED);
-    }catch (\Exception $e) {
+            $this->entityManager->persist($avis);
+            $this->entityManager->flush();
 
-        return new JsonResponse([
-            'status' => 'error',
-            'message' => 'Erreur : ' . $e->getMessage()
-        ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse(['message' => 'Avis créé avec succès'], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Erreur : '.$e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
-}
-
 
     #[Route('/{id}/approve', name: 'approve', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', ['ROLE_EMPLOYE'])]
     public function approveReview($id, AvisRepository $avisRepository, EntityManagerInterface $em): JsonResponse
     {
         $avis = $avisRepository->find($id);
@@ -96,7 +96,7 @@ class AvisController extends AbstractController
     #[Route('/latest-avis', name: 'latest_avis', methods: ['GET'])]
     public function getLatestAvis(AvisRepository $avisRepository, SerializerInterface $serializer): JsonResponse
     {
-        $latestAvis = $avisRepository->findLatestAvis(); 
+        $latestAvis = $avisRepository->findLatestAvis();
         $jsonContent = $serializer->serialize($latestAvis, 'json', ['groups' => 'avis']);
 
         return new JsonResponse($jsonContent, 200, [], true);

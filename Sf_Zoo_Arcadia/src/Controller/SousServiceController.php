@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Service;
 use App\Entity\SousService;
-use App\Repository\SousServiceRepository;
 use App\Service\ImageManagerService;
 use App\Service\SousServiceService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,8 +12,8 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/sousService', name: '_app_api_sous_service_')]
@@ -33,17 +32,21 @@ class SousServiceController extends AbstractController
     {
         $sousService = $entityManager->getRepository(SousService::class)->findAll();
         $data = $serializer->serialize($sousService, 'json', ['groups' => 'sousService_basic']);
+
         return new JsonResponse(json_decode($data), JsonResponse::HTTP_OK);
     }
+
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(int $id, EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
     {
         $sousService = $entityManager->getRepository(SousService::class)->find($id);
         $data = $serializer->serialize($sousService, 'json', ['groups' => 'sousService_basic']);
+
         return new JsonResponse(json_decode($data), JsonResponse::HTTP_OK);
     }
 
     #[Route('/new', name: 'new', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function createSousService(Request $request, ImageManagerService $imageManagerService): JsonResponse
     {
         try {
@@ -55,13 +58,13 @@ class SousServiceController extends AbstractController
             $imageFiles = [
                 'file1' => $request->files->get('file1'),
                 'file2' => $request->files->get('file2'),
-                ];
+            ];
             $imageName = $request->request->get('file1_name');
             $file1SubDirectory = $request->request->get('file1_sub_directory');
             $imageName = $request->request->get('file2_name');
-            $file2SubDirectory = $request->request->get('file2_sub_directory'); 
+            $file2SubDirectory = $request->request->get('file2_sub_directory');
 
-            if (!$nom || !$description  || !$idService) {
+            if (!$nom || !$description || !$idService) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Paramètres manquants.'], 400);
             }
 
@@ -85,7 +88,7 @@ class SousServiceController extends AbstractController
                 'nom' => $nom,
                 'description' => $description,
                 'menu' => $menu,
-                'idService' => $idService
+                'idService' => $idService,
             ], $image);
             foreach ($images as $image) {
                 $sousService->addImage($image);
@@ -95,21 +98,21 @@ class SousServiceController extends AbstractController
             $this->entityManager->flush();
 
             return new JsonResponse(['status' => 'success', 'id' => $sousService->getId()], 201);
-
         } catch (\Exception $e) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Une erreur est survenue : ' . $e->getMessage()], 500);
+            return new JsonResponse(['status' => 'error', 'message' => 'Une erreur est survenue : '.$e->getMessage()], 500);
         }
     }
 
     #[Route('/{id}', name: 'update', methods: ['POST'])]
-    public function updateSousService(int $id,Request $request): JsonResponse
+    #[IsGranted(['ROLE_ADMIN', 'ROLE_EMPLOYE'])]
+    public function updateSousService(int $id, Request $request): JsonResponse
     {
         $sousService = $this->entityManager->getRepository(SousService::class)->find($id);
 
         if (!$sousService) {
-                return new JsonResponse(['status' => 'error', 'message' => 'Service ou SousService non trouvé'], 404);
-            }
-            try{
+            return new JsonResponse(['status' => 'error', 'message' => 'Service ou SousService non trouvé'], 404);
+        }
+        try {
             $nom = $request->request->get('nom');
             $description = $request->request->get('description');
             $menu = $request->request->get('menu');
@@ -118,10 +121,9 @@ class SousServiceController extends AbstractController
             $file1 = $request->files->get('file1');
             $file2 = $request->files->get('file2');
             $imageSubDirectory = $request->request->get('image_sub_directory') ?? 'default_directory';
-    
-            
+
             $images = [];
-    
+
             if ($file1 instanceof UploadedFile) {
                 $originalFilename = pathinfo($file1->getClientOriginalName(), PATHINFO_FILENAME);
                 $timestamp = time();
@@ -132,7 +134,7 @@ class SousServiceController extends AbstractController
                 $images['imageName1'] = $imageName1;
                 $images['image_sub_directory'] = $imageSubDirectory;
             }
-            
+
             if ($menu && $file2 instanceof UploadedFile) {
                 $originalFilename = pathinfo($file2->getClientOriginalName(), PATHINFO_FILENAME);
                 $timestamp = time();
@@ -143,28 +145,28 @@ class SousServiceController extends AbstractController
                 $images['imageName2'] = $imageName2;
                 $images['file2_sub_directory'] = $imageSubDirectory;  // Ajoute file2 au tableau d'images (si menu est coché)
             }
-    
+
             // Appel de createOrUpdateSousService avec le tableau d'images
             $sousService = $this->sousServiceService->createOrUpdateSousService(
-                $sousService, 
+                $sousService,
                 [
                     'nom' => $nom,
                     'description' => $description,
                     'menu' => $menu,
-                    'idService' => $idService
-                ], 
+                    'idService' => $idService,
+                ],
                 $images
             );
             $this->entityManager->flush();
 
             return new JsonResponse(['status' => 'success', 'id' => $sousService->getId()], 200);
-    
         } catch (\Exception $e) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Une erreur est survenue : ' . $e->getMessage()], 500);
+            return new JsonResponse(['status' => 'error', 'message' => 'Une erreur est survenue : '.$e->getMessage()], 500);
         }
     }
 
     #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function deleteSousService(int $id): JsonResponse
     {
         $sousService = $this->entityManager->getRepository(SousService::class)->find($id);
@@ -173,30 +175,30 @@ class SousServiceController extends AbstractController
         }
 
         try {
-        // Parcourir toutes les images associées au sous-service
-        $images = $sousService->getImage(); // Supposons que cette méthode renvoie une collection d'images
+            // Parcourir toutes les images associées au sous-service
+            $images = $sousService->getImage(); // Supposons que cette méthode renvoie une collection d'images
 
-        foreach ($images as $image) {
-            $this->deleteImageFile($image->getImagePath());
-            $this->entityManager->remove($image);
-        }
+            foreach ($images as $image) {
+                $this->deleteImageFile($image->getImagePath());
+                $this->entityManager->remove($image);
+            }
 
-        // Supprimer le sous-service
-        $this->entityManager->remove($sousService);
-        $this->entityManager->flush();
+            // Supprimer le sous-service
+            $this->entityManager->remove($sousService);
+            $this->entityManager->flush();
 
             return new JsonResponse(['status' => 'success', 'message' => 'Sous-service supprimé avec succès'], 200);
         } catch (\Exception $e) {
             // En cas d'erreur, renvoyer un message d'erreur détaillé
-            return new JsonResponse(['status' => 'error', 'message' => 'Erreur lors de la suppression : ' . $e->getMessage()], 500);
+            return new JsonResponse(['status' => 'error', 'message' => 'Erreur lors de la suppression : '.$e->getMessage()], 500);
         }
     }
 
     private function deleteImageFile(string $imagePath): void
     {
-        $filePath = $this->parameterBag->get('kernel.project_dir') . '/public' . $imagePath;
+        $filePath = $this->parameterBag->get('kernel.project_dir').'/public'.$imagePath;
         if (file_exists($filePath)) {
-            unlink($filePath); 
+            unlink($filePath);
         }
     }
 }

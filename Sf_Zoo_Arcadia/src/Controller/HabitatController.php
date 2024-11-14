@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/habitat', name: 'app_api_habitat_')]
@@ -54,6 +55,7 @@ class HabitatController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request): JsonResponse
     {
         try {
@@ -98,6 +100,7 @@ class HabitatController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function update(int $id, Request $request): JsonResponse
     {
         try {
@@ -140,6 +143,7 @@ class HabitatController extends AbstractController
     }
 
     #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function deleteService(int $id): JsonResponse
     {
         try {

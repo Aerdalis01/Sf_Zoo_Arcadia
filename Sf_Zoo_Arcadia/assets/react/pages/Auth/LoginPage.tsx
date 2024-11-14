@@ -4,6 +4,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+
 export const getUserRoles = (): string[] => {
   const token = localStorage.getItem("jwt_token");
   if (token) {
@@ -51,11 +52,9 @@ export const LoginPage: React.FC = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          
         },
-        body: JSON.stringify({
-          email: formValues.email,
-          password: formValues.password,
-        }),
+        body: JSON.stringify(formValues),
       });
       if (response.ok) {
         const { token } = await response.json();
