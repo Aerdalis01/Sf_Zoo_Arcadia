@@ -76,7 +76,7 @@
   .middle-service-section,
   .last-service-section{
     position: relative;
-    height: 100svh;
+    height: 100vh;
     height: auto;
     z-index: 1000;
   
@@ -131,6 +131,8 @@
   .btn-carte-zoo {
     position: relative;
     z-index: 1000;
+    width: 50px;
+    height: 20px;
   }
   .close-button-custom{
     color: black;

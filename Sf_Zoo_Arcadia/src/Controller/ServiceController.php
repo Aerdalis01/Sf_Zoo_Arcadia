@@ -12,7 +12,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -60,7 +59,7 @@ class ServiceController extends AbstractController
             $nom = $request->get('nom');
             $description = $request->get('description');
             $titre = $request->get('titre');
-            $horaire = json_decode($request->get('horaire'), true);
+            $horaireTexte = $request->get('horaire');
             $carteZoo = $request->get('carteZoo');
 
             $imageFile = $request->files->get('file');
@@ -89,7 +88,7 @@ class ServiceController extends AbstractController
                 'nom' => $nom,
                 'description' => $description,
                 'titre' => $titre,
-                'horaire' => $horaire,
+                'horaire' => $horaireTexte,
                 'carteZoo' => $carteZoo,
             ], $image, $request);
             // Attacher l'image au service
@@ -107,22 +106,6 @@ class ServiceController extends AbstractController
         }
     }
 
-    #[Route('/horaire', name: 'newHoraire', methods: ['POST'])]
-    #[IsGranted(['ROLE_ADMIN', 'ROLE_EMPLOYE'])]
-    public function addHoraires(Request $request): Response
-    {
-        $horairesData = $request->get('horaires');
-        if ($horairesData) {
-            $horaires = json_decode($horairesData, true);
-            // Logique pour sauvegarder les horaires dans la base de données
-            // Par exemple, vous pouvez les attacher à un service existant
-
-            return $this->json(['status' => 'success', 'message' => 'Horaires ajoutés avec succès']);
-        }
-
-        return $this->json(['status' => 'error', 'message' => 'Données horaires non fournies'], 400);
-    }
-
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]
     #[IsGranted(['ROLE_ADMIN', 'ROLE_EMPLOYE'])]
     public function updateService(int $id, Request $request): JsonResponse
@@ -137,7 +120,7 @@ class ServiceController extends AbstractController
             $nom = $request->get('nom');
             $description = $request->get('description');
             $titre = $request->get('titre');
-            $horaire = $request->get('horaire');
+            $horaireTexte = $request->get('horaire');
 
             $carteZoo = $request->get('carteZoo');
 
@@ -150,7 +133,7 @@ class ServiceController extends AbstractController
                 'nom' => $nom,
                 'description' => $description,
                 'titre' => $titre,
-                'horaire' => $horaire,
+                'horaire' => $horaireTexte,
                 'carteZoo' => $carteZoo,
             ], $image, $request);
 
@@ -176,7 +159,7 @@ class ServiceController extends AbstractController
         try {
             foreach ($service->getSousServices() as $sousService) {
                 foreach ($sousService->getImage() as $image) {
-                    $this->imageManagerService->deleteImage($image->getImagePath());
+                    $this->imageManagerService->deleteImage($image->getId());
                     $this->entityManager->remove($image);
                 }
 

@@ -4,7 +4,7 @@ interface ServiceFormFieldsProps {
   serviceFormFieldsData: {
     description: string;
     titre: string;
-    horaire: string;
+    horaireTexte: string;
     carteZoo: boolean;
   };
   setServiceFormFieldsData: React.Dispatch<React.SetStateAction<any>>;
@@ -57,7 +57,7 @@ export const ServiceFormFields: React.FC<ServiceFormFieldsProps> = ({
       <input
         type="text"
         name="horaire"
-        value={serviceFormFieldsData.horaire}
+        value={serviceFormFieldsData.horaireTexte}
         onChange={handleChange}
       />
 

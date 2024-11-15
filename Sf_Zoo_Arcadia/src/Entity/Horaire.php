@@ -16,17 +16,9 @@ class Horaire
     #[Groups('horaire')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 25)]
+    #[ORM\Column(type: 'text')]
     #[Groups('horaire')]
-    private ?string $jour = null;
-
-    #[ORM\Column(type: 'time')]
-    #[Groups('horaire')]
-    private ?\DateTimeInterface $heureOuverture = null;
-
-    #[ORM\Column(type: 'time')]
-    #[Groups('horaire')]
-    private ?\DateTimeInterface $heureFermeture = null;
+    private ?string $horaireTexte = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -53,42 +45,6 @@ class Horaire
         return $this->id;
     }
 
-    public function getJour(): ?string
-    {
-        return $this->jour;
-    }
-
-    public function setJour(string $jour): static
-    {
-        $this->jour = $jour;
-
-        return $this;
-    }
-
-    public function getHeureOuverture(): ?\DateTimeInterface
-    {
-        return $this->heureOuverture;
-    }
-
-    public function setHeureOuverture(\DateTimeInterface $heureOuverture): static
-    {
-        $this->heureOuverture = $heureOuverture;
-
-        return $this;
-    }
-
-    public function getHeureFermeture(): ?\DateTimeInterface
-    {
-        return $this->heureFermeture;
-    }
-
-    public function setHeureFermeture(\DateTimeInterface $heureFermeture): static
-    {
-        $this->heureFermeture = $heureFermeture;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -99,13 +55,15 @@ class Horaire
         return $this->updatedAt;
     }
 
-    public function toArray(): array
+    public function getHoraireTexte(): ?string
     {
-        return [
-            'id' => $this->getId(),
-            'jour' => $this->getJour(),
-            'heureOuverture' => $this->getHeureOuverture()->format('H:i'),
-            'heureFermeture' => $this->getHeureFermeture()->format('H:i'),
-        ];
+        return $this->horaireTexte;
+    }
+
+    public function setHoraireTexte(string $horaireTexte): static
+    {
+        $this->horaireTexte = $horaireTexte;
+
+        return $this;
     }
 }

@@ -13,7 +13,7 @@ export function ServiceFormUpdate() {
   const [serviceFormFieldsData, setServiceFormFieldsData] = useState({
     description: "",
     titre: "",
-    horaire: "",
+    horaireTexte: "",
     carteZoo: false,
   });
   const [serviceData, setServiceData] = useState({
@@ -21,7 +21,7 @@ export function ServiceFormUpdate() {
     nom: "",
     titre: "",
     description: "",
-    horaire: "",
+    horaireTexte: "",
     carteZoo: false,
   });
   const [removeSousService, setRemoveSousService] = useState<boolean | null>(
@@ -34,36 +34,7 @@ export function ServiceFormUpdate() {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  const [horaireNom1, setHoraireNom1] = useState("");
-  const [horaireNom2, setHoraireNom2] = useState("");
-  const [horaires1, setHoraires1] = useState<{ nom: string; heure: string }[]>(
-    []
-  );
-  const [horaires2, setHoraires2] = useState<{ nom: string; heure: string }[]>(
-    []
-  );
-  const [horaireInput1, setHoraireInput1] = useState("");
-  const [horaireInput2, setHoraireInput2] = useState("");
-
-  const modifierHoraire1 = () => {
-    if (horaireInput1 && horaireNom1) {
-      setHoraires1((prevHoraires) => [
-        ...prevHoraires,
-        { nom: horaireNom1, heure: horaireInput1 },
-      ]);
-      setHoraireInput1("");
-    }
-  };
-  const modifierHoraire2 = () => {
-    if (horaireInput2 && horaireNom2) {
-      setHoraires2((prevHoraires) => [
-        ...prevHoraires,
-        { nom: horaireNom2, heure: horaireInput2 },
-      ]);
-      setHoraireInput2("");
-    }
-  };
+  const [horaireTexte, setHoraireTexte] = useState("");
 
   useEffect(() => {
     fetch("/api/service")
@@ -95,7 +66,7 @@ export function ServiceFormUpdate() {
             nom: data.nom || "",
             titre: data.titre || "",
             description: data.description || "",
-            horaire: JSON.stringify(data.horaire, null, 2) || "",
+            horaireTexte: data.horaiteTexte || "",
             carteZoo: data.carteZoo || false,
           });
         })
@@ -152,19 +123,13 @@ export function ServiceFormUpdate() {
 
     formService.append("nom", serviceData.nom);
 
-    if (horaires1.length === 0 && horaires2.length === 0) {
-      formService.append("horaire", ""); // Envoyer un champ vide si les horaires sont vides
-    } else {
-      const horaires = {
-        horaire1: horaires1.length > 0 ? horaires1 : null,
-        horaire2: horaires2.length > 0 ? horaires2 : null,
-      };
-      formService.append("horaire", JSON.stringify(horaires));
+    if (horaireTexte) {
+      formService.append("horaire", serviceData.horaireTexte);
     }
 
     if (serviceData.carteZoo !== null && serviceData.carteZoo !== undefined) {
       formService.append("carteZoo", serviceData.carteZoo ? "true" : "false");
-  }
+    }
 
     if (serviceData.description !== "") {
       formService.append("description", serviceData.description);
@@ -178,7 +143,7 @@ export function ServiceFormUpdate() {
     if (removeSousService) {
       formService.append("removeSousServices", "true");
     }
-    
+
     if (file) {
       const originalFilename = file.name.split(".").slice(0, -1).join(".");
       const extension = file.name.split(".").pop();
@@ -213,17 +178,17 @@ export function ServiceFormUpdate() {
         return response.json();
       })
       .then((data) => {
-    console.log("Données renvoyées par le serveur:", data);
-    setSuccessMessage("Sous-service mis à jour avec succès !");
-    setError(null);
-  })
-  .catch((error) => {
-    console.error("Erreur:", error);
-    setError("Erreur lors de la mise à jour du sous-service.");
-    setSuccessMessage(null);
-    formRef.current?.reset(); // Réinitialiser après le succès de la requête
+        console.log("Données renvoyées par le serveur:", data);
+        setSuccessMessage("Sous-service mis à jour avec succès !");
+        setError(null);
+      })
+      .catch((error) => {
+        console.error("Erreur:", error);
+        setError("Erreur lors de la mise à jour du sous-service.");
+        setSuccessMessage(null);
+        formRef.current?.reset(); // Réinitialiser après le succès de la requête
         setFile(null); // Réinitialiser l'image
-  });
+      });
 
   };
 
@@ -266,29 +231,17 @@ export function ServiceFormUpdate() {
         onChange={handleServiceChange}
       />
 
-      <HoraireField
-        horaireNom={horaireNom1}
-        horaireInput={horaireInput1}
-        setHoraireNom={setHoraireNom1}
-        setHoraireInput={setHoraireInput1}
-        horaires={horaires1}
-        ajouterHoraire={modifierHoraire1}
-        label="Ajouter Horaire 1"
+<label>Horaires</label>
+      <textarea
+        name="horaireTexte" // Correspondance exacte avec la clé dans serviceData
+        placeholder="Ex: Lundi: 09h00 - 18h00"
+        value={serviceData.horaireTexte || ""} // Valeur par défaut si undefined
+        onChange={handleChange} // Gestionnaire pour rendre modifiable
       />
+      
+      <CheckBoxField label="Si carte zoo, le fichier doit se nommer: " checked={serviceData.carteZoo} onChange={(e) => setServiceData({ ...serviceData, carteZoo: e.target.checked })} />
 
-      <HoraireField
-        horaireNom={horaireNom2}
-        horaireInput={horaireInput2}
-        setHoraireNom={setHoraireNom2}
-        setHoraireInput={setHoraireInput2}
-        horaires={horaires2}
-        ajouterHoraire={modifierHoraire2}
-        label="Ajouter Horaire 2"
-      />
-
-       <CheckBoxField label="Si carte zoo, le fichier doit se nommer: " checked={serviceData.carteZoo} onChange={(e) => setServiceData({ ...serviceData, carteZoo: e.target.checked })} />
-
-      <ImageForm serviceName={serviceData.nom} onImageSelect={setFile} resetImage={resetImage}/>
+      <ImageForm serviceName={serviceData.nom} onImageSelect={setFile} resetImage={resetImage} />
       <div>
         <label>Supprimer l'image existante :</label>
         <input
