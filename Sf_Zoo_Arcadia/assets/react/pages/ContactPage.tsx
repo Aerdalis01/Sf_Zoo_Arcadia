@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ContactForm } from '../controllers/components/form/Contact/ContactForm';
+import { ZooHoraires } from '../controllers/components/form/Contact/HoraireView';
 
 interface Horaire {
   id: number;
@@ -61,18 +62,7 @@ export const ContactPage: React.FC = () => {
                   <div className="col d-flex justify-content-center p-md-3 p-lg-4 p-xl-5">
                     <div
                       className="train--card-body col-10 bg-warning rounded-5 h-100 d-flex flex-column align-items-center justify-content-center">
-                      <h4>Horaires du zoo</h4>
-                      <ul>
-                        {horaires.length > 0 ? (
-                          horaires.map((horaire) => (
-                            <li key={horaire.id}>
-                              {horaire.jour} : {new Date(horaire.heureOuverture).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(horaire.heureFermeture).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </li>
-                          ))
-                        ) : (
-                          <p>Aucun horaire disponible.</p>
-                        )}
-                      </ul>
+                      <ZooHoraires />
                     </div>
                   </div>
                 </div>

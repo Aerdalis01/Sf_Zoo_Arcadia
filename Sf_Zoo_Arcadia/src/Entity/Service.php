@@ -32,7 +32,7 @@ class Service
 
     #[ORM\Column(type: 'text', nullable: true)]
     #[Groups('service_basic')]
-    private ?string $horaire = null;
+    private ?string $horaireTexte = null;
 
     #[ORM\Column(type: 'boolean')]
     #[Groups('service_basic')]
@@ -112,14 +112,14 @@ class Service
         return $this;
     }
 
-    public function getHoraire(): ?array
+    public function getHoraireTexte(): ?string
     {
-        return $this->horaire ? json_decode($this->horaire, true) : null;
+        return $this->horaireTexte;
     }
 
-    public function setHoraire(?string $horaire): static
+    public function setHoraireTexte(?string $horaireTexte): static
     {
-        $this->horaire = $horaire;
+        $this->horaireTexte = $horaireTexte;
 
         return $this;
     }

@@ -5,10 +5,7 @@ export interface Service {
   nom: string;
   titre: string;
   description: string;
-  horaire: {
-    horaire1?: { nom: string; heure: string }[];
-    horaire2?: { nom: string; heure: string }[];
-  } | string; 
+  horaireTexte: string; 
   carteZoo: boolean;
   image?:{
     id: number;

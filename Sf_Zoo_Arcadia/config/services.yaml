@@ -64,9 +64,6 @@ services:
     App\Service\ServiceService:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
-    App\Service\HoraireService:
-        arguments:
-            $em: '@doctrine.orm.entity_manager'
     # App\Controller\AuthController:
     #     autowire: true
     #     autoconfigure: true

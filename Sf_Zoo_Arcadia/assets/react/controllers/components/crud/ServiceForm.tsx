@@ -5,66 +5,46 @@ import { TextInputField } from "../form/TextInputField";
 import { HoraireField } from "../form/HoraireField";
 import { CheckBoxField } from "../form/CheckBoxFieldProps";
 
+
 export function ServiceForm() {
   const [formData, setFormData] = useState<Service>({
     id: 0,
     nom: "",
     titre: "",
     description: "",
-    horaire: "",
+    horaireTexte: "",
     carteZoo: false,
   });
   const [resetImage, setResetImage] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const formRef = useRef(null);
   const [isCarteZoo, setIsCarteZoo] = useState(false);
-  const [horaireNom1, setHoraireNom1] = useState("");
-  const [horaireNom2, setHoraireNom2] = useState("");
-  const [horaires1, setHoraires1] = useState<{ nom: string; heure: string }[]>(
-    []
-  );
-  const [horaires2, setHoraires2] = useState<{ nom: string; heure: string }[]>(
-    []
-  );
-  const [horaireInput1, setHoraireInput1] = useState("");
-  const [horaireInput2, setHoraireInput2] = useState("");
+  const [horaireTexte, setHoraireTexte] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
 
   const resetForm = () => {
-    setFormData(formData); 
-    setHoraires1([]);       
-  setHoraires2([]);
-  setFile(null);            
-  setResetImage(true);      
-  setIsCarteZoo(false);     
-  setError(null);           
-  setSuccessMessage(null);
-};
-  const ajouterHoraire1 = () => {
-    if (horaireInput1 && horaireNom1) {
-      setHoraires1((prevHoraires) => [
-        ...prevHoraires,
-        { nom: horaireNom1, heure: horaireInput1 },
-      ]);
-      setHoraireInput1("");
-    }
+    setFile(null);
+    setResetImage(true);
+    setIsCarteZoo(false);
+    setError(null);
+    setSuccessMessage(null);
   };
-  const ajouterHoraire2 = () => {
-    if (horaireInput2 && horaireNom2) {
-      setHoraires2((prevHoraires) => [
-        ...prevHoraires,
-        { nom: horaireNom2, heure: horaireInput2 },
-      ]);
-      setHoraireInput2("");
-    }
-  };
- 
+
+
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsCarteZoo(e.target.checked);
-    setFormData({ ...formData, carteZoo: e.target.checked ? true : false }); 
+    setFormData({ ...formData, carteZoo: e.target.checked ? true : false });
+  };
+
+  const handleHoraireTexteChange = (value: string) => {
+    setHoraireTexte(value);
+    setFormData((prev) => ({
+      ...prev,
+      horaireTexte: value,
+    }));
   };
 
   const handleChange = (
@@ -81,13 +61,8 @@ export function ServiceForm() {
     const formService = new FormData();
     formService.append("nom", formData.nom);
 
-    if (horaires1.length > 0 || horaires2.length > 0) {
-      const horaires = {
-        horaire1: horaires1.length > 0 ? horaires1 : null,
-        horaire2: horaires2.length > 0 ? horaires2 : null,
-      };
-      console.log("Objets horaires à envoyer : ", horaires);
-      formService.append("horaire", JSON.stringify(horaires));
+    if (formData.horaireTexte) {
+      formService.append("horaire", formData.horaireTexte);
     }
     if (formData.titre) {
       formService.append("titre", formData.titre);
@@ -110,36 +85,26 @@ export function ServiceForm() {
       formService.append("nomImage", imageNameGenerated);
       formService.append("image_sub_directory", imageSubDirectory);
     }
-    formService.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
-    });
-    console.log("Envoi de la requête avec FormData :", Array.from((formService as any).entries()));
     fetch("/api/service/new", {
       method: "POST",
       body: formService,
     })
-    .then(async (response) => {
-      const contentType = response.headers.get("content-type");
-  
-      if (!response.ok) {
-        const errorText = contentType && contentType.includes("application/json")
-          ? (await response.json()).message
-          : await response.text();
-        throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
-      }
-  
+    .then(response => {
+      // Vérifier si la réponse est bien en JSON
+      const contentType = response.headers.get("Content-Type");
       if (contentType && contentType.includes("application/json")) {
-        return response.json();
+        return response.json();  // Si c'est du JSON, on le parse
       } else {
-        throw new Error("Réponse non JSON reçue.");
+        throw new Error('Réponse non-JSON reçue du serveur');
       }
     })
     .then((data) => {
-      if (data && data.status === "success") {
+      console.log("Données reçues:", data);
+      if (data.status === "success") {
         setSuccessMessage("Service ajouté avec succès !");
         resetForm();
       } else {
-        throw new Error("Erreur : Réponse inattendue.");
+        throw new Error("Réponse inattendue.");
       }
     })
     .catch((error) => {
@@ -147,9 +112,7 @@ export function ServiceForm() {
       setError("Erreur lors de l'ajout du service.");
       setSuccessMessage(null);
     });
-  }
-
-    
+  };
   return (
     <form ref={formRef} onSubmit={handleSubmit}>
       <TextInputField
@@ -172,23 +135,9 @@ export function ServiceForm() {
       />
 
       <HoraireField
-        horaireNom={horaireNom1}
-        horaireInput={horaireInput1}
-        setHoraireNom={setHoraireNom1}
-        setHoraireInput={setHoraireInput1}
-        horaires={horaires1}
-        ajouterHoraire={ajouterHoraire1}
-        label="Ajouter Horaire 1"
-      />
-
-      <HoraireField
-        horaireNom={horaireNom2}
-        horaireInput={horaireInput2}
-        setHoraireNom={setHoraireNom2}
-        setHoraireInput={setHoraireInput2}
-        horaires={horaires2}
-        ajouterHoraire={ajouterHoraire2}
-        label="Ajouter Horaire 2"
+        horaireTexte={horaireTexte}
+        setHoraireTexte={handleHoraireTexteChange}
+        label="Horaires du service"
       />
 
       <CheckBoxField
@@ -196,7 +145,7 @@ export function ServiceForm() {
         checked={isCarteZoo}
         onChange={handleCheckboxChange}
       />
-      <ImageForm serviceName={formData.nom} onImageSelect={setFile} resetImage={resetImage}/>
+      <ImageForm serviceName={formData.nom} onImageSelect={setFile} resetImage={resetImage} />
       <button type="submit">Soumettre</button>
 
       {error && <p style={{ color: "red" }}>{error}</p>}

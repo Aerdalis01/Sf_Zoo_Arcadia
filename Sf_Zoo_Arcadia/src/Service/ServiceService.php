@@ -27,10 +27,18 @@ class ServiceService
         $entity->setTitre($data['titre'] ?? $entity->getTitre());
         $entity->setDescription($data['description'] ?? $entity->getDescription());
 
-        if (isset($data['horaire']) && is_array($data['horaire'])) {
-            $entity->setHoraire(json_encode($data['horaire']));
+        if (isset($data['horaire'])) {
+            // Si horaire est un tableau, le convertir en chaîne JSON
+            $horaireValue = is_array($data['horaire']) ? json_encode($data['horaire']) : $data['horaire'];
+
+            // Log de débogage pour vérifier le type et la valeur de $horaireValue
+            error_log('Type of $horaireValue: '.gettype($horaireValue).', Value: '.$horaireValue);
+
+            // Assigner la valeur formatée à horaireTexte
+            $entity->setHoraireTexte($horaireValue);
         } else {
-            $entity->setHoraire($data['horaire'] ?? $entity->getHoraire());
+            // Sinon, garder la valeur actuelle de horaireTexte
+            $entity->setHoraireTexte($entity->getHoraireTexte());
         }
         if (isset($data['carteZoo'])) {
             $entity->setCarteZoo((bool) $data['carteZoo']);
@@ -62,7 +70,7 @@ class ServiceService
         }
 
         if ($request->get('removeSousServices') === 'true') {
-            foreach ($entity->getSousService() as $sousService) {
+            foreach ($entity->getSousServices() as $sousService) {
                 foreach ($sousService->getImage() as $image) {
                     $sousService->removeImage($image);
                     $this->entityManager->remove($image);
@@ -87,7 +95,7 @@ class ServiceService
         }
 
         if ($entity instanceof Service) {
-            foreach ($entity->getSousService() as $sousService) {
+            foreach ($entity->getSousServices() as $sousService) {
                 $this->deleteService($sousService);
             }
         }

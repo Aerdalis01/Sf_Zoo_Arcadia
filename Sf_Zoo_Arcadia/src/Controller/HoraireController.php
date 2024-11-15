@@ -3,7 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Horaire;
-use App\Service\HoraireService;
+use App\Repository\HoraireRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,23 +15,23 @@ use Symfony\Component\Serializer\SerializerInterface;
 #[Route('/api/horaire', name: 'app_api_horaire_')]
 class HoraireController extends AbstractController
 {
-    public function __construct(private HoraireService $horaireService, private SerializerInterface $serializer)
+    public function __construct(private SerializerInterface $serializer, private EntityManagerInterface $em)
     {
     }
 
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(): JsonResponse
     {
-        $horaires = $this->horaireService->getAll();
+        $horaires = $this->em->getRepository(Horaire::class)->getAll();
         $data = $this->serializer->serialize($horaires, 'json', ['groups' => 'horaire']);
 
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
     #[Route('/{jour}', name: 'show', methods: ['GET'])]
-    public function show(string $jour): JsonResponse
+    public function show(int $id): JsonResponse
     {
-        $horaire = $this->horaireService->findByDay($jour);
+        $horaire = $this->em->getRepository(Horaire::class)->findByDay($id);
         if (!$horaire) {
             return new JsonResponse(['error' => 'Horaire non trouvé'], Response::HTTP_NOT_FOUND);
         }
@@ -43,58 +44,52 @@ class HoraireController extends AbstractController
     #[Route('/new', name: 'new', methods: ['POST'])]
     public function newAndUpdate(Request $request): Response
     {
-        $jour = $request->request->get('jour');
-        $heureOuverture = new \DateTime($request->request->get('heureOuverture'));
-        $heureFermeture = new \DateTime($request->request->get('heureFermeture'));
+        try {
+            $horaireTexte = $request->request->get('horaire');
 
-        $existingHoraire = $this->horaireService->findByDay($jour);
-
-        if ($existingHoraire) {
-            $existingHoraire->setHeureOuverture($heureOuverture);
-            $existingHoraire->setHeureFermeture($heureFermeture);
-            $this->horaireService->save($existingHoraire);
-
-            return new JsonResponse($existingHoraire, Response::HTTP_OK);
-        } else {
-            // Si aucun horaire n'existe, créez-en un nouveau
             $horaire = new Horaire();
-            $horaire->setJour($jour);
-            $horaire->setHeureOuverture($heureOuverture);
-            $horaire->setHeureFermeture($heureFermeture);
+            $horaire->setHoraireTexte($horaireTexte);
 
-            $this->horaireService->save($horaire);
+            $this->em->persist($horaire);
+            $this->em->flush();
 
-            return new JsonResponse($horaire, Response::HTTP_CREATED);
+            return new JsonResponse(['message' => 'Horaire créé avec succès'], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Erreur : '.$e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]
     public function update(int $id, Request $request): Response
     {
-        $horaire = $this->horaireService->getById($id);
+        $horaire = $this->em->getRepository(Horaire::class)->findByDay($id);
         if (!$horaire) {
             return new JsonResponse(['error' => 'Horaire non trouvé'], Response::HTTP_NOT_FOUND);
         }
 
-        $horaire->setJour($request->request->get('jour'));
-        $horaire->setHeureOuverture(new \DateTime($request->request->get('heureOuverture')));
-        $horaire->setHeureFermeture(new \DateTime($request->request->get('heureFermeture')));
+        $horaire->setHoraireTexte($request->request->get('horaire'));
 
-        $this->horaireService->save($horaire);
+        $this->em->persist($horaire);
+        $this->em->flush();
 
         return new JsonResponse($horaire, Response::HTTP_OK);
     }
 
     #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
-    public function delete(int $id): Response
+    public function delete(int $id, HoraireRepository $horaireRepository): Response
     {
-        $horaire = $this->horaireService->getById($id);
-        if ($horaire) {
-            $this->horaireService->delete($horaire);
+        $horaire = $horaireRepository->find($id);
 
-            return new JsonResponse(['success' => 'Horaire supprimé avec succès'], Response::HTTP_OK);
-        } else {
-            return new JsonResponse(['error' => 'Horaire non trouvé'], Response::HTTP_NOT_FOUND);
+        if (!$horaire) {
+            return new JsonResponse(['error' => 'Avis non trouvé'], 404);
         }
+
+        $this->em->remove($horaire);
+        $this->em->flush();
+
+        return new JsonResponse(['success' => 'Horaire supprimé avec succès'], Response::HTTP_OK);
     }
 }
