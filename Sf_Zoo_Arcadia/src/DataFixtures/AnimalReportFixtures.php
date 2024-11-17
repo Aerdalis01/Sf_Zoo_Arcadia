@@ -45,7 +45,9 @@ class AnimalReportFixtures extends Fixture implements DependentFixtureInterface
 
             // Associe l'alimentation de l'animal (on utilise l'alimentation la plus récente ici)
             $alimentation = $animal->getAlimentation()->first();
-            $report->setAlimentation($alimentation);
+            if ($alimentation) {
+                $report->setAlimentation($alimentation);
+            }
 
             // Définit les autres attributs
             $report->setEtat($data['etat']);
@@ -64,7 +66,7 @@ class AnimalReportFixtures extends Fixture implements DependentFixtureInterface
         return [
             AlimentationFixtures::class,
             AnimalFixtures::class,
-            AppFixtures::class,
+            UserFixtures::class,
         ];
     }
 }

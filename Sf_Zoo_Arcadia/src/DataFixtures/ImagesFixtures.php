@@ -12,42 +12,29 @@ class ImagesFixtures extends Fixture implements FixtureGroupInterface, Dependent
 {
     public function load(ObjectManager $manager): void
     {
-        $restaurant = $this->getReference('Restaurant');
-        $snack = $this->getReference('Snack');
-        $camionGlace = $this->getReference('Camion_glace');
-
-        // Elements de verification
-        echo 'Restaurant: '.($restaurant ? 'found' : 'not found').PHP_EOL;
-        echo 'Snack: '.($snack ? 'found' : 'not found').PHP_EOL;
-        echo 'Camion_glace: '.($camionGlace ? 'found' : 'not found').PHP_EOL;
-
-        if (!$restaurant || !$snack || !$camionGlace) {
-            throw new \Exception('Sous-service manquant');
-        }
-
         $imageJungle = new Image();
         $imageJungle->setNom('Jungle');
-        $imageJungle->setImagePath('public\uploads\images\habitats\Jungle-66a0f13f677ca.webp');
+        $imageJungle->setImagePath('/uploads/images/carousel/bg-jungle-carousel.webp');
         $imageJungle->setImageSubDirectory('habitats');
 
         $manager->persist($imageJungle);
 
         $imageMarais = new Image();
         $imageMarais->setNom('Marais');
-        $imageMarais->setImagePath('public\uploads\images\habitats\Marais-66a0f0f74ccc8.webp');
+        $imageMarais->setImagePath('/uploads/images/carousel/bg-marais-carousel.webp');
         $imageMarais->setImageSubDirectory('habitats');
 
         $manager->persist($imageMarais);
 
         $imageSavane = new Image();
         $imageSavane->setNom('Savane');
-        $imageSavane->setImagePath('public\uploads\images\habitats\Savane-66a0f1317db71.webp');
+        $imageSavane->setImagePath('/uploads/images/carousel/Savane-lg.webp');
         $imageSavane->setImageSubDirectory('habitats');
 
         $manager->persist($imageSavane);
 
         // Chemin de base pour toutes les images d'animaux
-        $imageDir = 'public\uploads\images\animals';
+        $imageDir = '/uploads/images/animals';
 
         // Liste des noms de fichiers
         $imageFiles = [
@@ -60,7 +47,7 @@ class ImagesFixtures extends Fixture implements FixtureGroupInterface, Dependent
             'elephant-66a1066c99a48.webp',
             'Flamant-20241105132725-672a1d3d6503a.webp',
             'Fourmilier-66a100819b3f9.webp',
-            'Gnou-66a10682833be.webp',
+            'Gnou.webp',
             'heron-66a1056804ca0.webp',
             'impala-66a1069864089.webp',
             'Jango le ouistiti.webp',

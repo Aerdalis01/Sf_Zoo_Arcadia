@@ -53,6 +53,15 @@ services:
     App\Service\ServiceService:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
+    App\Command\InitializeAdminCommand:
+        arguments:
+            $adminInitializer: '@App\Service\AdminInitializer'
+    App\Service\AdminInitializer:
+        arguments:
+            $parameterBag: '@parameter_bag'
+            $entityManager: '@doctrine.orm.entity_manager'
+            $passwordHasher: '@security.password_hasher'
+            $logger: '@logger'
     # App\Controller\AuthController:
     #     autowire: true
     #     autoconfigure: true

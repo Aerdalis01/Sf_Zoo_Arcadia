@@ -40,6 +40,7 @@ class AnimalReport
     private ?string $etatDetail = null;
 
     #[ORM\ManyToOne(inversedBy: 'animalReport')]
+    #[ORM\JoinColumn(name: 'animal_id', referencedColumnName: 'id', nullable: false)]
     private ?Animal $animal = null;
 
     #[ORM\PrePersist]

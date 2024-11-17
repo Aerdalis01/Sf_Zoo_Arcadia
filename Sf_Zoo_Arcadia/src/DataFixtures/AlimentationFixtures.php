@@ -55,8 +55,8 @@ class AlimentationFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies()
     {
         return [
-            AnimalFixtures::class, // Assure que les animaux sont chargés avant l'alimentation
-            AppFixtures::class,    // Assure que les employés sont disponibles avant l'alimentation
+            AnimalFixtures::class,
+            UserFixtures::class,
         ];
     }
 }

@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/avis', name: 'app_api_avis_')]
@@ -64,7 +63,6 @@ class AvisController extends AbstractController
     }
 
     #[Route('/{id}/approve', name: 'approve', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN', ['ROLE_EMPLOYE'])]
     public function approveReview($id, AvisRepository $avisRepository, EntityManagerInterface $em): JsonResponse
     {
         $avis = $avisRepository->find($id);

@@ -9,8 +9,6 @@ import "./sass/app.scss";
 import { AuthProvider } from "./react/pages/Auth/AuthContext";
 import { Layout } from './react/components/layout';
 
-import Header from './react/components/header';
-import Footer from './react/components/footer';
 import { ProtectedRoute } from "./react/pages/Auth/Auth";
 
 

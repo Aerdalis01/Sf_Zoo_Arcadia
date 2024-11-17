@@ -15,7 +15,6 @@ class AnimalVisiteController extends AbstractController
     {
         $animalVisite = $documentManager->getRepository(AnimalVisite::class)->findOneBy(['animalId' => (int) $id]);
 
-        // Si aucun document n'est trouvé, en créer un nouveau
         if (!$animalVisite) {
             $animalVisite = new AnimalVisite();
             $animalVisite->setAnimalId((int) $id);

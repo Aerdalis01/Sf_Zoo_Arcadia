@@ -62,6 +62,7 @@ class ContactFixtures extends Fixture
             $contact->setIsResponded($data['isResponded']);
             $contact->setResponseMessage($data['responseMessage']);
             $contact->setRespondedAt($data['respondedAt']);
+            $contact->setSendAt(new \DateTimeImmutable()); // Définition de la date d'envoi pour chaque contact
 
             $manager->persist($contact);
         }

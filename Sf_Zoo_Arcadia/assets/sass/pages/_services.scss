@@ -131,8 +131,16 @@
   .btn-carte-zoo {
     position: relative;
     z-index: 1000;
-    width: 50px;
-    height: 20px;
+
+    width: 300px;
+    height: 30px;
+    font-size: 0.6rem;
+    @include media-breakpoint-up(sm) {
+      width:auto;
+      height: auto;
+      font-size: 0.9rem;
+    }
+    
   }
   .close-button-custom{
     color: black;

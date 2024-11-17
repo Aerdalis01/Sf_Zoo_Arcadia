@@ -26,7 +26,7 @@ class AnimalFixtures extends Fixture implements DependentFixtureInterface
             ['nom' => 'Basile l\'Éléphant', 'race' => 'Éléphant', 'imageRef' => 'elephant-66a1066c99a48', 'habitat' => 'Savane'],
             ['nom' => 'jack le Flamant Rose', 'race' => 'Flamant', 'imageRef' => 'Flamant-20241105132725-672a1d3d6503a', 'habitat' => 'Marais'],
             ['nom' => 'Jérémie le Fourmilier', 'race' => 'Fourmilier', 'imageRef' => 'Fourmilier-66a100819b3f9', 'habitat' => 'Jungle'],
-            ['nom' => 'Joe le Gnou', 'race' => 'Antilope', 'imageRef' => 'Gnou-66a10682833be', 'habitat' => 'Savane'],
+            ['nom' => 'Joe le Gnou', 'race' => 'Antilope', 'imageRef' => 'Gnou', 'habitat' => 'Savane'],
             ['nom' => 'Olaf le Héron', 'race' => 'Oiseau', 'imageRef' => 'heron-66a1056804ca0', 'habitat' => 'Marais'],
             ['nom' => 'Leila l\'Impala', 'race' => 'Antilope', 'imageRef' => 'impala-66a1069864089', 'habitat' => 'Savane'],
             ['nom' => 'Jango le Ouistiti', 'race' => 'Ouistiti', 'imageRef' => 'Jango le ouistiti', 'habitat' => 'Jungle'],
@@ -37,7 +37,7 @@ class AnimalFixtures extends Fixture implements DependentFixtureInterface
             ['nom' => 'Sofie la Girafe', 'race' => 'Girafe', 'imageRef' => 'Sofie la girafe', 'habitat' => 'Savane'],
             ['nom' => 'Benoit le Tatou', 'race' => 'Tatou', 'imageRef' => 'Tatoo-66a101ff327b6', 'habitat' => 'Jungle'],
             ['nom' => 'Alban le Toucan', 'race' => 'Toucan', 'imageRef' => 'Toucan-66a1020e370a5', 'habitat' => 'Jungle'],
-            ['nom' => 'Eliott le Zèbre', 'race' => 'Zèbre', 'imageRef' => 'zebre-66a106e0e93f', 'habitat' => 'Savane'],
+            ['nom' => 'Eliott le Zèbre', 'race' => 'Zèbre', 'imageRef' => 'zebre-66a106e0e93f2', 'habitat' => 'Savane'],
         ];
 
         foreach ($animalsData as $data) {
@@ -50,15 +50,14 @@ class AnimalFixtures extends Fixture implements DependentFixtureInterface
 
             $animal = new Animal();
             $animal->setNom($data['nom']);
-            $animal->setRace($race);
-
-            $image = $this->getReference($data['imageRef']);
-            $animal->setImage($image);
-
-            $habitat = $this->getReference($data['habitat']);
-            $animal->setHabitat($habitat);
+            $animal->setRace($race); // Assurez-vous que $race est défini correctement
+            $animal->setImage($this->getReference($data['imageRef']));
+            $animal->setHabitat($this->getReference('habitat_'.strtolower($data['habitat'])));
 
             $manager->persist($animal);
+
+            // Ajoutez cette ligne pour ajouter une référence
+            $this->addReference($data['nom'], $animal);
         }
 
         $manager->flush();

@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class InitializeAdminCommand extends Command
 {
-    protected static $defaultName = 'app:create-admin';
+    protected static $defaultName = 'app:initialize-admin';
     private AdminInitializer $adminInitializer;
 
     public function __construct(AdminInitializer $adminInitializer)
@@ -20,7 +20,9 @@ class InitializeAdminCommand extends Command
 
     protected function configure(): void
     {
-        $this->setDescription('Creates an admin user if it does not exist.');
+        $this
+            ->setName('app:initialize-admin')
+            ->setDescription('Creates an admin user if it does not exist.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

@@ -14,7 +14,7 @@ class AnimalVisite
     private int $animalId;
 
     #[ODM\Field]
-    private string $visites;
+    private int $visites;
 
     #[ODM\Field(type: 'string')]
     private string $nom = '';

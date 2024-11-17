@@ -29,34 +29,34 @@ class ServiceFixtures extends Fixture
 
         $imageSnack = new Image();
         $imageSnack->setNom('Image Snack')
-            ->setImagePath($imageDir.'snack.webp')
+            ->setImagePath($imageDir.'Snack.webp')
             ->setImageSubDirectory('services');
         $imageSnack->setSousService($sousService1);
 
         $manager->persist($imageSnack);
         $manager->persist($sousService1);
 
-        $sousService2 = new SousService();
-        $sousService2->setNom('Restaurant')
+        $restaurant = new SousService();
+        $restaurant->setNom('Restaurant')
             ->setDescription('Venez déguster la cuisine de notre chef !')
             ->setMenu(true);
-        $restauration->addSousService($sousService2);
+        $restauration->addSousService($restaurant);
 
         $imageMenu = new Image();
         $imageMenu->setNom('menu-67063393cdcd7.svg')
             ->setImagePath($imageDir.'menu-67063393cdcd7.svg')
             ->setImageSubDirectory('services');
-        $imageMenu->setSousService($sousService2);
+        $imageMenu->setSousService($restaurant);
 
         $imageResto = new Image();
         $imageResto->setNom('Resto')
-            ->setImagePath($imageDir.'resto.webp')
+            ->setImagePath($imageDir.'Resto.webp')
             ->setImageSubDirectory('services');
-        $imageResto->setSousService($sousService2);
+        $imageResto->setSousService($restaurant);
 
         $manager->persist($imageResto);
         $manager->persist($imageMenu);
-        $manager->persist($sousService2);
+        $manager->persist($restaurant);
 
         $sousService3 = new SousService();
         $sousService3->setNom('Camion glacé')
@@ -66,7 +66,7 @@ class ServiceFixtures extends Fixture
 
         $imageCamionglace = new Image();
         $imageCamionglace->setNom('CamionGlace')
-            ->setImagePath($imageDir.'camionGlace.webp')
+            ->setImagePath($imageDir.'CamionGlace.webp')
             ->setImageSubDirectory('services');
         $imageCamionglace->setSousService($sousService3);
 
@@ -114,8 +114,16 @@ class ServiceFixtures extends Fixture
         $infoService->setNom('Info Service')
             ->setTitre('null')
             ->setDescription('null')
-            ->setHoraireTexte('Visite Guidée 09h00 11h00 13h00 15h00
-            Petit Train 10h00 12h00 14h00 16h00')
+            ->setHoraireTexte('Départ des visites guidée: 
+            09h00 
+            11h00 
+            13h00 
+            15h00
+            Départ des petits trains 
+            10h00 
+            12h00 
+            14h00 
+            16h00')
             ->setCarteZoo(true);
 
         $carteZoo = new Image();
