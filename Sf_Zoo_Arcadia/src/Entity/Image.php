@@ -4,32 +4,62 @@ namespace App\Entity;
 
 use App\Repository\ImageRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Image
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['habitat', 'animal', 'service_basic'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['habitat', 'animal', 'service_basic'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['habitat', 'animal', 'service_basic'])]
     private ?string $imagePath = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['habitat', 'animal', 'service_basic'])]
     private ?string $imageSubDirectory = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?service $service = null;
-
     #[ORM\OneToOne(inversedBy: 'image', cascade: ['persist', 'remove'])]
-    private ?SousService $sousService = null;
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Service $service = null;
 
     #[ORM\OneToOne(inversedBy: 'image', cascade: ['persist', 'remove'])]
     private ?Animal $animal = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: false)]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'image', cascade: ['persist', 'remove'])]
+    private ?SousService $sousService = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Habitat $habitat = null;
+
+    #[ORM\PrePersist]
+    public function setCreatedAt(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): void
+    {
+        if ($this->createdAt !== null) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
 
     public function getId(): ?int
     {
@@ -84,14 +114,14 @@ class Image
         return $this;
     }
 
-    public function getSousService(): ?SousService
+    public function getHabitat(): ?habitat
     {
-        return $this->sousService;
+        return $this->habitat;
     }
 
-    public function setSousService(?SousService $sousService): static
+    public function setHabitat(?habitat $habitat): static
     {
-        $this->sousService = $sousService;
+        $this->habitat = $habitat;
 
         return $this;
     }
@@ -104,6 +134,28 @@ class Image
     public function setAnimal(?Animal $animal): static
     {
         $this->animal = $animal;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function getSousService(): ?SousService
+    {
+        return $this->sousService;
+    }
+
+    public function setSousService(?SousService $sousService): static
+    {
+        $this->sousService = $sousService;
 
         return $this;
     }

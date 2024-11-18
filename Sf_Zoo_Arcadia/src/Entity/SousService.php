@@ -3,21 +3,32 @@
 namespace App\Entity;
 
 use App\Repository\SousServiceRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: SousServiceRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class SousService
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['sousService_basic', 'service_basic'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
+    #[Groups(['sousService_basic', 'service_basic'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['sousService_basic', 'service_basic'])]
     private ?string $description = null;
+
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['sousService_basic', 'service_basic'])]
+    private $menu = false;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -25,11 +36,31 @@ class SousService
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\OneToOne(mappedBy: 'sousService', cascade: ['persist', 'remove'])]
-    private ?Image $image = null;
-
-    #[ORM\ManyToOne(inversedBy: 'sousService')]
+    #[ORM\ManyToOne(inversedBy: 'sousServices')]
     private ?Service $service = null;
+
+    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'sousService')]
+    #[Groups(['sousService_basic', 'service_basic'])]
+    private Collection $image;
+
+    public function __construct()
+    {
+        $this->image = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAt(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): void
+    {
+        if ($this->createdAt !== null) {  // Vérifie que l'entité n'est pas nouvellement créée
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
 
     public function getId(): ?int
     {
@@ -60,50 +91,31 @@ class SousService
         return $this;
     }
 
+    public function setMenu(bool $menu): static
+    {
+        $this->menu = $menu;
+
+        return $this;
+    }
+
+    public function getMenu(): ?bool
+    {
+        return $this->menu;
+    }
+
+    public function isMenu(): bool
+    {
+        return $this->menu;
+    }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function getImage(): ?Image
-    {
-        return $this->image;
-    }
-
-    public function setImage(?Image $image): static
-    {
-        // unset the owning side of the relation if necessary
-        if ($image === null && $this->image !== null) {
-            $this->image->setSousService(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($image !== null && $image->getSousService() !== $this) {
-            $image->setSousService($this);
-        }
-
-        $this->image = $image;
-
-        return $this;
     }
 
     public function getService(): ?Service
@@ -114,6 +126,36 @@ class SousService
     public function setService(?Service $service): static
     {
         $this->service = $service;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Image>
+     */
+    public function getImage(): Collection
+    {
+        return $this->image;
+    }
+
+    public function addImage(Image $image): static
+    {
+        if (!$this->image->contains($image)) {
+            $this->image->add($image);
+            $image->setSousService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): static
+    {
+        if ($this->image->contains($image)) {
+            $this->image->removeElement($image);
+            if ($image->getSousService() === $this) {
+                $image->setSousService(null);
+            }
+        }
 
         return $this;
     }

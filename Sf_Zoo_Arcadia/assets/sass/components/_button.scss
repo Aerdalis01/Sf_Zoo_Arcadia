@@ -1,0 +1,11 @@
+@import "../vendors/_custom-bootstrap";
+
+button {
+  background-color: $green;
+  color: white;
+  font-family: 'Akaya_kanadaka', inter, sans-serif !important;
+}
+
+button:hover {
+  cursor: pointer;
+}

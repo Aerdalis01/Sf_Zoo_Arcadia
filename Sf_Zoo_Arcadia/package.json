@@ -2,9 +2,29 @@
     "devDependencies": {
         "@babel/core": "^7.17.0",
         "@babel/preset-env": "^7.16.0",
+        "@babel/preset-react": "^7.24.7",
+        "@hotwired/stimulus": "^3.0.0",
+        "@prettier/plugin-php": "^0.22.2",
+        "@symfony/stimulus-bridge": "^3.2.0",
+        "@symfony/ux-react": "file:vendor/symfony/ux-react/assets",
         "@symfony/webpack-encore": "^4.0.0",
+        "@types/babel__core": "^7.20.5",
+        "@types/jwt-decode": "^3.1.0",
+        "@types/react": "^18.3.12",
+        "@types/react-dom": "^18.3.0",
+        "@types/react-router-dom": "^5.3.3",
         "core-js": "^3.23.0",
+        "dart-sass": "^1.25.0",
+        "file-loader": "^6.2.0",
+        "html-webpack-plugin": "^5.6.0",
+        "prettier": "^3.3.3",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
         "regenerator-runtime": "^0.13.9",
+        "sass": "^1.80.6",
+        "sass-loader": "^14.2.1",
+        "ts-loader": "^9.5.1",
+        "typescript": "^5.6.2",
         "webpack": "^5.74.0",
         "webpack-cli": "^4.10.0",
         "webpack-notifier": "^1.15.0"
@@ -16,5 +36,13 @@
         "dev": "encore dev",
         "watch": "encore dev --watch",
         "build": "encore production --progress"
+    },
+    "dependencies": {
+        "bootstrap": "^5.3.3",
+        "jwt-decode": "^4.0.0",
+        "react-bootstrap": "^2.10.5",
+        "react-bootstrap-icons": "^1.11.4",
+        "react-router-dom": "^6.27.0",
+        "zod": "^3.23.8"
     }
 }

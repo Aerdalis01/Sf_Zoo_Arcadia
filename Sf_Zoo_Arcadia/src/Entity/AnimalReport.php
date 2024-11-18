@@ -4,32 +4,56 @@ namespace App\Entity;
 
 use App\Repository\AnimalReportRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AnimalReportRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class AnimalReport
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['animal', 'animalReport', 'habitat'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['animal', 'animalReport', 'habitat'])]
     private ?string $etat = null;
 
     #[ORM\Column]
+    #[Groups(['animal', 'animalReport', 'habitat'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'AnimalReport')]
-    private ?Veterinaire $veterinaire = null;
+    #[ORM\Column(length: 100)]
+    #[Groups(['animal', 'animaReport', 'habitat'])]
+    private ?string $createdBy = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups(['animal', 'animaReport', 'habitat'])]
+    private ?Alimentation $alimentation = null;
+
+    #[ORM\Column(type: 'text')]
+    #[Groups(['animal', 'animaReport', 'habitat'])]
+    private ?string $etatDetail = null;
 
     #[ORM\ManyToOne(inversedBy: 'animalReport')]
+    #[ORM\JoinColumn(name: 'animal_id', referencedColumnName: 'id', nullable: false)]
     private ?Animal $animal = null;
 
-    #[ORM\Column(length: 100)]
-    private ?string $createdBy = null;
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -72,14 +96,38 @@ class AnimalReport
         return $this;
     }
 
-    public function getVeterinaire(): ?Veterinaire
+    public function getCreatedBy(): ?string
     {
-        return $this->veterinaire;
+        return $this->createdBy;
     }
 
-    public function setVeterinaire(?Veterinaire $veterinaire): static
+    public function setCreatedBy(string $createdBy): static
     {
-        $this->veterinaire = $veterinaire;
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getAlimentation(): ?Alimentation
+    {
+        return $this->alimentation;
+    }
+
+    public function setAlimentation(?Alimentation $alimentation): static
+    {
+        $this->alimentation = $alimentation;
+
+        return $this;
+    }
+
+    public function getEtatDetail(): ?string
+    {
+        return $this->etatDetail;
+    }
+
+    public function setEtatDetail(?string $etatDetail): static
+    {
+        $this->etatDetail = $etatDetail;
 
         return $this;
     }
@@ -92,18 +140,6 @@ class AnimalReport
     public function setAnimal(?Animal $animal): static
     {
         $this->animal = $animal;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    public function setCreatedBy(string $createdBy): static
-    {
-        $this->createdBy = $createdBy;
 
         return $this;
     }

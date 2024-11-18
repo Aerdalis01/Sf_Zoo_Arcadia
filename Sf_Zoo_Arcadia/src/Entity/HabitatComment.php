@@ -4,26 +4,38 @@ namespace App\Entity;
 
 use App\Repository\HabitatCommentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: HabitatCommentRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class HabitatComment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['animalReport', 'habitat'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['animalReport', 'habitat'])]
     private ?string $comment = null;
 
     #[ORM\Column]
+    #[Groups(['animalReport', 'habitat'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['animalReport', 'habitat'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'habitatComment')]
     private ?Habitat $habitat = null;
+
+    #[ORM\PrePersist]
+    public function setCreatedAt(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -45,13 +57,6 @@ class HabitatComment
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable

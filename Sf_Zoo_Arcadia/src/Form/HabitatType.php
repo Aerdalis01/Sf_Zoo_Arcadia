@@ -23,7 +23,7 @@ class HabitatType extends AbstractType
                 'label' => 'Description de l\'habitat'
             ])
             
-            ->add('images', EntityType::class, [
+            ->add('image', EntityType::class, [
                 'class' => Image::class,
                 'choice_label' => 'nom',
                 'label' => 'Image',

@@ -6,19 +6,24 @@ use App\Repository\HabitatRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: HabitatRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Habitat
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('habitat', 'animal')]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
+    #[Groups('habitat', 'animal')]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'text')]
+    #[Groups('habitat', 'animal')]
     private ?string $description = null;
 
     #[ORM\Column]
@@ -27,24 +32,36 @@ class Habitat
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'HabitatComment')]
-    private ?self $HabitatComment = null;
-
     #[ORM\OneToMany(targetEntity: HabitatComment::class, mappedBy: 'habitat')]
-    private Collection $habitatComment;
+    #[Groups('habitat', 'animal')]
+    private Collection $habitatComments;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups('habitat', 'animal')]
     private ?Image $image = null;
 
-
-    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'habitat')]
-    private Collection $animal;
+    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'habitat', cascade: ['remove'], orphanRemoval: true, fetch: 'EAGER')]
+    #[Groups('habitat', 'animal')]
+    private Collection $animals;
 
     public function __construct()
     {
-        $this->HabitatComment = new ArrayCollection();
-        $this->habitatComment = new ArrayCollection();
-        $this->animal = new ArrayCollection();
+        $this->habitatComments = new ArrayCollection();
+        $this->animals = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAt(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): void
+    {
+        if ($this->createdAt !== null) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
     }
 
     public function getId(): ?int
@@ -81,52 +98,31 @@ class Habitat
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    public function getHabitatComment(): Collection
     {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
+        return $this->habitatComments;
     }
 
-    public function getHabitatComment(): ?self
+    public function addHabitatComment(HabitatComment $habitatComment): static
     {
-        return $this->HabitatComment;
-    }
-
-    public function setHabitatComment(?self $HabitatComment): static
-    {
-        $this->HabitatComment = $HabitatComment;
-
-        return $this;
-    }
-
-    public function addHabitatComment(self $habitatComment): static
-    {
-        if (!$this->habitatComment->contains($habitatComment)) {
-            $this->habitatComment->add($habitatComment);
-            $habitatComment->setHabitatComment($this);
+        if (!$this->habitatComments->contains($habitatComment)) {
+            $this->habitatComments->add($habitatComment);
+            $habitatComment->setHabitat($this);
         }
 
         return $this;
     }
 
-    public function removeHabitatComment(self $habitatComment): static
+    public function removeHabitatComment(HabitatComment $habitatComment): static
     {
-        if ($this->habitatComment->removeElement($habitatComment)) {
-            if ($habitatComment->getHabitatComment() === $this) {
-                $habitatComment->setHabitatComment(null);
+        if ($this->habitatComments->removeElement($habitatComment)) {
+            if ($habitatComment->getHabitat() === $this) {
+                $habitatComment->setHabitat(null);
             }
         }
 
@@ -145,16 +141,15 @@ class Habitat
         return $this;
     }
 
-
-    public function getAnimal(): Collection
+    public function getAnimals(): Collection
     {
-        return $this->animal;
+        return $this->animals;
     }
 
     public function addAnimal(Animal $animal): static
     {
-        if (!$this->animal->contains($animal)) {
-            $this->animal->add($animal);
+        if (!$this->animals->contains($animal)) {
+            $this->animals->add($animal);
             $animal->setHabitat($this);
         }
 
@@ -163,7 +158,7 @@ class Habitat
 
     public function removeAnimal(Animal $animal): static
     {
-        if ($this->animal->removeElement($animal)) {
+        if ($this->animals->removeElement($animal)) {
             if ($animal->getHabitat() === $this) {
                 $animal->setHabitat(null);
             }

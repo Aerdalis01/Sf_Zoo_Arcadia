@@ -6,16 +6,20 @@ use App\Repository\AnimalRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AnimalRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Animal
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['animal', 'alimentation', 'habitat'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 25)]
+    #[ORM\Column(length: 50)]
+    #[Groups(['animal', 'alimentation', 'habitat'])]
     private ?string $nom = null;
 
     #[ORM\Column]
@@ -24,25 +28,44 @@ class Animal
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'animal')]
+    #[ORM\ManyToOne(targetEntity: Habitat::class, inversedBy: 'animals')]
+    #[Groups('animal')]
     private ?Habitat $habitat = null;
 
     #[ORM\OneToMany(targetEntity: Alimentation::class, mappedBy: 'animal')]
+    #[Groups('animal', 'habitat')]
     private Collection $alimentation;
 
     #[ORM\ManyToOne(inversedBy: 'animals')]
+    #[Groups(['animal', 'habitat'])]
     private ?Race $race = null;
 
-    #[ORM\OneToMany(targetEntity: AnimalReport::class, mappedBy: 'animal')]
-    private Collection $animalReport;
-
-    #[ORM\OneToOne(mappedBy: 'animal', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'animal', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[Groups(['animal', 'habitat'])]
     private ?Image $image = null;
+
+    #[ORM\OneToMany(targetEntity: AnimalReport::class, mappedBy: 'animal')]
+    #[Groups(['animal', 'habitat'])]
+    private Collection $animalReport;
 
     public function __construct()
     {
         $this->alimentation = new ArrayCollection();
         $this->animalReport = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAt(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): void
+    {
+        if ($this->createdAt !== null) {  // Vérifie que l'entité n'est pas nouvellement créée
+            $this->updatedAt = new \DateTimeImmutable();
+        }
     }
 
     public function getId(): ?int
@@ -67,23 +90,9 @@ class Animal
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 
     public function getHabitat(): ?Habitat
@@ -136,6 +145,28 @@ class Animal
         return $this;
     }
 
+    public function getImage(): ?Image
+    {
+        return $this->image;
+    }
+
+    public function setImage(?Image $image): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($image === null && $this->image !== null) {
+            $this->image->setAnimal(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($image !== null && $image->getAnimal() !== $this) {
+            $image->setAnimal($this);
+        }
+
+        $this->image = $image;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, AnimalReport>
      */
@@ -162,28 +193,6 @@ class Animal
                 $animalReport->setAnimal(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getImage(): ?Image
-    {
-        return $this->image;
-    }
-
-    public function setImage(?Image $image): static
-    {
-        // unset the owning side of the relation if necessary
-        if ($image === null && $this->image !== null) {
-            $this->image->setAnimal(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($image !== null && $image->getAnimal() !== $this) {
-            $image->setAnimal($this);
-        }
-
-        $this->image = $image;
 
         return $this;
     }

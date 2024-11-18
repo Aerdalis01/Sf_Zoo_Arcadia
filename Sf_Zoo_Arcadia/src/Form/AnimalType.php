@@ -23,12 +23,7 @@ class AnimalType extends AbstractType
                 'choice_label' => 'nom',
                 'required' => true,
             ])
-            ->add('race_nom', EntityType::class, [
-                'class' => Race::class,
-                'choice_label' => 'nom',
-                'label' => 'Race associé'
-            ])
-            ->add('habitat_nom', EntityType::class, [
+            ->add('habitat', EntityType::class, [
                 'class' => Habitat::class,
                 'choice_label' => 'nom',
                 'label' => 'Habitat associé'
