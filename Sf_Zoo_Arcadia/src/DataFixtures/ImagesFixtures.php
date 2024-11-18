@@ -66,7 +66,7 @@ class ImagesFixtures extends Fixture implements FixtureGroupInterface, Dependent
             $image = new Image();
             $imageName = pathinfo($fileName, PATHINFO_FILENAME); // Nom sans l'extension
             $image->setNom($imageName);
-            $image->setImagePath($imageDir.'\\'.$fileName);
+            $image->setImagePath($imageDir.'/'.$fileName);
             $image->setImageSubDirectory('animals');
 
             $manager->persist($image);

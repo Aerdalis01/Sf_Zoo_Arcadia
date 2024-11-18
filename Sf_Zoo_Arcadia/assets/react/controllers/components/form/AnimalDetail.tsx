@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Animal } from '../../../models/animalInterface';
-import { HabitatDetail } from './HabitatDetail';
+
 
 
 interface AnimalDetailProps {

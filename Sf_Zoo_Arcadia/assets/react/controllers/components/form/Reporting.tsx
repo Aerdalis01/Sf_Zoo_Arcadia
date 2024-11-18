@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react';
 
-interface VisiteStats {
-  animalId: number;
-  visites: number;
+interface AnimalStat {
+  id: number;
   nom: string;
+  visites: number;
+  imagePath: string | null;
 }
 
 export const Reporting: React.FC = () => {
-  const [visiteStats, setVisiteStats] = useState<VisiteStats[]>([]);
+  const [animalStats, setAnimalStats] = useState<AnimalStat[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchVisiteStats = async () => {
+    const fetchAnimalStats = async () => {
       try {
         const response = await fetch('/api/reporting');
         if (!response.ok) throw new Error("Erreur lors de la récupération des statistiques de visites.");
 
         const data = await response.json();
-        setVisiteStats(data);
+        setAnimalStats(data);
       } catch (error) {
         console.error("Erreur:", error);
       } finally {
@@ -25,7 +26,7 @@ export const Reporting: React.FC = () => {
       }
     };
 
-    fetchVisiteStats();
+    fetchAnimalStats();
   }, []);
 
   if (loading) return <p>Chargement des statistiques...</p>;
@@ -36,15 +37,13 @@ export const Reporting: React.FC = () => {
       <table className="table admin-table">
         <thead>
           <tr>
-            <th>Animal ID</th>
             <th>Nom de l'animal</th>
             <th>Nombre de visites</th>
           </tr>
         </thead>
         <tbody>
-          {visiteStats.map((stat) => (
-            <tr key={stat.animalId}>
-              <td>{stat.animalId}</td>
+          {animalStats.map((stat) => (
+            <tr key={stat.id}>
               <td>{stat.nom}</td>
               <td>{stat.visites}</td>
             </tr>

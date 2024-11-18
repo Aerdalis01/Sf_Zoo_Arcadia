@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ImageForm } from "./ImageForm";
 import { TextInputField } from "../form/TextInputField";
-import { HoraireField } from "../form/HoraireField";
+import { HoraireField } from "./HoraireField";
 import { CheckBoxField } from "../form/CheckBoxFieldProps";
 import { ServiceFormFields } from "../form/ServiceFormFieldsProps";
 

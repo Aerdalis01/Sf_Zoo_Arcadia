@@ -4,6 +4,14 @@ import { renderStars, AvisForm } from '../controllers/components/form/Avis/AvisF
 import { Carousel } from '../components/carousel';
 import { ServicesSection } from '../components/ServicesHomePage';
 
+
+interface Animal {
+  animalId: number;
+  nom: string;
+  visites: number;
+  imagePath: string | null;
+}
+
 export const HomePage = () => {
 
   const [latestAvis, setLatestAvis] = useState([]);
@@ -11,25 +19,49 @@ export const HomePage = () => {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [animals, setAnimals] = useState([]);
 
   const handleFormSuccess = (message: string) => {
-    setShowForm(false); 
+    setShowForm(false);
     setSuccessMessage(message);
   };
   useEffect(() => {
     if (successMessage) {
       const timer = setTimeout(() => {
-        setSuccessMessage(null); // Masquer le message après 5 secondes
+        setSuccessMessage(null);
       }, 5000);
 
-      return () => clearTimeout(timer); // Nettoyer le timer
+      return () => clearTimeout(timer);
     }
   }, [successMessage]);
 
-const handleFormToggle = () => {
+  const handleFormToggle = () => {
     setShowForm(!showForm);
-    
   };
+
+ useEffect(() => {
+    const fetchAnimals = async () => {
+      try {
+        const response = await fetch('/api/reporting');
+        if (!response.ok) throw new Error("Erreur lors de la récupération des animaux populaires.");
+
+        const data = await response.json();
+        console.log(data);
+        setAnimals(data.slice(0, 4)); // Limite aux 4 premiers animaux les plus populaires
+      } catch (error) {
+        console.error("Erreur:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnimals();
+    console.log(animals);
+
+  }, []);
+  
+
+
   const carouselItems = [
     {
       id: 'slide1',
@@ -63,7 +95,7 @@ const handleFormToggle = () => {
       description: 'Dans la luxuriante jungle d’Arcadia, vous pourrez découvrir nos chimpanzés, ouistitis ainsi que nombres d\'animaux étonnants et d\'oiseaux rares.',
       className: 'carousel-img--jungle',
     },
-    
+
   ];
 
   useEffect(() => {
@@ -88,17 +120,18 @@ const handleFormToggle = () => {
 
     fetchLatestAvis();
   }, []);
+  
   return (
     <>
-     <section id="accueil">
-      <div  className="carousel-accueil">
-      <Carousel items={carouselItems}/>
-      </div>
+      <section id="accueil">
+        <div className="carousel-accueil">
+          <Carousel items={carouselItems} />
+        </div>
       </section>
       {/* Début section services */}
       <section className="services">
         <div className="content-greenSvg w-100">
-          <img className="img-fluid w-100" src="/uploads/images/svgDeco/RecOvalVert.svg" alt="Forme géométrique de couleur verte"/>
+          <img className="img-fluid w-100" src="/uploads/images/svgDeco/RecOvalVert.svg" alt="Forme géométrique de couleur verte" />
         </div>
         <div className="services-svg w-100 py-md-2 py-lg-3 py-xl-4 py-xxl-5">
           <div className="services-title text-center py-2">
@@ -106,80 +139,60 @@ const handleFormToggle = () => {
             <h6 className="text-white">Retrouvez toutes nos offres</h6>
           </div>
           <div className="content-orangeSvg">
-            <img className="svg-rectangle img-fluid w-100" src="/uploads/images/svgDeco/RecOrLg.svg" alt="Rectangle Orange"/>
-            <img className="svg-ellipse  w-100" src="/uploads/images/svgDeco/demiElOrmob.svg" alt="ellipse Orange"/>
+            <img className="svg-rectangle img-fluid w-100" src="/uploads/images/svgDeco/RecOrLg.svg" alt="Rectangle Orange" />
+            <img className="svg-ellipse  w-100" src="/uploads/images/svgDeco/demiElOrmob.svg" alt="ellipse Orange" />
           </div>
         </div>
         <div>
-<ServicesSection />
+          <ServicesSection />
         </div>
-        </section>
+      </section>
       {/* Fin section services */}
       <section className="animaux">
         {/* Début section animaux*/}
-        <img className="svg-top w-100" src="/uploads/images/svgDeco/SliceGreenMobil.svg" alt="demi-ellipse de couleur verte"/>
-        <img className="svg-left" src="/uploads/images/svgDeco/RonOr&verLeft.svg" alt="Demi ellipse verte et orange"/>
-        <img className="svg-right" src="/uploads/images/svgDeco/RonOr&verRight.svg" alt="Demi ellipse verte et orange"/>
+        <img className="svg-top w-100" src="/uploads/images/svgDeco/SliceGreenMobil.svg" alt="demi-ellipse de couleur verte" />
+        <img className="svg-left" src="/uploads/images/svgDeco/RonOr&verLeft.svg" alt="Demi ellipse verte et orange" />
+        <img className="svg-right" src="/uploads/images/svgDeco/RonOr&verRight.svg" alt="Demi ellipse verte et orange" />
         <div className="services-title text-center py-2 mb-lg-5">
           <h1 className="text-white">Nos stars</h1>
           <h6 className="text-white">Retrouvez nos célébrités</h6>
         </div>
         {/* Animaux cards */}
+        {animals.length === 0 ? (
+        <p className="text-center text-white">Aucun animal disponible pour le moment.</p>
+      ) : (
         <div className="container-animaux row row-cols-1 row-cols-md-3 g-4 d-flex justify-content-center mt-lg-5">
-          <div className="col-6  mx-5 mx-md-2">
-            {/* Animaux-1 cards */}
-            <div className="card  accueil-card--renne col-8 h-100 mx-auto">
-              <img src="/uploads/images/animals/René le cerf.webp" className="card-img-top rounded-circle"
-                alt="Portrait d'un renne blanc"/>
-              <div className="card-body rounded-5 text-center p-1">
-                <h3 className="card-title">René le renne blanc</h3>
-                <p className="card-text animaux-text">Emblème de le forêt de Brocéliande et mascotte de notre zoo.</p>
+          {animals.map((animal, index) => (
+            
+      <div key={animal.animalId || index} className="col-6 mx-5 mx-md-2">
+        <div className="card col-8 h-100 mx-auto">
+          {animal.imagePath ? (
+            <img
+              src={`http://127.0.0.1:8000${animal.imagePath}`}
+              
+              alt={animal.nom}
+              className="card-img-top rounded-circle"
+            />
+          ) : (
+            <span>Pas d'image disponible</span>
+          )}
+          <div className="card-body rounded-5 text-center p-1">
+            <h3 className="card-title">{animal.nom}</h3>
+            <p className="card-text animaux-text">Nombre de visites : {animal.visites}</p>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="col-6 mx-5 mx-md-2">
-            {/* Animaux-2 cards */}
-            <div className="card accueil-card--flamant col-8 h-100 mx-auto">
-              <img src="/uploads/images/animals/Jack le flamant.webp" className="card-img-top rounded-circle"
-                alt="Portrait d'un flamant rose"/>
-              <div className="card-body rounded-5 text-center p-1">
-                <h3 className="card-title">Jack le flamant rose</h3>
-                <p className="card-text animaux-text">Les pieds dans l'eau, Jack aime se pavaner devant les visiteurs.</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 mx-5 mx-md-2">
-            {/* Animaux-3 cards */}
-            <div className="card accueil-card--ouistiti col-8 h-100 mx-auto">
-              <img src="/uploads/images/animals/Jango le ouistiti.webp" className="card-img-top rounded-circle"
-                alt="Portrait d'un ouistiti"/>
-              <div className="card-body rounded-5 text-center p-1">
-                <h3 className="card-title">Jango le ouistiti</h3>
-                <p className="card-text animaux-text">Cacher dans les arbres il vous observe !! Soyez attentif.</p>
-              </div>
-            </div>
-          </div>
-          <div className="container-sophie col-6 mx-5 mx-md-2">
-            {/* Animaux-4 cards */}
-            <div className="card col-8 h-100 mx-auto">
-              <img src="/uploads/images/animals/Sofie la girafe.webp" className="card-img-top rounded-circle"
-                alt="Portrait d'une girafe"/>
-              <div className="card-body rounded-5 text-center p-1">
-                <h3 className="card-title">Sofie 
-                  la girafe</h3>
-                <p className="card-text animaux-text">Du haut de ses 4 mètres Sofie espère toujours être à la hauteur de votre rencontre.</p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
-      </section>
+      )}
+    </section>
 
-      {successMessage && 
-    <div className="alert alert-success">{successMessage}</div>}
-      <hr className="hr-avis"/>
+      {successMessage &&
+        <div className="alert alert-success">{successMessage}</div>}
+      <hr className="hr-avis" />
       <section className="avis mb-5">
         <div className="container-fluid">
-          <hr/>
+          <hr />
           <div className="avis-title bg-danger rounded-circle w-100 text-center py-2 mb-lg-5 mt-5">
             <h1 className="text-white">Avis</h1>
             <h6 className="text-white">Vos avis comptent.</h6>
@@ -207,23 +220,22 @@ const handleFormToggle = () => {
         </div>
         <hr />
         <div className="col-12 d-flex justify-content-center ">
-        <button
-              type="button"
-              className="btn-avis btn-primary  h-100 col-lg-3 fs-5 fw-semibold rounded-3"
-              onClick={handleFormToggle} 
-              >
-                Donnez votre avis !
-              </button>
+          <button
+            type="button"
+            className="btn-avis btn-primary  h-100 col-lg-3 fs-5 fw-semibold rounded-3"
+            onClick={handleFormToggle}
+          >
+            Donnez votre avis !
+          </button>
         </div>
 
         {showForm && (
-        <div className="overlay">
-          <AvisForm handleFormToggle={handleFormToggle} onFormSuccess={handleFormSuccess}/>
-        </div>
+          <div className="overlay">
+            <AvisForm handleFormToggle={handleFormToggle} onFormSuccess={handleFormSuccess} />
+          </div>
         )}
       </section>
- 
-      </>
-    );
-  };
-  
+
+    </>
+  );
+};

@@ -8,7 +8,7 @@ export const HoraireForm: React.FC = () => {
         horaireTexte: '',
     });
     const [error, setError] = useState<string>('');
-
+    const [successMessage, setSuccessMessage] = useState<string>('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -35,6 +35,7 @@ export const HoraireForm: React.FC = () => {
             const savedHoraire = await response.json();
             console.log('Horaire enregistré:', savedHoraire);
             setFormData({ horaireTexte: '' });
+            setSuccessMessage('Horaire enregistré avec succès !');
         } catch (error) {
             setError(error.message);
             console.error('Erreur lors de l\'enregistrement de l\'horaire', error);
@@ -45,7 +46,8 @@ export const HoraireForm: React.FC = () => {
         <form onSubmit={handleSubmit}>
 
 
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+            {successMessage && <div style={{ color: 'green', marginBottom: '10px' }}>{successMessage}</div>}
 
             <label>
                 Horaire texte :

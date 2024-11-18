@@ -19,6 +19,8 @@ import { DashboardPage } from "./react/pages/Dashboard";
 import { LoginPage } from "./react/pages/Auth/LoginPage";
 import { RegisterPage } from "./react/pages/Auth/RegisterPage";
 import { ServicePage } from "./react/pages/ServicesPage";
+import { AnimalDetail } from "./react/controllers/components/form/AnimalDetail";
+
 
 const App: React.FC = () => {
   return (

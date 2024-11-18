@@ -1,4 +1,4 @@
-interface HoraireFieldProps {
+export interface HoraireFieldProps {
   horaireTexte: string;
   setHoraireTexte: (value: string) => void;
   label: string;

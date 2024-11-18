@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/horaire', name: 'app_api_horaire_')]
@@ -29,10 +28,11 @@ class HoraireController extends AbstractController
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/{jour}', name: 'show', methods: ['GET'])]
+    #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(int $id): JsonResponse
     {
-        $horaire = $this->em->getRepository(Horaire::class)->findByDay($id);
+        $horaire = $this->em->getRepository(Horaire::class)->find($id);
+
         if (!$horaire) {
             return new JsonResponse(['error' => 'Horaire non trouvé'], Response::HTTP_NOT_FOUND);
         }
@@ -43,7 +43,6 @@ class HoraireController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function newAndUpdate(Request $request): Response
     {
         try {
@@ -65,10 +64,9 @@ class HoraireController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN', ['ROLE_EMPLOYE'])]
     public function update(int $id, Request $request): Response
     {
-        $horaire = $this->em->getRepository(Horaire::class)->findByDay($id);
+        $horaire = $this->em->getRepository(Horaire::class)->find($id);
         if (!$horaire) {
             return new JsonResponse(['error' => 'Horaire non trouvé'], Response::HTTP_NOT_FOUND);
         }

@@ -15,112 +15,74 @@ export const Sidebar: React.FC<SidebarProps> = ({ onSectionChange }) => {
     setIsClick(!isClick);
   };
   return (
-    <div className={`toggle-sidebar col-1 bg-primary text-warning d-flex justify-content-center align-items-center ${!isClick ? "collapsed" : ""}`}   onClick={toggleSidebar}>
-     
-    <section className="sidebar-Container d-flex">
-      <div className={`sidebar col-11 bg-primary p-3 text-center ${isClick ? "" : "d-none"}`}>
-        <h3 className="text-warning" >Tableau de Bord</h3>
-        <ul className="nav flex-column">
-          {userRoles.includes("ROLE_ADMIN") && (
-            <>
-              <hr />
-              <div className="accordion" id="accordionAdmin">
-                <div className="accordion-item">
-                  <h2 className="accordion-header" id="headingOne">
-                    <button
-                      className="accordion-button"
-                      type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#collapseOne"
-                      aria-expanded="true"
-                      aria-controls="collapseOne"
-                    >
-                      Espace Admin
-                    </button>
-                  </h2>
-                  <div
-                    id="collapseOne"
-                    className="accordion-collapse collapse show"
-                    aria-labelledby="headingOne"
-                    data-bs-parent="#accordionAdmin"
-                  >
-                    <div className="accordion-body">
-                      <li className="nav-item">
-                        <Link className="nav-link" to="#" onClick={() => onSectionChange("service")}>
-                          Services
-                        </Link>
-                      </li>
-                      <li className="nav-item">
-                        <Link className="nav-link" to="#" onClick={() => onSectionChange("sousService")}>
-                          Sous services
-                        </Link>
-                      </li>
-                      <li className="nav-item">
-                        <Link className="nav-link" to="#" onClick={() => onSectionChange("habitat")}>
-                          Habitats
-                        </Link>
-                      </li>
-                      <li className="nav-item">
-                        <Link className="nav-link" to="#" onClick={() => onSectionChange("animal")}>
-                          Animaux
-                        </Link>
-                      </li>
-                      <li className="nav-item">
-                        <Link className="nav-link" to="#" onClick={() => onSectionChange("horaire")}>
-                          Horaires
-                        </Link>
-                      </li>
-                      <li className="nav-item">
-                        <Link className="nav-link" to="#" onClick={() => onSectionChange("reporting")}>
-                          Reporting
-                        </Link>
-                      </li>
-                      <li className="nav-item">
-                        <Link className="nav-link" to="#" onClick={() => onSectionChange("adminReport")}>
-                          Compte Rendu vétérinaire
-                        </Link>
-                      </li>
-                      <li className="nav-item">
-                        <Link className="nav-link" to="#" onClick={() => onSectionChange("register")}>
-                          Créer un compte utilisateur
-                        </Link>
-                      </li>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
+    <div className="d-flex justify-content-center align-items-center">
 
-          <hr />
-
-          {(userRoles.includes("ROLE_VETERINAIRE") ||
-            userRoles.includes("ROLE_ADMIN")) && (
+      <section className="sidebar-Container d-flex h-100">
+        <div className={`sidebar bg-primary text-center ${isClick ? "" : "d-none"}`}>
+          <h3 className="text-warning" >Tableau de Bord</h3>
+          <ul className="nav flex-column">
+            {userRoles.includes("ROLE_ADMIN") && (
               <>
-                <div className="accordion" id="accordionVeterinaire">
+                <hr />
+                <div className="accordion" id="accordionAdmin">
                   <div className="accordion-item">
-                    <h2 className="accordion-header" id="headingTwo">
+                    <h2 className="accordion-header" id="headingOne">
                       <button
-                        className="accordion-button collapsed"
+                        className="accordion-button"
                         type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target="#collapseTwo"
-                        aria-expanded="false"
-                        aria-controls="collapseTwo"
+                        data-bs-target="#collapseOne"
+                        aria-expanded="true"
+                        aria-controls="collapseOne"
                       >
-                        Espace Vétérinaire
+                        Espace Admin
                       </button>
                     </h2>
                     <div
-                      id="collapseTwo"
-                      className="accordion-collapse collapse"
-                      aria-labelledby="headingTwo"
-                      data-bs-parent="#accordionVeterinaire"
+                      id="collapseOne"
+                      className="accordion-collapse collapse show"
+                      aria-labelledby="headingOne"
+                      data-bs-parent="#accordionAdmin"
                     >
                       <div className="accordion-body">
                         <li className="nav-item">
-                          <Link className="nav-link" to="#" onClick={() => onSectionChange("rapport")}>
-                            Rapports Vétérinaires
+                          <Link className="nav-link" to="#" onClick={() => onSectionChange("service")}>
+                            Services
+                          </Link>
+                        </li>
+                        <li className="nav-item">
+                          <Link className="nav-link" to="#" onClick={() => onSectionChange("sousService")}>
+                            Sous services
+                          </Link>
+                        </li>
+                        <li className="nav-item">
+                          <Link className="nav-link" to="#" onClick={() => onSectionChange("habitat")}>
+                            Habitats
+                          </Link>
+                        </li>
+                        <li className="nav-item">
+                          <Link className="nav-link" to="#" onClick={() => onSectionChange("animal")}>
+                            Animaux
+                          </Link>
+                        </li>
+                        <li className="nav-item">
+                          <Link className="nav-link" to="#" onClick={() => onSectionChange("horaire")}>
+                            Horaires
+                          </Link>
+                        </li>
+                        <li className="nav-item">
+                          <Link className="nav-link" to="#" onClick={() => onSectionChange("reporting")}>
+                            Reporting
+                          </Link>
+                        </li>
+                        <li className="nav-item">
+                          <Link className="nav-link" to="#" onClick={() => onSectionChange("adminReport")}>
+                            Compte Rendu vétérinaire
+                          </Link>
+                        </li>
+                        <li className="nav-item">
+                          <Link className="nav-link" to="#" onClick={() => onSectionChange("register")}>
+                            Créer un compte utilisateur
                           </Link>
                         </li>
                       </div>
@@ -130,68 +92,114 @@ export const Sidebar: React.FC<SidebarProps> = ({ onSectionChange }) => {
               </>
             )}
 
-          <hr />
+            <hr />
 
-          {(userRoles.includes("ROLE_EMPLOYE") ||
-            userRoles.includes("ROLE_ADMIN")) && (
-              <>
-                <div className="accordion" id="accordionEmploye">
-                  <div className="accordion-item">
-                    <h2 className="accordion-header" id="headingThree">
-                      <button
-                        className="accordion-button collapsed"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#collapseThree"
-                        aria-expanded="false"
-                        aria-controls="collapseThree"
+            {(userRoles.includes("ROLE_VETERINAIRE") ||
+              userRoles.includes("ROLE_ADMIN")) && (
+                <>
+                  <div className="accordion" id="accordionVeterinaire">
+                    <div className="accordion-item">
+                      <h2 className="accordion-header" id="headingTwo">
+                        <button
+                          className="accordion-button collapsed"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseTwo"
+                          aria-expanded="false"
+                          aria-controls="collapseTwo"
+                        >
+                          Espace Vétérinaire
+                        </button>
+                      </h2>
+                      <div
+                        id="collapseTwo"
+                        className="accordion-collapse collapse"
+                        aria-labelledby="headingTwo"
+                        data-bs-parent="#accordionVeterinaire"
                       >
-                        Espace Employé
-                      </button>
-                    </h2>
-                    <div
-                      id="collapseThree"
-                      className="accordion-collapse collapse"
-                      aria-labelledby="headingThree"
-                      data-bs-parent="#accordionEmploye"
-                    >
-                      <div className="accordion-body">
-                        <li className="nav-item">
-                          <Link className="nav-link" to="#" onClick={() => onSectionChange("avis")}>
-                            Avis
-                          </Link>
-                        </li>
-                        <li className="nav-item">
-                          <Link className="nav-link" to="#" onClick={() => onSectionChange("alimentation")}>
-                            Alimentation
-                          </Link>
-                        </li>
-                        <li className="nav-item">
-                          <Link className="nav-link" to="#" onClick={() => onSectionChange("contact")}>
-                            Contacts
-                          </Link>
-                        </li>
-                        <li className="nav-item">
-                          <Link className="nav-link" to="#" onClick={() => onSectionChange("serviceUpdate")}>
-                            Services (Mise à jour)
-                          </Link>
-                        </li>
-                        <li className="nav-item">
-                          <Link className="nav-link" to="#" onClick={() => onSectionChange("horaireUpdate")}>
-                            Horaires (Mise à jour)
-                          </Link>
-                        </li>
+                        <div className="accordion-body">
+                          <li className="nav-item">
+                            <Link className="nav-link" to="#" onClick={() => onSectionChange("rapport")}>
+                              Rapports Vétérinaires
+                            </Link>
+                          </li>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </>
-            )}
-        </ul>
+                </>
+              )}
+
+            <hr />
+
+            {(userRoles.includes("ROLE_EMPLOYE") ||
+              userRoles.includes("ROLE_ADMIN")) && (
+                <>
+                  <div className="accordion" id="accordionEmploye">
+                    <div className="accordion-item">
+                      <h2 className="accordion-header" id="headingThree">
+                        <button
+                          className="accordion-button collapsed"
+                          type="button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#collapseThree"
+                          aria-expanded="false"
+                          aria-controls="collapseThree"
+                        >
+                          Espace Employé
+                        </button>
+                      </h2>
+                      <div
+                        id="collapseThree"
+                        className="accordion-collapse collapse"
+                        aria-labelledby="headingThree"
+                        data-bs-parent="#accordionEmploye"
+                      >
+                        <div className="accordion-body">
+                          <li className="nav-item">
+                            <Link className="nav-link" to="#" onClick={() => onSectionChange("avis")}>
+                              Avis
+                            </Link>
+                          </li>
+                          <li className="nav-item">
+                            <Link className="nav-link" to="#" onClick={() => onSectionChange("alimentation")}>
+                              Alimentation
+                            </Link>
+                          </li>
+                          <li className="nav-item">
+                            <Link className="nav-link" to="#" onClick={() => onSectionChange("contact")}>
+                              Contacts
+                            </Link>
+                          </li>
+                          <li className="nav-item">
+                            <Link className="nav-link" to="#" onClick={() => onSectionChange("serviceUpdate")}>
+                              Services (Mise à jour)
+                            </Link>
+                          </li>
+                          <li className="nav-item">
+                            <Link className="nav-link" to="#" onClick={() => onSectionChange("horaireUpdate")}>
+                              Horaires (Mise à jour)
+                            </Link>
+                          </li>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+          </ul>
+        </div>
+
+      </section>
+      <div className="d-flex bg-primary h-100 px-2">
+        {/* Toggle Button for Sidebar */}
+        <div
+          className={`toggle-sidebar col-6 bg-primary text-warning d-flex justify-content-center align-items-center w-100 h-100`}
+          onClick={toggleSidebar}
+        >
+          {isClick ? "❮" : "❯"}
+        </div>
       </div>
-      
-    </section>
-    {isClick ? "❮" : "❯"}
       </div>
-  );
+      );
 };

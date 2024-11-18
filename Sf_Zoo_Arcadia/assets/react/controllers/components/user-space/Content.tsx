@@ -13,16 +13,34 @@ import { AlimentationForm } from "../form/Alimentation/AlimentationForm";
 import { AlimentationReport } from "../form/Alimentation/AlimentationReportForm";
 import { AdminReports } from "../form/Alimentation/AdminReportsForm";
 import { HoraireForm } from "../form/Contact/HoraireForm";
+import {HoraireFormUpdate} from "../crud/HoraireFormUpdate";
+import { HoraireFormDelete } from "../crud/HoraireFormDelete";
 import { ContactResponseForm } from "../form/Contact/ContactResponseForm";
 import { RegisterPage } from "../../../pages/Auth/RegisterPage";
 import { SousServiceForm } from "../crud/SousServiceForm";
 import { SousServiceFormUpdate } from "../crud/SousServiceFormUpdate";
 import { SousServiceDeleteForm } from "../crud/SousServiceDeleteForm";
 import { Reporting } from "../form/Reporting";
+import { Horaire } from "../../../models/horaireInterface";
 
 export const Content: React.FC<{ section: string }> = ({ section }) => {
   const [crudAction, setCrudAction] = useState<string>("");
+  const [horaires, setHoraires] = useState<Horaire[]>([]);
+  const [horaireTexte, setHoraireTexte] = useState('');
 
+  const addHoraire = () => {
+    const newHoraire = { id: Date.now(), horaireTexte };
+    setHoraires([...horaires, newHoraire]);
+    setHoraireTexte('');
+  };
+
+  const updateHoraire = (id: number, updatedText: string) => {
+    setHoraires(horaires.map(h => (h.id === id ? { ...h, horaireTexte: updatedText } : h)));
+  };
+
+  const deleteHoraire = (id: number) => {
+    setHoraires(horaires.filter(h => h.id !== id));
+  };
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setCrudAction(event.target.value);
   };
@@ -79,6 +97,17 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
           default:
             return <p>Veuillez sélectionner une action pour les animaux</p>;
         }
+      case "horaire":
+        switch (crudAction) {
+          case "create":
+            return <HoraireForm /> 
+          case "edit":
+            return <HoraireFormUpdate/>;
+          case "delete":
+            return <HoraireFormDelete/>;
+          default:
+            return <p>Veuillez sélectionner une action pour les horaires</p>;
+        }
       case "avis":
         return <AvisApproval />;
       case "alimentation":
@@ -87,14 +116,12 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
         return <AlimentationReport />;
       case "adminReport":
         return <AdminReports />;
-        case "horaire":
-        return   <HoraireForm /> 
         case "contact":
           return <ContactResponseForm  />;
         case "serviceUpdate":
           return <ServiceFormUpdate />;
         case "horaireUpdate":
-          return <HoraireForm/>;
+          return <HoraireFormUpdate/>;
         case "register":
           return <RegisterPage/>;
         case "reporting":
@@ -151,7 +178,7 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
             section != "horaireUpdate" && 
             section != "register" && 
             section != "reporting" && 
-            section != "horaire" && (
+           (
               <div className="mb-3">
                 <label htmlFor="crudSelect" className="form-label">
                   Sélectionnez une action :
