@@ -31,7 +31,7 @@ class AnimalReport
     #[Groups(['animal', 'animaReport', 'habitat'])]
     private ?string $createdBy = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'animalReport', cascade: ['persist', 'remove'])]
     #[Groups(['animal', 'animaReport', 'habitat'])]
     private ?Alimentation $alimentation = null;
 
