@@ -46,7 +46,7 @@ class Alimentation
     #[Groups(['animal', 'alimentation'])]
     private $isUsed = false;
 
-    #[ORM\OneToOne(mappedBy: 'alimentation', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'alimentation', targetEntity: AnimalReport::class, cascade: ['persist', 'remove'])]
     #[Groups(['animal', 'alimentation'])]
     private ?AnimalReport $animalReport = null;
 
