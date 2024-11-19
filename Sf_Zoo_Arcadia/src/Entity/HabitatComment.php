@@ -28,7 +28,7 @@ class HabitatComment
     #[Groups(['animalReport', 'habitat'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'habitatComment')]
+    #[ORM\ManyToOne(inversedBy: 'habitatComments')]
     private ?Habitat $habitat = null;
 
     #[ORM\PrePersist]
