@@ -155,7 +155,6 @@ export const RegisterPage = () => {
           <option value="" disabled hidden>
             -- Sélectionner un rôle --
           </option>
-          <option value="admin">Admin</option>
           <option value="employe">Employé</option>
           <option value="veterinaire">Vétérinaire</option>
         </select>
