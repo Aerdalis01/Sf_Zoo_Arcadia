@@ -39,7 +39,7 @@ class AnimalReport
     #[Groups(['animal', 'animaReport', 'habitat'])]
     private ?string $etatDetail = null;
 
-    #[ORM\ManyToOne(targetEntity: Alimentation::class, inversedBy: 'animalReport')]
+    #[ORM\ManyToOne(targetEntity: Animal::class, inversedBy: 'animalReport')]
     #[ORM\JoinColumn(name: 'animal_id', referencedColumnName: 'id', nullable: false)]
     private ?Animal $animal = null;
 
