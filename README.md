@@ -218,3 +218,30 @@ Lors de la compilation des assets, les fichiers `.sass` sont transformés en `.c
 
 Le projet est structuré de manière à séparer le back-end (Symfony et PHP) et le front-end (TypeScript et React), tout en assurant une intégration fluide à travers Webpack Encore pour gérer les assets (CSS, JavaScript).
 
+[u389160231@fr-int-web1704 Sf_Zoo_Arcadia]$ nano ~/.bashrc
+[u389160231@fr-int-web1704 Sf_Zoo_Arcadia]$ source ~/.bashrc
+[u389160231@fr-int-web1704 Sf_Zoo_Arcadia]$ nano ~/.zshrc
+[u389160231@fr-int-web1704 Sf_Zoo_Arcadia]$ nano ~/.zshrc
+[u389160231@fr-int-web1704 Sf_Zoo_Arcadia]$ source ~/.zshrc
+
+[u389160231@fr-int-web1704 Sf_Zoo_Arcadia]$ 
+[u389160231@fr-int-web1704 Sf_Zoo_Arcadia]$ nvm --version
+0.39.3
+[u389160231@fr-int-web1704 Sf_Zoo_Arcadia]$ source ~/.bashrc
+[u389160231@fr-int-web1704 Sf_Zoo_Arcadia]$ nvm --version
+0.39.3
+[u389160231@fr-int-web1704 Sf_Zoo_Arcadia]$ nvm install node
+v23.2.0 is already installed.
+Now using node v23.2.0 (npm v10.9.0)
+[u389160231@fr-int-web1704 Sf_Zoo_Arcadia]$ node --version
+npm --version
+v23.2.0
+10.9.0
+
+
+npm install jwt-decode           # Installer la dernière version de jwt-decode
+npm install rimraf@latest         # Mettre à jour rimraf
+npm install glob@latest          # Mettre à jour glob
+npm install sass                 # Mettre à jour sass
+npm install glob@latest
+npm install @babel/preset-react @symfony/webpack-encore bootstrap react react-dom sass sass-loader ts-loader typescript webpack-notifier --save-dev
