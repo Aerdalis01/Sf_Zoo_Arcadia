@@ -46,7 +46,6 @@ export const HomePage = () => {
         if (!response.ok) throw new Error("Erreur lors de la récupération des animaux populaires.");
 
         const data = await response.json();
-        console.log(data);
         setAnimals(data.slice(0, 4)); // Limite aux 4 premiers animaux les plus populaires
       } catch (error) {
         console.error("Erreur:", error);
@@ -56,7 +55,6 @@ export const HomePage = () => {
     };
 
     fetchAnimals();
-    console.log(animals);
 
   }, []);
   
@@ -68,7 +66,7 @@ export const HomePage = () => {
       imgSrc: '/uploads/images/carousel/CerfBlancMobil.webp',
       altText: 'Cerf blanc dans la forêt',
       title: 'Bienvenue au Zoo Arcadia',
-      description: 'Un zoo familial soucieux des animaux et de leur environnement...',
+      description: 'Un zoo familial soucieux des animaux et de leur environnement.',
       className: 'carousel-img--accueil',
     },
     {
@@ -168,7 +166,7 @@ export const HomePage = () => {
         <div className="card col-8 h-100 mx-auto">
           {animal.imagePath ? (
             <img
-              src={`http://127.0.0.1:8000${animal.imagePath}`}
+              src={`${process.env.REACT_APP_API_BASE_URL}${animal.imagePath}`}
               
               alt={animal.nom}
               className="card-img-top rounded-circle"

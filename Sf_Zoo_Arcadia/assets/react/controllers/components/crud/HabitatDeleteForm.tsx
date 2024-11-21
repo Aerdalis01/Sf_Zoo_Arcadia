@@ -15,7 +15,6 @@ export const HabitatDeleteForm = () => {
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = Number(e.target.value);
-    console.log("Habitat sélectionné avec l'ID :", selectedId);
     setSelectedHabitatId(selectedId);
   };
 

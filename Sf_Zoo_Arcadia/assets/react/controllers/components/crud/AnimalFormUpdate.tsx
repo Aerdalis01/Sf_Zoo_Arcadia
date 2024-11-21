@@ -55,7 +55,6 @@ export function AnimalFormUpdate() {
       fetch(`/api/animal/${selectedAnimal}`)
         .then((response) => response.json())
         .then((data) => {
-          console.log("Données de l'animal :", data);
           const animalData = data[0];
           setFormData({
             id: animalData.id || 0,
@@ -99,7 +98,6 @@ export function AnimalFormUpdate() {
   };
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const animalId = Number(e.target.value);
-    console.log("Animal sélectionné avec l'ID :", animalId);
     setSelectedAnimal(animalId);
   };
   const handleEditRace = async (raceId) => {
@@ -109,7 +107,6 @@ export function AnimalFormUpdate() {
     if (confirmation && formData.nomRace) {
       try {
         const updatedRace = await updateRace(raceId, { nom: formData.nomRace });
-        console.log("Race mise à jour avec succès :", updatedRace);
         setSuccessMessage("Race modifiée avec succès !");
       } catch (error) {
         console.error("Erreur lors de la modification de la race :", error);
@@ -147,7 +144,6 @@ export function AnimalFormUpdate() {
       formAnimal.append("image_sub_directory", imageSubDirectory);
     }
     formAnimal.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
   });
 
   const response = await fetch(`/api/animal/update/${formData.id}`, {

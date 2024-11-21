@@ -22,11 +22,9 @@ export function HabitatForm() {
   useEffect(() => {
     fetch("/api/animal")
       .then((response) => {
-        console.log("Réponse brute de l'API :", response);
         return response.json();
       })
       .then((data) => {
-        console.log("Données des animaux :", data);
         setAnimals(data);
       })
       .catch((error) =>
@@ -61,7 +59,6 @@ export function HabitatForm() {
       formHabitat.append("image_sub_directory", imageSubDirectory);
     }
     formHabitat.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
     });
     fetch("/api/habitat/new", {
       method: "POST",
@@ -79,7 +76,6 @@ export function HabitatForm() {
           : Promise.reject("Réponse non JSON reçue.");
       })
       .then((data) => {
-        console.log('Données de l\'habitat: ', data);
         if (data && data.status === "success") {
           setSuccess("Service ajouté avec succès !");
           setFormData({

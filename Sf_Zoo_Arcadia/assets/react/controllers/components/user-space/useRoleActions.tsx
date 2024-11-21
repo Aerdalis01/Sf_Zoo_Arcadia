@@ -21,7 +21,6 @@ export const useRoleActions = () => {
         }
   
         const data = await response.json();
-        console.log('Données récupérées :', data);
   
         setAvis(data);
       } catch (err) {

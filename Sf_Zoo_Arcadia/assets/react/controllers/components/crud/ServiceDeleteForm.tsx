@@ -11,7 +11,6 @@ export const ServiceDeleteForm = () => {
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = Number(e.target.value);
-    console.log("Service sélectionné avec l'ID :", selectedId);
     setSelectedServiceId(selectedId);
   };
   useEffect(() => {

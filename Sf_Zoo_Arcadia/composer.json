@@ -12,14 +12,15 @@
         "doctrine/dbal": "^3",
         "doctrine/doctrine-bundle": "^2.13",
         "doctrine/doctrine-migrations-bundle": "^3.3",
-        "doctrine/mongodb-odm": "^2.8",
+        "doctrine/mongodb-odm": "^2.6",
         "doctrine/mongodb-odm-bundle": "^5.1",
         "doctrine/orm": "^3.2",
         "firebase/php-jwt": "^6.10",
         "lcobucci/jwt": "^5.3",
-        "lexik/jwt-authentication-bundle": "3.0.0",
+        "lexik/jwt-authentication-bundle": "^3.0.0",
         "mongodb/mongodb": "^1.18",
         "phpmailer/phpmailer": "^6.9",
+        "symfony/apache-pack": "^1.0",
         "symfony/asset": "7.1.*",
         "symfony/console": "7.1.*",
         "symfony/dotenv": "7.1.*",
@@ -31,6 +32,7 @@
         "symfony/mailer": "6.4.*",
         "symfony/mailgun-mailer": "7.1.*",
         "symfony/mime": "6.4.*",
+        "symfony/monolog-bundle": "^3.10",
         "symfony/password-hasher": "6.4.*",
         "symfony/property-access": "6.4.*",
         "symfony/property-info": "6.4.*",
@@ -98,6 +100,9 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.6",
-        "symfony/maker-bundle": "^1.61"
+        "symfony/debug-bundle": "7.1.*",
+        "symfony/maker-bundle": "^1.61",
+        "symfony/stopwatch": "7.1.*",
+        "symfony/web-profiler-bundle": "7.1.*"
     }
 }

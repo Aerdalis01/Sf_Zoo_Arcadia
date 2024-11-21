@@ -32,8 +32,15 @@ Encore
     })
     .enableSassLoader()
     .enableTypeScriptLoader()
+    const webpack = require('webpack');
 
+    Encore.addPlugin(
+        new webpack.DefinePlugin({
+            'process.env': JSON.stringify({
+                REACT_APP_API_BASE_URL: process.env.REACT_APP_API_BASE_URL || 'https://arcadiabroceliande.com'
+            })
+        })
+    );
 module.exports = Encore.getWebpackConfig();
 ;
 
-module.exports = Encore.getWebpackConfig();

@@ -43,14 +43,12 @@ export function AlimentationForm() {
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Formulaire soumis");
     const token = localStorage.getItem("jwt_token");
     if (!token) {
       setError("Vous devez être connecté pour soumettre ce formulaire.");
       return;
     }
     try {
-      console.log("Formulaire en cours d'envoi...");
       const formAlimentation = new FormData();
       formAlimentation.append("nourriture", formData.nourriture);
       formAlimentation.append("quantite", formData.quantite);
@@ -69,7 +67,6 @@ export function AlimentationForm() {
       if (response.ok) {
         if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
-          console.log("Données JSON reçues :", data);
           setSuccessMessage("Rapport d'alimentation envoyé avec succès !");
           formRef.current?.reset();
           setFormData({ id: 0, nourriture: "", quantite: "", idAnimal: "" });
@@ -78,7 +75,6 @@ export function AlimentationForm() {
           }, 5000);
         } else {
           setSuccessMessage("Rapport envoyé, mais réponse non-JSON.");
-          console.log("La réponse n'est pas JSON");
         }
       } else {
         if (contentType && contentType.includes("application/json")) {

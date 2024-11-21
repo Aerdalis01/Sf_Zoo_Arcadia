@@ -5,7 +5,7 @@ import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 export const fetchAuth = async (url: string,  options: RequestInit = {}) => {
   const token = localStorage.getItem('jwt_token');
-  console.log("Token récupéré :", token);  
+
 
   if (!token) {
     throw new Error("Utilisateur non authentifié");
@@ -45,12 +45,9 @@ export const ProtectedRoute = ({ children, allowedRoles }) => {
 
   try {
     const decodedToken: any = jwtDecode(token);
-    console.log('Payload du JWT :', decodedToken);
-    // Extraire les rôles du token
-    const userRoles = decodedToken.roles || [];
-    console.log("Rôles de l'utilisateur :", userRoles);
 
-    // Vérifiez si l'un des rôles de l'utilisateur correspond aux rôles autorisés
+    const userRoles = decodedToken.roles || [];
+
     const hasAccess = allowedRoles.some(role => userRoles.includes(role));
 
     if (!hasAccess) {

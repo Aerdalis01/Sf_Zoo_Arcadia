@@ -27,7 +27,6 @@ const Header: React.FC = () => {
   };
 
   useEffect(() => {
-    console.log("connected:", connected, "userRoles:", userRoles); // Vérifiez que ces valeurs sont à jour
   }, [connected, userRoles]);
 
   useEffect(() => {
@@ -256,7 +255,7 @@ const Header: React.FC = () => {
           ) : (
 
             <li className="nav-item item-connexion col-3 mb-5 w-100">
-              <a className="nav-link text-warning fs-1 fw-semibold" href='/login'>
+              <a className="nav-link fs-1 fw-semibold" href='/login'>
                 Se connecter
               </a>
             </li>

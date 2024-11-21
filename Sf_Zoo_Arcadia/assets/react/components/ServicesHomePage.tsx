@@ -52,7 +52,7 @@ export const ServicesSection = () => {
                 <div className="img-service col-12 col-lg-6 ">
                   {service.image ? (
                     <img
-                      src={`http://127.0.0.1:8000${service.image.imagePath}`}
+                      src={`${process.env.REACT_APP_API_BASE_URL}${service.image.imagePath}`}
                       className="img-fluid rounded-5"
                       alt={`Image de ${service.nom}`}
                     />
@@ -62,7 +62,7 @@ export const ServicesSection = () => {
                       {service.sousServiceImages && service.sousServiceImages.map((image, index) => (
                         <Carousel.Item key={index} >
                           <img
-                            src={`http://127.0.0.1:8000${image.imagePath}`}
+                            src={`${process.env.REACT_APP_API_BASE_URL}${image.imagePath}`}
                             className="d-block w-100 rounded-5"
                             alt={`Image de ${service.nom} - ${index + 1}`}
                           />

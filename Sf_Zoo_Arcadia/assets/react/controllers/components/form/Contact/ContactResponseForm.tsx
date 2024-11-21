@@ -95,7 +95,6 @@ export function ContactResponseForm() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
         setSuccessMessage("Réponse envoyée avec succès.");
         setResponseMessage("");
         setContactData(null);

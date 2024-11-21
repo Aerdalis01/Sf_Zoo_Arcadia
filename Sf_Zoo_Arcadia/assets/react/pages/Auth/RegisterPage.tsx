@@ -60,19 +60,13 @@ export const RegisterPage = () => {
     }
 
     try {
-        // Hacher le mot de passe avant de l'envoyer
-        // const hashedPassword = await hashPassword(formValues.password);
-        // console.log("Mot de passe haché:", hashedPassword);
 
-        // Créer un nouvel objet avec le mot de passe haché
         const formDataToSend = {
             ...formValues,
-            // password: hashedPassword,
+            
         };
 
-        console.log("Données envoyées :", formDataToSend); // Vérifiez que le mot de passe haché est utilisé ici
-
-        const response = await fetch("http://127.0.0.1:8000/api/admin/register/new", {
+        const response = await fetch("/api/admin/register/new", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

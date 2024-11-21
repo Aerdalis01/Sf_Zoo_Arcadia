@@ -11,7 +11,6 @@ export const SousServiceDeleteForm = () => {
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = Number(e.target.value);
-    console.log("SousService sélectionné avec l'ID :", selectedId);
     setSelectedSousServiceId(selectedId);
   };
   useEffect(() => {

@@ -20,7 +20,6 @@ export const AnimalDetail: React.FC<AnimalDetailProps> = ({ animalId, onBack }) 
         if (!response.ok) throw new Error('Erreur lors de la récupération de l\'animal.');
 
         const data = await response.json();
-        console.log("Données de l'animal:", data);
 
 
 
@@ -57,7 +56,7 @@ export const AnimalDetail: React.FC<AnimalDetailProps> = ({ animalId, onBack }) 
               {animal.image && animal.image.imagePath ? (
                 <img
                   className="img-fluid rounded-circle mt-3 detail-animal--img"
-                  src={`http://127.0.0.1:8000${animal.image.imagePath}`}
+                  src={`${process.env.REACT_APP_API_BASE_URL}${animal.image.imagePath}`}
                   alt={animal.nom}
                 />
               ) : (

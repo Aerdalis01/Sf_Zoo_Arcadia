@@ -30,7 +30,6 @@ export function SousServiceFormUpdate() {
     fetch("/api/sousService")
       .then((response) => response.json())
       .then((data) => {
-        console.log("Sous-services récupérés :", data);
         setSousServices(data);
       })
       .catch((error) => {
@@ -40,11 +39,9 @@ export function SousServiceFormUpdate() {
   useEffect(() => {
     fetch("/api/service")
       .then((response) => {
-        console.log("Réponse brute de l'API :", response);
         return response.json();
       })
       .then((data) => {
-        console.log("Données des services :", data);
         setServices(data);
       })
       .catch((error) =>
@@ -55,14 +52,12 @@ export function SousServiceFormUpdate() {
     if (selectedSousServiceId !== null) {
       fetch(`/api/sousService/${selectedSousServiceId}`)
         .then((response) => {
-          console.log("Réponse brute:", response);
           if (!response.ok) {
             throw new Error("Erreur lors du chargement des sous services");
           }
           return response.json();
         })
         .then((data) => {
-          console.log("Services récupérés :", data);
 
           setSousServiceData({
             id: data.id || 0,
@@ -118,7 +113,6 @@ export function SousServiceFormUpdate() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formSousService = new FormData();
-    console.log("sous-service Data:", sousServiceData);
     formSousService.append("nom", sousServiceData.nom);
     formSousService.append("description", sousServiceData.description);
     formSousService.append("idService", sousServiceData.idService);
@@ -134,18 +128,10 @@ export function SousServiceFormUpdate() {
         formSousService.append(fieldName, file);
         formSousService.append(`${fieldName}_name`, imageNameGenerated);
         formSousService.append(`${fieldName}_sub_directory`, imageSubDirectory);
-        console.log(
-          `Nom de l'image généré pour ${fieldName}:`,
-          imageNameGenerated
-        );
       }
     };
     appendImage(file1, "image1");
     appendImage(file2, "image2");
-    console.log(
-      "Données envoyées :",
-      Array.from((formSousService as any).entries())
-    );
 
     fetch(`/api/sousService/${selectedSousServiceId}`, {
       method: "POST",

@@ -47,7 +47,7 @@ export function HabitatFormUpdate() {
       fetch(`/api/habitat/${selectedHabitat}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log("Données des habitats :", data);
+
       
         setFormData({
           id: data.id || 0,
@@ -107,7 +107,7 @@ export function HabitatFormUpdate() {
       formHabitat.append("image_sub_directory", imageSubDirectory);
     }
     formHabitat.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
+
     });
     fetch(`/api/habitat/update/${formData.id}`, {
       method: "POST",
@@ -115,7 +115,7 @@ export function HabitatFormUpdate() {
     })
     .then(async (response) => {
       const contentType = response.headers.get("content-type");
-      console.log("Content-Type de la réponse : ", contentType);
+
   
       if (!response.ok) {
         const errorText = await response.text();
@@ -127,12 +127,11 @@ export function HabitatFormUpdate() {
         return response.json();
       } else {
         const textResponse = await response.text(); // Affiche le contenu brut
-        console.log("Réponse brute reçue : ", textResponse);
+
         throw new Error("Réponse non JSON reçue.");
       }
     })
       .then((data) => {
-        console.log("Données de l'habitat: ", data);
         if (data && data.status === "success") {
           setSuccess("habitat modifié avec succès !");
           setFormData({

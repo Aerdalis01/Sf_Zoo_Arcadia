@@ -99,7 +99,6 @@ export function ServiceForm() {
       }
     })
     .then((data) => {
-      console.log("Données reçues:", data);
       if (data.status === "success") {
         setSuccessMessage("Service ajouté avec succès !");
         resetForm();

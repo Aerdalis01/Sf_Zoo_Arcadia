@@ -5,7 +5,6 @@ export const fetchRaces = async () => {
     throw new Error('Erreur lors du chargement des races');
   }
   const data = await res.json();
-  console.log("Races reçues depuis l'API:", data);
   return data;
 };
 

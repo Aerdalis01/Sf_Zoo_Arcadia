@@ -42,11 +42,9 @@ export function AnimalForm() {
   useEffect(() => {
     fetch("/api/habitat/")
       .then((response) =>{
-        console.log("Réponse brute de l'API :", response);
         return response.json();
       })
       .then((data) => {
-        console.log("Données des habitats :", data); 
         setHabitat(data);
       })
       .catch((error) =>
@@ -91,7 +89,6 @@ export function AnimalForm() {
       formAnimal.append("image_sub_directory", imageSubDirectory);
     }
     formAnimal.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
     });
     fetch("/api/animal/new", {
       method: "POST",

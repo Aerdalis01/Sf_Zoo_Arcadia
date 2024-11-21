@@ -25,7 +25,6 @@ export const ContactPage: React.FC = () => {
           throw new Error('Erreur lors de la récupération des horaires');
         }
         const data = await response.json();
-        console.log(data);
         setHoraires(data);
       } catch (error) {
         setError((error as Error).message);

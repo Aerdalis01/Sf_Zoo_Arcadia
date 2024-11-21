@@ -29,7 +29,6 @@ export const HoraireFormUpdate: React.FC = () => {
       fetch(`/api/horaire/${selectedHoraireId}`)
         .then((response) => response.json())
         .then((data) => {
-          console.log("Données des horaires :", data);
           const horaireData = Array.isArray(data) ? data[0] : data; // Gère le cas où `data` pourrait ne pas être un tableau
           setFormData({
             id: horaireData.id || 0,
@@ -49,7 +48,6 @@ export const HoraireFormUpdate: React.FC = () => {
   };
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const horaireId = Number(e.target.value);
-    console.log("Horaire sélectionné avec l'ID :", horaireId);
     setSelectedHoraireId(horaireId);
   };
 
@@ -74,7 +72,6 @@ export const HoraireFormUpdate: React.FC = () => {
           }
      
           const savedHoraire = await response.json();
-          console.log('Horaire enregistré:', savedHoraire);
           setFormData({ horaireTexte: '' });
           setSuccessMessage('Horaire modifié avec succès !');
         } catch (error) {

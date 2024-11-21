@@ -33,7 +33,6 @@ export const HoraireForm: React.FC = () => {
             }
 
             const savedHoraire = await response.json();
-            console.log('Horaire enregistré:', savedHoraire);
             setFormData({ horaireTexte: '' });
             setSuccessMessage('Horaire enregistré avec succès !');
         } catch (error) {

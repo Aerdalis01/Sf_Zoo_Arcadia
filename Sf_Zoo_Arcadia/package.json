@@ -15,6 +15,7 @@
         "@types/react-router-dom": "^5.3.3",
         "core-js": "^3.39.0",
         "dart-sass": "^1.25.0",
+        "dotenv-webpack": "^8.1.0",
         "file-loader": "^6.2.0",
         "html-webpack-plugin": "^5.6.0",
         "prettier": "^3.3.3",

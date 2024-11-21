@@ -25,11 +25,9 @@ export function SousServiceForm() {
   useEffect(() => {
     fetch("/api/service")
       .then((response) => {
-        console.log("Réponse brute de l'API :", response);
         return response.json();
       })
       .then((data) => {
-        console.log("Données des services :", data); 
         setServices(data);
       })
       .catch((error) =>
@@ -74,19 +72,10 @@ export function SousServiceForm() {
         formSousService.append(fieldName, file);
         formSousService.append(`${fieldName}_name`, imageNameGenerated);
         formSousService.append(`${fieldName}_sub_directory`, imageSubDirectory);
-        console.log(
-          `Nom de l'image généré pour ${fieldName}:`,
-          imageNameGenerated
-        );
       }
     };
     appendImage(file1, "file1");
     appendImage(file2, "file2");
-
-    console.log(
-      "FormData envoyé :",
-      Object.fromEntries((formSousService as any).entries())
-    );
 
     fetch("/api/sousService/new", {
       method: "POST",

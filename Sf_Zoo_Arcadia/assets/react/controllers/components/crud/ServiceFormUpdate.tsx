@@ -40,7 +40,6 @@ export function ServiceFormUpdate() {
     fetch("/api/service")
       .then((response) => response.json())
       .then((data) => {
-        console.log("Services récupérés :", data);
         setServices(data);
       })
       .catch((error) => {
@@ -52,14 +51,12 @@ export function ServiceFormUpdate() {
     if (selectedServiceId !== null) {
       fetch(`/api/service/${selectedServiceId}`)
         .then((response) => {
-          console.log("Réponse brute:", response);
           if (!response.ok) {
             throw new Error("Erreur lors du chargement des services");
           }
           return response.json();
         })
         .then((data) => {
-          console.log("Services récupérés :", data);
 
           setServiceData({
             id: data.id || 0,
@@ -98,7 +95,6 @@ export function ServiceFormUpdate() {
   //Gestion du changement du select
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = Number(e.target.value);
-    console.log("Service sélectionné avec l'ID :", selectedId);
     setSelectedServiceId(selectedId);
   };
 
@@ -119,7 +115,6 @@ export function ServiceFormUpdate() {
       return;
     }
     const formService = new FormData();
-    console.log("Service Data:", serviceData);
 
     formService.append("nom", serviceData.nom);
 
@@ -159,11 +154,6 @@ export function ServiceFormUpdate() {
       );
     }
 
-    console.log(
-      "Données envoyées :",
-      Array.from((formService as any).entries())
-    );
-
     fetch(`/api/service/update/${selectedServiceId}`, {
       method: "POST",
       body: formService,
@@ -178,7 +168,7 @@ export function ServiceFormUpdate() {
         return response.json();
       })
       .then((data) => {
-        console.log("Données renvoyées par le serveur:", data);
+  
         setSuccessMessage("Sous-service mis à jour avec succès !");
         setError(null);
       })
@@ -186,8 +176,8 @@ export function ServiceFormUpdate() {
         console.error("Erreur:", error);
         setError("Erreur lors de la mise à jour du sous-service.");
         setSuccessMessage(null);
-        formRef.current?.reset(); // Réinitialiser après le succès de la requête
-        setFile(null); // Réinitialiser l'image
+        formRef.current?.reset();
+        setFile(null); 
       });
 
   };

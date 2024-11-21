@@ -21,7 +21,6 @@ export const HabitatList = () => {
         }
 
         const data = await response.json();
-        console.log("Données récupérées :", data);
         setHabitats(data);
       } catch (err) {
         setError((err as Error).message);
@@ -34,7 +33,6 @@ export const HabitatList = () => {
   }, []);
 
   const handleHabitatClick = (id: number) => {
-    console.log("Habitat cliqué avec ID :", id);
     setSelectedHabitatId(id);
   };
 
@@ -54,8 +52,8 @@ export const HabitatList = () => {
       <div className="habitats-accueil">
         <img className="img-fluid w-100 d-block" src="/uploads/images/svgDeco/habitat-acc.svg" alt="un renne blanc les pattes dans un lac" />
       </div>
-      <div className="container-fluid habitats-container d-flex flex-column justify-content-center p-0 m-0">
-        <div className="habitat-content d-flex flex-row flex-wrap p-0 m-0 w-100">
+      <div className="container-fluid habitats-container d-flex flex-column justify-content-center align-items-center p-0 m-0">
+        <div className="habitat-content d-flex flex-row flex-wrap align-items-center justify-content-center p-0 m-0 w-100">
           <ul className="row w-100 list-unstyled">
             {habitats.map((habitat) => (
               <li
@@ -68,7 +66,7 @@ export const HabitatList = () => {
                 {habitat.image && (
                   <div className='circular-container'>
                     <img
-                      src={`http://127.0.0.1:8000${habitat.image.imagePath}`}
+                      src={`${process.env.REACT_APP_API_BASE_URL}${habitat.image.imagePath}`}
                       alt={`Image de ${habitat.nom}`}
                       className="img-fluid img-circular"
                     />

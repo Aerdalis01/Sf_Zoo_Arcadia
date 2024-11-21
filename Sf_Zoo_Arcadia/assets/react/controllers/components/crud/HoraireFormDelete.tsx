@@ -9,7 +9,6 @@ export const HoraireFormDelete: React.FC = () => {
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const horaireId = Number(e.target.value);
-    console.log("Horaire sélectionné avec l'ID :", horaireId);
     setSelectedHoraireId(horaireId);
   };
 

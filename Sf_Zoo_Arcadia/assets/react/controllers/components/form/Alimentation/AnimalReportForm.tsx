@@ -95,7 +95,7 @@ export function AnimalReportForm({ onSubmit }: AnimalReportFormProps) {
 
 
     formReport.forEach((value, key) => {
-      console.log(key, value); // Affiche chaque clé et valeur
+
     });
     if (selectedReportId !== null) {
       formReport.append("alimentation", selectedReportId.toString());
@@ -112,7 +112,6 @@ export function AnimalReportForm({ onSubmit }: AnimalReportFormProps) {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
         setSuccessMessage(data.message);
         setError(null);
 

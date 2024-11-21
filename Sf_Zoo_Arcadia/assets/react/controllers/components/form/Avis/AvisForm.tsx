@@ -59,10 +59,8 @@ export function AvisForm ({ handleFormToggle, onFormSuccess }) {
       body: formAvis,
     })
     .then(async (response) => {
-      console.log('Réponse du serveur :', response);
       if (response.ok) {
         const data = await response.json();
-        console.log('Données reçues :', data);
         handleFormToggle();
         onFormSuccess("Avis créé avec succès !");
       } else {

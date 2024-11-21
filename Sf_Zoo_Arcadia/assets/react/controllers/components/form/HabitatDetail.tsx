@@ -36,7 +36,6 @@ export const HabitatDetail: React.FC<HabitatDetailProps> = ({ habitatId, onBack 
 
 
   const handleAnimalClick = async (id: number, nom: string) => {
-    console.log("Animal cliqué avec ID :", id, "et nom", nom);
     setSelectedAnimalId(id);
     setSelectedAnimalName(nom);
     try {
@@ -47,7 +46,6 @@ export const HabitatDetail: React.FC<HabitatDetailProps> = ({ habitatId, onBack 
         },
       });
       const data = await response.json();
-      console.log(data.message); 
     } catch (error) {
       console.error("Erreur lors de l'incrémentation de la visite", error);
     }
@@ -66,14 +64,14 @@ export const HabitatDetail: React.FC<HabitatDetailProps> = ({ habitatId, onBack 
 
   return (
     <div className="habitat-detail d-flex flex-column align-items-center">
-      <div className="habitat-text text-center align-items-center rounded-5">
+      <div className="habitat-text text-center align-items-center justify-content-center rounded-5">
         <h2>{habitat.nom}</h2>
         <p>{habitat.description}</p>
       </div>
       {habitat.image && (
         <img
           className="habitat-img"
-          src={`http://127.0.0.1:8000${habitat.image.imagePath}`}
+          src={`${process.env.REACT_APP_API_BASE_URL}${habitat.image.imagePath}`}
           alt={habitat.nom}
         />
       )}
@@ -97,7 +95,7 @@ export const HabitatDetail: React.FC<HabitatDetailProps> = ({ habitatId, onBack 
               </p>
               {animal.image && (
                 <img
-                  src={`http://127.0.0.1:8000${animal.image.imagePath}`}
+                  src={`${process.env.REACT_APP_API_BASE_URL}${animal.image.imagePath}`}
                   alt={animal.nom}
                   className="img-fluid animal-img"
                 />

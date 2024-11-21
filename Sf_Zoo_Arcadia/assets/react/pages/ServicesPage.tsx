@@ -153,7 +153,7 @@ export const ServicePage = () => {
                               {Array.isArray(sousService.image) && sousService.image.length > 0 ? (
                                 <div className="img-container d-flex justify-content-center p-0">
                                   <img
-                                    src={`http://127.0.0.1:8000${mainImage.imagePath}`}
+                                    src={`${process.env.REACT_APP_API_BASE_URL}${mainImage.imagePath}`}
                                     alt={`Image de ${sousService.nom}`}
                                     className="img-fluid sousService-img rounded-5"
                                   />
@@ -174,7 +174,7 @@ export const ServicePage = () => {
                                 <Modal.Body className="text-center">
                                   {menuImagePath && (
                                     <img
-                                      src={`http://127.0.0.1:8000${menuImagePath}`}
+                                      src={`${process.env.REACT_APP_API_BASE_URL}${menuImagePath}`}
                                       alt="Image du menu"
                                       className="img-fluid"
                                     />
@@ -194,7 +194,7 @@ export const ServicePage = () => {
                                 <Modal.Body className="text-center w-100">
                                   {carteZooImagePath && (
                                     <img
-                                      src={`http://127.0.0.1:8000${carteZooImagePath}`}
+                                      src={`${process.env.REACT_APP_API_BASE_URL}${carteZooImagePath}`}
                                       alt="Carte du zoo"
                                       className="img-fluid w-100"
                                     />
@@ -215,14 +215,14 @@ export const ServicePage = () => {
                     <div className="d-flex flex-column flex-sm-row w-100 text-center align-items-center justify-content-center p-1">
                       <div className='service-img col-6 col-lg-5'>
                         <img
-                          src={`http://127.0.0.1:8000${service.image.imagePath}`}
+                          src={`${process.env.REACT_APP_API_BASE_URL}${service.image.imagePath}`}
                           alt={`Image de ${service.nom}`}
                           className="img-fluid rounded-5 col-10 p-1"
                         />
                       </div>
                       <div className="col-6 col-lg-5 d-flex justify-content-center p-1">
                         <div
-                          className="visite--card-body col-10 bg-warning rounded-5 h-100 d-flex flex-column align-items-center justify-content-center">
+                          className="visite--card-body col-12 col-sm-10 bg-warning rounded-5 h-100 d-flex flex-column align-items-center justify-content-center overflow-auto">
                           <p className="card service-description">{service.description}</p>
                         </div>
                       </div>

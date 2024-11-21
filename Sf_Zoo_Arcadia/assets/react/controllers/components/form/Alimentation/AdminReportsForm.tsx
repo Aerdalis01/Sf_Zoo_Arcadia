@@ -37,8 +37,6 @@ export function AdminReports() {
         throw new Error("Erreur lors du chargement des rapports.");
       }
       const data = await response.json();
-      console.log("voici le report", reports);
-      console.log(data);
       setReports(data);
     } catch (err) {
       setError(err.message);
