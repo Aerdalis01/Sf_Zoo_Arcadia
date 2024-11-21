@@ -5,8 +5,9 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[HasLifecycleCallbacks]
@@ -16,11 +17,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    
+
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'L\'email est obligatoire.')]
+    #[Assert\Email(message: 'L\'email n\'est pas valide.')]
     private ?string $email = null;
-    
+
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le mot de passe est obligatoire.')]
+    #[Assert\Length(
+        min: 6,
+        minMessage: 'Le mot de passe doit contenir au moins 6 caractères.'
+    )]
     private ?string $password = null;
 
     #[ORM\Column(type: 'json')]
@@ -33,15 +41,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\PrePersist]
-    public function prePersist() {
-        
+    public function prePersist()
+    {
         $this->setCreatedAt(new \DateTimeImmutable());
         $this->setUpdatedAt(new \DateTimeImmutable());
-
     }
-    #[ORM\PreUpdate]
-    public function preUpdate() {
 
+    #[ORM\PreUpdate]
+    public function preUpdate()
+    {
         $this->setUpdatedAt(new \DateTimeImmutable());
     }
 
@@ -76,9 +84,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserIdentifier(): string
     {
-        return (string)$this->email;
+        return (string) $this->email;
     }
-    
+
     public function getRoles(): array
     {
         $roles = $this->roles;
@@ -117,10 +125,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-    
 
     public function eraseCredentials(): void
     {
-
     }
 }

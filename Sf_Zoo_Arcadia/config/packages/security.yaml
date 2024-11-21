@@ -40,7 +40,7 @@ security:
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/alimentation/new, roles: ROLE_ADMIN }
         - { path: ^/api/animalReport/new, roles: ROLE_ADMIN }
-        # - { path: ^/api/horaire/update, roles: ROLE_ADMIN }
+        - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/public, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
 when@test:

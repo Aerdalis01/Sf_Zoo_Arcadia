@@ -9,6 +9,11 @@ parameters:
     env(MONGODB_URL): ''
     env(MONGODB_DB): ''
     
+    user_roles_map:
+        admin: ['ROLE_ADMIN']
+        employe: ['ROLE_EMPLOYE']
+        veterinaire: ['ROLE_VETERINAIRE']
+        
 services:
     
     _defaults:
@@ -17,9 +22,6 @@ services:
         bind:
             $passwordHasher: '@security.password_hasher'
     
-    # App\Controller\:
-    #     resource: '../src/controller'
-    #     tags: ['controller.service_arguments']
 
     App\:
         resource: '../src/'
@@ -28,24 +30,10 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    
     App\Service\MailerService:
         arguments:
             $fromEmail: '%env(MAILER_FROM_EMAIL)%'
-            
-    # App\Service\AdminInitializer:
-    #     arguments:
-    #         $entityManager: '@doctrine.orm.entity_manager'
-    #         $passwordHasher: '@security.password_hasher'
-    #         $adminEmail: '%env(ADMIN_EMAIL)%'
-    #         $adminPassword: '%env(ADMIN_PASSWORD)%'
-    #     public: false
 
-    # App\Command\InitializeAdminCommand:
-    #         arguments:
-    #             $adminInitializer: '@App\Service\AdminInitializer'
-    #         tags:
-    #             - { name: 'console.command' }
     App\Service\ImageManagerService:
         arguments:
             $imageDirectory: '%images_directory%'
@@ -53,19 +41,15 @@ services:
     App\Service\ServiceService:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
+
     App\Command\InitializeAdminCommand:
         arguments:
             $adminInitializer: '@App\Service\AdminInitializer'
+
     App\Service\AdminInitializer:
         arguments:
             $parameterBag: '@parameter_bag'
             $entityManager: '@doctrine.orm.entity_manager'
             $passwordHasher: '@security.password_hasher'
             $logger: '@logger'
-    # App\Controller\AuthController:
-    #     autowire: true
-    #     autoconfigure: true
-    #     public: true
-    # App\EventListener\CorsListener:
-    #     tags:
-    #         - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
+
