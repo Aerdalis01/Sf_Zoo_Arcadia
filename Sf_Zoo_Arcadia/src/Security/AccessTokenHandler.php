@@ -24,7 +24,6 @@ class AccessTokenHandler implements AccessTokenHandlerInterface
             throw new \Exception('Email non trouvé dans le token.');
         }
 
-        // Créer un UserBadge en utilisant directement l'email
         return new UserBadge($email, function ($userIdentifier) {
             return $this->userProvider->loadUserByIdentifier($userIdentifier);
         });

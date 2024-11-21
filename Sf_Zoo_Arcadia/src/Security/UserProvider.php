@@ -17,10 +17,8 @@ class UserProvider implements UserProviderInterface
         $this->entityManager = $entityManager;
     }
 
-    // Charger un utilisateur par son email
     public function loadUserByIdentifier(string $identifier): UserInterface
     {
-        dd('bonjour');
         $user = $this->entityManager->getRepository(User::class)
             ->findOneBy(['email' => $identifier]);
 
@@ -31,7 +29,6 @@ class UserProvider implements UserProviderInterface
         return $user;
     }
 
-    // Rafraîchir l'utilisateur authentifié
     public function refreshUser(UserInterface $user): UserInterface
     {
         if (!$user instanceof User) {
@@ -41,7 +38,6 @@ class UserProvider implements UserProviderInterface
         return $this->loadUserByIdentifier($user->getUserIdentifier());
     }
 
-    // Vérifie si la classe donnée est supportée par ce provider
     public function supportsClass(string $class): bool
     {
         return is_a($class, User::class, true);

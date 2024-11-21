@@ -1,23 +1,11 @@
-import { jwtDecode } from "jwt-decode";
+
 import React from "react";
 import { useState } from "react";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 
-export const getUserRoles = (): string[] => {
-  const token = localStorage.getItem("jwt_token");
-  if (token) {
-    try {
-      const decodedToken: any = jwtDecode(token);
-      return decodedToken.roles || []; 
-    } catch (error) {
-      console.error("Erreur lors du décodage du token JWT", error);
-      return [];
-    }
-  }
-  return [];
-};
+
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -61,11 +49,9 @@ export const LoginPage: React.FC = () => {
         login(token);
         setSuccessMessage("Connexion réussie !");
         localStorage.setItem("jwt_token", token);
-
-        // Attendre 2 secondes pour afficher le message de succès, puis rediriger
         setTimeout(() => {
-          setSuccessMessage(null); // Effacer le message
-          navigate("/"); // Rediriger après l'affichage du message
+          setSuccessMessage(null);
+          navigate("/"); 
         }, 2000);
       } else {
         setFormError("Échec de la connexion. Veuillez réessayer.");
@@ -79,7 +65,7 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  // Handle input changes
+  
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormValues((prevValues) => ({

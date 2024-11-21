@@ -13,19 +13,19 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        api_login:
-            pattern: ^/api/login
-            provider: app_user_provider
-            json_login:
-                check_path: /api/login
-                username_path: email
-                password_path: password
-                success_handler: App\Security\LoginSuccessHandler
-                failure_handler: App\Security\LoginFailureHandler
+        # api_login:
+        #     pattern: ^/api/login
+        #     provider: app_user_provider
+        #     json_login:
+        #         check_path: /api/login
+        #         username_path: email
+        #         password_path: password
+        #         success_handler: App\Security\LoginSuccessHandler
+                
 
 
         api:
-            pattern: ^/api/  # Toutes les routes /api/ sont protégées
+            pattern: ^/api/ 
             provider: app_user_provider
             access_token:
                 token_handler: App\Security\AccessTokenHandler
@@ -36,12 +36,11 @@ security:
             access_token:
                 token_handler: App\Security\AccessTokenHandler
 
-    access_control:
-        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/alimentation/new, roles: ROLE_ADMIN }
-        - { path: ^/api/animalReport/new, roles: ROLE_ADMIN }
-        - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/public, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    # access_control:
+    #     - { path: ^/api/login, roles: ROLE_USER }
+    #     - { path: ^/api/alimentation/new, roles: ROLE_ADMIN }
+    #     - { path: ^/api/animalReport/new, roles: ROLE_ADMIN }
+        
 
 when@test:
     security:

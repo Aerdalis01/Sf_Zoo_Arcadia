@@ -5,8 +5,6 @@ import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 export const fetchAuth = async (url: string,  options: RequestInit = {}) => {
   const token = localStorage.getItem('jwt_token');
-
-
   if (!token) {
     throw new Error("Utilisateur non authentifié");
   }
@@ -25,7 +23,7 @@ export const fetchAuth = async (url: string,  options: RequestInit = {}) => {
 
   const response = await fetch(url, {
     ...options,
-    headers, // Utilisation de l'instance de Headers
+    headers, 
   });
 
   if (response.status === 401) {

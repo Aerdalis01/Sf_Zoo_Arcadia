@@ -18,39 +18,63 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const navigate = useNavigate();
 
-
-  useEffect(() => {
-    const roles = getRolesFromToken();
-    if (roles.length > 0) {
-      setUserRoles(roles);
-      setIsConnected(true);
+  const isTokenExpired = (token: string): boolean => {
+    try {
+      const decodedToken: any = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000);
+      return decodedToken.exp < currentTime;
+    } catch (error) {
+      return true;
     }
-  }, []);
-
-  const login = (token: string) => {
-    localStorage.setItem("jwt_token", token);
-    const decodedToken: any = jwtDecode(token);
-    setUserRoles(decodedToken.roles);
-    setIsConnected(true);
   };
 
-  const logout = () => {
-    localStorage.removeItem("jwt_token");
-    setIsConnected(false);
-    setUserRoles([]);
-  };
+ 
+
   const getRolesFromToken = (): string[] => {
     const token = localStorage.getItem("jwt_token");
     if (token) {
       try {
         const decodedToken: any = jwtDecode(token);
-        return decodedToken.roles || [];
+        return Array.isArray(decodedToken.roles) ? decodedToken.roles : [];
       } catch (error) {
-        console.error("Erreur lors du décodage du token JWT", error);
+        console.error("Erreur lors de la décodification du token :", error);
       }
     }
     return [];
   };
+
+  const login = (token: string) => {
+    localStorage.setItem("jwt_token", token);
+    const decodedToken: any = jwtDecode(token);
+    console.log("Rôles de l'utilisateur à la connexion :", decodedToken.roles);
+    setUserRoles(Array.isArray(decodedToken.roles) ? decodedToken.roles : []);
+    setIsConnected(true);
+  };
+
+  const logout = async () => {
+    try {
+      await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include', 
+      });
+      localStorage.removeItem("jwt_token");
+      setIsConnected(false);
+      setUserRoles([]);
+      navigate("/login");
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion :", error);
+      
+    }
+  };
+  useEffect(() => {
+    const token = localStorage.getItem("jwt_token");
+    if (token && !isTokenExpired(token)) {
+      setUserRoles(getRolesFromToken());
+      setIsConnected(true);
+    } else if (token) {
+      logout();
+    }
+  }, []);
 
   return (
     <AuthContext.Provider value={{ connected, userRoles, login, logout, getRolesFromToken }}>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { getUserRoles } from "../../../pages/Auth/LoginPage";
+import { useAuth } from "../../../pages/Auth/AuthContext";
 
 
 interface SidebarProps {
@@ -8,7 +8,8 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ onSectionChange }) => {
-  const userRoles = getUserRoles();
+  const { getRolesFromToken } = useAuth();
+  const userRoles = getRolesFromToken();
   const [isClick, setIsClick] = useState(false);
 
   const toggleSidebar = () => {

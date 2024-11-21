@@ -10,10 +10,10 @@ parameters:
     env(MONGODB_DB): ''
     
     user_roles_map:
-        admin: ['ROLE_ADMIN']
-        employe: ['ROLE_EMPLOYE']
-        veterinaire: ['ROLE_VETERINAIRE']
-        
+            admin: ['ROLE_ADMIN']
+            employe: ['ROLE_EMPLOYE']
+            veterinaire: ['ROLE_VETERINAIRE']
+
 services:
     
     _defaults:
@@ -52,4 +52,7 @@ services:
             $entityManager: '@doctrine.orm.entity_manager'
             $passwordHasher: '@security.password_hasher'
             $logger: '@logger'
-
+            
+    App\Controller\RegistrationController:
+        arguments:
+            $rolesMap: '%user_roles_map%'
