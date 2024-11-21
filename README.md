@@ -6,9 +6,9 @@ Zoo Arcadia est une application de gestion d’un zoo, permettant de gérer les 
 ## Pré-requis
 
 ### Backend :
-- **PHP** : >=8.0.2 (Requis pour Symfony 6.x)
-- **Symfony** : 6.x (Version LTS maintenue)
-- **Doctrine ORM** : ^2.8 (Gestion des bases de données avec MySQL)
+- **PHP** : >=8.2 
+- **Symfony CLI** 
+- **Doctrine ORM** : ^3.2
 - **Composer** : 2.x ou supérieur (Gestionnaire de dépendances PHP)
 - **MySQL** : (ou tout autre gestionnaire de base de données relationnel compatible)
 - **MongoDB** : Base de donnée non relationnel
@@ -22,8 +22,38 @@ Zoo Arcadia est une application de gestion d’un zoo, permettant de gérer les 
 - **Webpack Encore** (Bundle pour gérer les assets)
 
 ## Commandes d'installation
+1.**Se déplacer dans le bon répertoire**
+    ```bash
+      cd Sf_Zoo_Arcadia
 
 ### Backend :
+1. **Installer les dépendances PHP** :
+  ```bash
+  composer install
+
+2. **Configurer l'environnement** :
+  Dupliquez le fichier .env et nommez-le .env.local. Modifiez les paramètres de connexion à la base de données et autres variables d'environnement si nécessaire.
+
+  DATABASE_URL="mysql://user:password@127.0.0.1:3306/sf_zoo_arcadia?serverVersion=mariadb-10.5.8" 
+
+4. **Installer les dépendances front-end**
+  ```bash
+    npm install
+    npm run dev
+
+5. **Attribuer les droit au fichiers reset_db_and_init.sh**
+    ```bash
+      chmod +x reset_db_and_init.sh
+
+6. **Créer les bdd et implémenter les données**
+    ```bash
+      ./reset_db_and_init.sh
+
+7. **Démarer le serveur symfony**
+    ```bash
+      symfony serve
+### Backend :
+
 
 1. **Créer un projet Symfony** :
    ```bash
