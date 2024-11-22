@@ -88,6 +88,7 @@ export function HabitatFormUpdate() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const token = localStorage.getItem("jwt_token");
     const formHabitat = new FormData();
     formHabitat.append("nom", formData.nom);
     formHabitat.append("description", formData.description);
@@ -111,6 +112,9 @@ export function HabitatFormUpdate() {
     });
     fetch(`/api/habitat/update/${formData.id}`, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formHabitat,
     })
     .then(async (response) => {

@@ -6,6 +6,7 @@ use App\Entity\Animal;
 use App\Entity\Habitat;
 use App\Service\HabitatService;
 use App\Service\ImageManagerService;
+use App\Service\TokenValidatorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,7 +15,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/habitat', name: 'app_api_habitat_')]
@@ -26,7 +26,8 @@ class HabitatController extends AbstractController
         private LoggerInterface $logger,
         private ImageManagerService $imageManager,
         private ParameterBagInterface $parameterBag,
-        private SerializerInterface $serializer
+        private SerializerInterface $serializer,
+        private TokenValidatorService $tokenValidator
     ) {
     }
 
@@ -55,9 +56,12 @@ class HabitatController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request): JsonResponse
     {
+        $this->tokenValidator->validateTokenAndRoles(
+            $request->headers->get('Authorization'),
+            ['ROLE_ADMIN']
+        );
         try {
             $nom = $request->request->get('nom');
             $description = $request->request->get('description');
@@ -100,9 +104,12 @@ class HabitatController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function update(int $id, Request $request): JsonResponse
     {
+        $this->tokenValidator->validateTokenAndRoles(
+            $request->headers->get('Authorization'),
+            ['ROLE_ADMIN']
+        );
         try {
             $habitat = $this->entityManager->getRepository(Habitat::class)->find($id);
 
@@ -143,7 +150,6 @@ class HabitatController extends AbstractController
     }
 
     #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function deleteService(int $id): JsonResponse
     {
         try {

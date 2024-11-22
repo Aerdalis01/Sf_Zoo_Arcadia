@@ -58,6 +58,7 @@ export function ServiceForm() {
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const token = localStorage.getItem("jwt_token");
     const formService = new FormData();
     formService.append("nom", formData.nom);
 
@@ -87,13 +88,16 @@ export function ServiceForm() {
     }
     fetch("/api/service/new", {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formService,
     })
     .then(response => {
-      // Vérifier si la réponse est bien en JSON
+      
       const contentType = response.headers.get("Content-Type");
       if (contentType && contentType.includes("application/json")) {
-        return response.json();  // Si c'est du JSON, on le parse
+        return response.json(); 
       } else {
         throw new Error('Réponse non-JSON reçue du serveur');
       }
@@ -148,7 +152,9 @@ export function ServiceForm() {
       <button type="submit">Soumettre</button>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
-      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+      {successMessage && <p style={{ color: "green", fontWeight: "bold", marginTop: "10px" }}>
+            {successMessage}
+        </p>}
     </form>
   );
 }

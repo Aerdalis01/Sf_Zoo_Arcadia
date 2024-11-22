@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Service;
 use App\Service\ImageManagerService;
+use App\Service\JwtService;
 use App\Service\ServiceService;
+use App\Service\TokenValidatorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,7 +15,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/service', name: '_app_api_service_')]
@@ -24,7 +25,9 @@ class ServiceController extends AbstractController
         private EntityManagerInterface $entityManager,
         private LoggerInterface $logger,
         private ImageManagerService $imageManagerService,
-        private ParameterBagInterface $parameterBag)
+        private ParameterBagInterface $parameterBag,
+        private JwtService $jwtService,
+        private TokenValidatorService $tokenValidator)
     {
     }
 
@@ -52,9 +55,12 @@ class ServiceController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function createService(Request $request, ImageManagerService $imageManagerService): JsonResponse
     {
+        $this->tokenValidator->validateTokenAndRoles(
+            $request->headers->get('Authorization'),
+            ['ROLE_ADMIN']
+        );
         try {
             $nom = $request->get('nom');
             $description = $request->get('description');
@@ -72,18 +78,15 @@ class ServiceController extends AbstractController
             $image = null;
 
             if ($imageFile instanceof UploadedFile) {
-                // Récupérer le nom original du fichier (sans l'extension)
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $timestamp = time();
                 $extension = $imageFile->guessExtension();
                 $imageName = sprintf('%s-%s.%s', $originalFilename, $timestamp, $extension);
 
-                // Enregistrer l'image
                 $image = $imageManagerService->createImage($imageName, $imageSubDirectory, $imageFile);
                 $this->entityManager->persist($image);
             }
 
-            // Créer ou mettre à jour le -service avec le service ServiceService
             $service = $this->serviceService->createOrUpdateService(null, [
                 'nom' => $nom,
                 'description' => $description,
@@ -91,9 +94,8 @@ class ServiceController extends AbstractController
                 'horaire' => $horaireTexte,
                 'carteZoo' => $carteZoo,
             ], $image, $request);
-            // Attacher l'image au service
+
             if ($image !== null) {
-                // Attacher l'image au service
                 $service->setImage($image);
                 $image->setService($service);
             }
@@ -107,16 +109,18 @@ class ServiceController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]
-    #[IsGranted(['ROLE_ADMIN', 'ROLE_EMPLOYE'])]
     public function updateService(int $id, Request $request): JsonResponse
     {
+        $this->tokenValidator->validateTokenAndRoles(
+            $request->headers->get('Authorization'),
+            ['ROLE_ADMIN', 'ROLE_EMPLOYE']
+        );
         try {
             $service = $this->entityManager->getRepository(Service::class)->find($id);
             if (!$service) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Service non trouvé'], 404);
             }
 
-            // Récupérer les données du formulaire
             $nom = $request->get('nom');
             $description = $request->get('description');
             $titre = $request->get('titre');
@@ -128,7 +132,6 @@ class ServiceController extends AbstractController
             $imageSubDirectory = $request->request->get('image_sub_directory');
             $image = $this->imageManagerService->handleImageUpload($imageFile, $imageSubDirectory);
 
-            // Utiliser createOrUpdateService pour mettre à jour le service
             $service = $this->serviceService->createOrUpdateService($service, [
                 'nom' => $nom,
                 'description' => $description,
@@ -147,7 +150,6 @@ class ServiceController extends AbstractController
     }
 
     #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function deleteService(int $id): JsonResponse
     {
         $service = $this->entityManager->getRepository(Service::class)->find($id);

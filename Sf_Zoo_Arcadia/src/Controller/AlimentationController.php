@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Alimentation;
 use App\Entity\Animal;
+use App\Entity\Token;
+use App\Service\JwtService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -11,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/alimentation', name: 'app_api_alimentation_')]
@@ -19,18 +22,21 @@ class AlimentationController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private SerializerInterface $serializer,
-        private Security $security
+        private Security $security,
+        private JwtService $jwtService
     ) {
     }
+
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(): JsonResponse
     {
         $alimentation = $this->em->getRepository(Alimentation::class)->findAll();
-        ;
+
         $data = $this->serializer->serialize($alimentation, 'json', ['groups' => 'alimentation']);
 
         return new JsonResponse($data, JsonResponse::HTTP_OK, [], true);
     }
+
     #[Route('/reports', name: 'reports', methods: ['GET'])]
     public function getAlimentationReports(): JsonResponse
     {
@@ -40,33 +46,32 @@ class AlimentationController extends AbstractController
         ->leftJoin('a.animal', 'an') // Joins l'entité Animal associée
         ->getQuery();
 
-    $alimentationReports = $query->getArrayResult();
+        $alimentationReports = $query->getArrayResult();
 
-    foreach ($alimentationReports as &$report) {
-        if (isset($report['date']) && $report['date'] instanceof \DateTime) {
-            $report['formattedDate'] = $report['date']->format('Y-m-d');
-        } else {
-            $report['formattedDate'] = null;
+        foreach ($alimentationReports as &$report) {
+            if (isset($report['date']) && $report['date'] instanceof \DateTime) {
+                $report['formattedDate'] = $report['date']->format('Y-m-d');
+            } else {
+                $report['formattedDate'] = null;
+            }
+
+            if (isset($report['heure']) && $report['heure'] instanceof \DateTime) {
+                $report['formattedHeure'] = $report['heure']->format('H:i:s');
+            } else {
+                $report['formattedHeure'] = null;
+            }
         }
 
-        if (isset($report['heure']) && $report['heure'] instanceof \DateTime) {
-            $report['formattedHeure'] = $report['heure']->format('H:i:s');
-        } else {
-            $report['formattedHeure'] = null;
-        }
-    }
+        $data = $this->serializer->serialize($alimentationReports, 'json', ['groups' => 'alimentation']);
 
-
-    $data = $this->serializer->serialize($alimentationReports, 'json', ['groups' => 'alimentation']);
-
-    return new JsonResponse($data, 200, [], true); // `true` pour éviter de re-sérialiser
+        return new JsonResponse($data, 200, [], true); // `true` pour éviter de re-sérialiser
     }
 
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(int $id): JsonResponse
     {
         $alimentation = $this->em->getRepository(Alimentation::class)->find($id);
-        ;
+
         if (!$alimentation) {
             return new JsonResponse(['error' => 'Habitat not found'], 404);
         }
@@ -78,17 +83,36 @@ class AlimentationController extends AbstractController
     #[Route('/new', name: 'new', methods: ['POST'])]
     public function new(Request $request): Response
     {
-
         try {
-            if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_EMPLOYE')) {
-                return new JsonResponse(['message' => 'Accès refusé'], 403);
+            $authorizationHeader = $request->headers->get('Authorization');
+
+            if (!$authorizationHeader || !str_starts_with($authorizationHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token manquant ou invalide'], 401);
             }
 
-            $user = $this->getUser();
-            if (!$user) {
-                return new JsonResponse(['message' => 'Aucun utilisateur connecté'], 401);
+            $token = substr($authorizationHeader, 7);
+
+            $existingToken = $this->em->getRepository(Token::class)->findOneBy(['token' => $token]);
+            if (!$existingToken) {
+                throw new CustomUserMessageAuthenticationException('Token invalide ou supprimé.');
             }
-            $email = $user->getUserIdentifier();
+            try {
+                $decodedToken = $this->jwtService->decode($token);
+            } catch (\Exception $e) {
+                return new JsonResponse(['error' => $e->getMessage()], 401);
+            }
+
+            $requiredRoles = ['ROLE_ADMIN', 'ROLE_EMPLOYE'];
+            $userRoles = $decodedToken['roles'] ?? [];
+
+            if (empty(array_intersect($requiredRoles, $userRoles))) {
+                return new JsonResponse(['error' => 'Accès interdit'], 403);
+            }
+
+            $email = $decodedToken['email'] ?? null;
+            if (!$email) {
+                return new JsonResponse(['error' => 'Email non présent dans le token'], 400);
+            }
 
             $nourriture = $request->get('nourriture');
             $quantite = $request->get('quantite');
@@ -97,7 +121,7 @@ class AlimentationController extends AbstractController
             if (!$nourriture || !$quantite || !$idAnimal) {
                 return new JsonResponse([
                     'status' => 'error',
-                    'message' => 'Tous les champs sont requis'
+                    'message' => 'Tous les champs sont requis',
                 ], Response::HTTP_BAD_REQUEST);
             }
 
@@ -118,13 +142,12 @@ class AlimentationController extends AbstractController
             return new JsonResponse([
                 'status' => 'success',
                 'message' => 'Alimentation créée avec succès',
-                'alimentationId' => $alimentation->getId()
+                'alimentationId' => $alimentation->getId(),
             ], Response::HTTP_CREATED);
-
         } catch (\Exception $e) {
             return new JsonResponse([
                 'status' => 'error',
-                'message' => 'Erreur : ' . $e->getMessage()
+                'message' => 'Erreur : '.$e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -143,7 +166,7 @@ class AlimentationController extends AbstractController
 
             return new JsonResponse(['status' => 'success', 'message' => 'Alimentation supprimée avec succès'], 200);
         } catch (\Exception $e) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Erreur lors de la suppression : ' . $e->getMessage()], 500);
+            return new JsonResponse(['status' => 'error', 'message' => 'Erreur lors de la suppression : '.$e->getMessage()], 500);
         }
     }
 }

@@ -65,7 +65,7 @@ export function AnimalReportForm({ onSubmit }: AnimalReportFormProps) {
         } 
       } catch (error) {
         console.error("Erreur de requête:", error);
-        setError("Erreur lors de la vérification des rapports animaux.");
+        
       }
     } else {
       setError("Rapport d'alimentation non trouvé.");

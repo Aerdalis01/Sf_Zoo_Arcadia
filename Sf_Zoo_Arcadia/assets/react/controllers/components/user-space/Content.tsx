@@ -68,7 +68,7 @@ export const Content: React.FC<{ section: string }> = ({ section }) => {
         switch (crudAction) {
           case "create":
             return <SousServiceForm />;
-          case "update":
+          case "edit":
             return <SousServiceFormUpdate />;
           case "delete":
             return <SousServiceDeleteForm />;

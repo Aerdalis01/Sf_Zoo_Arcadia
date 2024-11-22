@@ -51,6 +51,7 @@ export function SousServiceForm() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const token = localStorage.getItem("jwt_token");
     const formSousService = new FormData();
     formSousService.append("nom", formData.nom);
     formSousService.append("description", formData.description);
@@ -79,6 +80,10 @@ export function SousServiceForm() {
 
     fetch("/api/sousService/new", {
       method: "POST",
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formSousService,
     })
       .then((response) => {
@@ -117,7 +122,7 @@ export function SousServiceForm() {
         setError("Erreur lors de l'ajout du service.");
         setSuccessMessage(null);
       });
-      formRef.current.reset();
+    formRef.current.reset();
   };
 
   return (
@@ -156,11 +161,11 @@ export function SousServiceForm() {
         onChange={handleCheckboxChange}
       />
       <div>
-        <ImageForm serviceName={formData.nom} onImageSelect={setFile1} resetImage={resetImage}/>
+        <ImageForm serviceName={formData.nom} onImageSelect={setFile1} resetImage={resetImage} />
       </div>
       <hr />
       <div>
-        <ImageForm serviceName={formData.nom} onImageSelect={setFile2} resetImage={resetImage}/>
+        <ImageForm serviceName={formData.nom} onImageSelect={setFile2} resetImage={resetImage} />
       </div>
       <button type="submit">Soumettre</button>
 

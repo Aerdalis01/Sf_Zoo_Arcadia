@@ -24,8 +24,8 @@ class ImageManagerService
             $timestamp = (new \DateTime())->format('YmdHis');
             $newFilename = $safeFilename.'-'.$timestamp.'-'.uniqid().'.'.$imageFile->guessExtension();
             $newFilename = basename($newFilename);
-            // Vérification du type MIME
-            $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+            $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
             $mimeType = $imageFile->getMimeType();
             if (!in_array($mimeType, $allowedMimeTypes)) {
                 throw new \InvalidArgumentException('Le fichier doit être une image valide.');

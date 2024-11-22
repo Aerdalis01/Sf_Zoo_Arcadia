@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Horaire;
 use App\Repository\HoraireRepository;
+use App\Service\TokenValidatorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,7 +16,10 @@ use Symfony\Component\Serializer\SerializerInterface;
 #[Route('/api/horaire', name: 'app_api_horaire_')]
 class HoraireController extends AbstractController
 {
-    public function __construct(private SerializerInterface $serializer, private EntityManagerInterface $em)
+    public function __construct(
+        private SerializerInterface $serializer,
+        private EntityManagerInterface $em,
+        private TokenValidatorService $tokenValidator)
     {
     }
 
@@ -45,6 +49,10 @@ class HoraireController extends AbstractController
     #[Route('/new', name: 'new', methods: ['POST'])]
     public function newAndUpdate(Request $request): Response
     {
+        $this->tokenValidator->validateTokenAndRoles(
+            $request->headers->get('Authorization'),
+            ['ROLE_ADMIN']
+        );
         try {
             $horaireTexte = $request->request->get('horaire');
 
@@ -66,6 +74,10 @@ class HoraireController extends AbstractController
     #[Route('/update/{id}', name: 'update', methods: ['POST'])]
     public function update(int $id, Request $request): Response
     {
+        $this->tokenValidator->validateTokenAndRoles(
+            $request->headers->get('Authorization'),
+            ['ROLE_ADMIN', 'ROLE_EMPLOYE']
+        );
         $horaire = $this->em->getRepository(Horaire::class)->find($id);
         if (!$horaire) {
             return new JsonResponse(['error' => 'Horaire non trouvé'], Response::HTTP_NOT_FOUND);

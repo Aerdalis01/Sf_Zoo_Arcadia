@@ -54,13 +54,16 @@ export const HoraireFormUpdate: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-
+      const token = localStorage.getItem("jwt_token");
       const formHoraire = new FormData();
       formHoraire.append('horaire', formData.horaireTexte);
 
       try {
         const response = await fetch(`/api/horaire/update/${selectedHoraireId}`, {
               method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
               body: formHoraire,
           });
 

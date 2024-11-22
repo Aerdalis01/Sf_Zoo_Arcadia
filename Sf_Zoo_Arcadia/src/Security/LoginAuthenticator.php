@@ -145,6 +145,7 @@ class LoginAuthenticator extends AbstractAuthenticator
             return new JsonResponse(['error' => 'Token invalide'], 401);
         }
 
+        // Si le token est valide, l'utilisateur est authentifié, et nous retournons un message de succès
         return new JsonResponse(['message' => 'Utilisateur authentifié avec succès']);
     }
 

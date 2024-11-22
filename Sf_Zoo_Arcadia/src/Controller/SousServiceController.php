@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/sousService', name: '_app_api_sous_service_')]
@@ -46,7 +45,6 @@ class SousServiceController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function createSousService(Request $request, ImageManagerService $imageManagerService): JsonResponse
     {
         try {
@@ -83,7 +81,7 @@ class SousServiceController extends AbstractController
                     $images[$key] = $image;
                 }
             }
-            // Créer ou mettre à jour le sous-service avec le service sousServiceService
+
             $sousService = $this->sousServiceService->createOrUpdateSousService(null, [
                 'nom' => $nom,
                 'description' => $description,
@@ -104,7 +102,6 @@ class SousServiceController extends AbstractController
     }
 
     #[Route('/{id}', name: 'update', methods: ['POST'])]
-    #[IsGranted(['ROLE_ADMIN', 'ROLE_EMPLOYE'])]
     public function updateSousService(int $id, Request $request): JsonResponse
     {
         $sousService = $this->entityManager->getRepository(SousService::class)->find($id);
@@ -143,10 +140,9 @@ class SousServiceController extends AbstractController
 
                 $images['file2'] = $file2;
                 $images['imageName2'] = $imageName2;
-                $images['file2_sub_directory'] = $imageSubDirectory;  // Ajoute file2 au tableau d'images (si menu est coché)
+                $images['file2_sub_directory'] = $imageSubDirectory;
             }
 
-            // Appel de createOrUpdateSousService avec le tableau d'images
             $sousService = $this->sousServiceService->createOrUpdateSousService(
                 $sousService,
                 [
@@ -166,7 +162,6 @@ class SousServiceController extends AbstractController
     }
 
     #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function deleteSousService(int $id): JsonResponse
     {
         $sousService = $this->entityManager->getRepository(SousService::class)->find($id);

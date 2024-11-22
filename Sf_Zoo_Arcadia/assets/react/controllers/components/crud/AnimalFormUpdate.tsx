@@ -117,7 +117,7 @@ export function AnimalFormUpdate() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    const token = localStorage.getItem("jwt_token");
     const formAnimal = new FormData();
     formAnimal.append("nom", formData.nom);
     formAnimal.append("idHabitat", formData.idHabitat);
@@ -148,6 +148,9 @@ export function AnimalFormUpdate() {
 
   const response = await fetch(`/api/animal/update/${formData.id}`, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formAnimal,
   });
 

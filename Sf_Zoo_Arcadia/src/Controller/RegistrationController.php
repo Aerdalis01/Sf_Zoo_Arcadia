@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Token;
 use App\Entity\User;
 use App\Service\JwtService;
 use App\Service\MailerService;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/admin/register', name: '_app_api_admin_register_')]
@@ -26,7 +28,8 @@ class RegistrationController extends AbstractController
         private array $rolesMap,
         private JwtService $jwtService,
         private AuthorizationCheckerInterface $authorizationChecker,
-        private Security $security
+        private Security $security,
+        private EntityManagerInterface $em
     ) {
     }
 
@@ -37,19 +40,26 @@ class RegistrationController extends AbstractController
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
     ): Response {
-        if (!$this->isGranted('ROLE_ADMIN')) {
-            return new JsonResponse(['error' => 'Accès interdit'], 403);
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        if (!$authorizationHeader || !str_starts_with($authorizationHeader, 'Bearer ')) {
+            return new JsonResponse(['error' => 'Token manquant ou invalide'], 401);
         }
 
-        return new JsonResponse(['message' => 'Accès autorisé']);
+        $token = substr($authorizationHeader, 7);
 
-        $data = json_decode($request->getContent(), true);
+        $existingToken = $this->em->getRepository(Token::class)->findOneBy(['token' => $token]);
+        if (!$existingToken) {
+            throw new CustomUserMessageAuthenticationException('Token invalide ou supprimé.');
+        }
+        try {
+            $decodedToken = $this->jwtService->decode($token);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 401);
+        }
 
-        if (!$data || empty($data['email']) || empty($data['password']) || empty($data['role'])) {
-            return new JsonResponse([
-                'status' => 'error',
-                'errors' => 'Email, mot de passe ou rôle requis',
-            ], 400);
+        if (!in_array('ROLE_ADMIN', $decodedToken['roles'] ?? [])) {
+            return new JsonResponse(['error' => 'Accès interdit'], 403);
         }
 
         $data = json_decode($request->getContent(), true);

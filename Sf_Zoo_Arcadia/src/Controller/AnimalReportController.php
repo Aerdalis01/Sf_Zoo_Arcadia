@@ -6,6 +6,9 @@ use App\Entity\Alimentation;
 use App\Entity\Animal;
 use App\Entity\AnimalReport;
 use App\Entity\HabitatComment;
+use App\Entity\Token;
+use App\Service\JwtService;
+use App\Service\TokenValidatorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -13,13 +16,16 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 
 #[Route('/api/animalReport', name: 'app_api_animalReport_')]
 class AnimalReportController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $em,
-        private Security $security
+        private Security $security,
+        private TokenValidatorService $tokenValidator,
+        private JwtService $jwtService
     ) {
     }
 
@@ -156,13 +162,33 @@ class AnimalReportController extends AbstractController
     public function createOrUpdate(Request $request): JsonResponse
     {
         try {
-            if (!$this->isGranted('ROLE_VETERINAIRE') && !$this->isGranted('ROLE_ADMIN')) {
-                return new JsonResponse(['message' => 'Accès refusé'], 403);
+            $authorizationHeader = $request->headers->get('Authorization');
+
+            if (!$authorizationHeader || !str_starts_with($authorizationHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token manquant ou invalide'], 401);
             }
 
-            // Récupération des données de la requête
-            $user = $this->getUser();
-            $email = $user->getUserIdentifier();
+            $token = substr($authorizationHeader, 7);
+
+            $existingToken = $this->em->getRepository(Token::class)->findOneBy(['token' => $token]);
+            if (!$existingToken) {
+                throw new CustomUserMessageAuthenticationException('Token invalide ou supprimé.');
+            }
+            try {
+                $decodedToken = $this->jwtService->decode($token);
+            } catch (\Exception $e) {
+                return new JsonResponse(['error' => $e->getMessage()], 401);
+            }
+
+            $requiredRoles = ['ROLE_ADMIN', 'ROLE_EMPLOYE'];
+            $userRoles = $decodedToken['roles'] ?? [];
+
+            if (empty(array_intersect($requiredRoles, $userRoles))) {
+                return new JsonResponse(['error' => 'Accès interdit'], 403);
+            }
+
+            $email = $decodedToken['email'] ?? null;
+
             $reportId = $request->get('id');
             $alimentationId = (int) $request->get('alimentation');
             $etat = $request->get('etat');

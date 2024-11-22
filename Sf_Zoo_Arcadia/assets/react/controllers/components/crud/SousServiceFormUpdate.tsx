@@ -112,6 +112,7 @@ export function SousServiceFormUpdate() {
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const token = localStorage.getItem("jwt_token");
     const formSousService = new FormData();
     formSousService.append("nom", sousServiceData.nom);
     formSousService.append("description", sousServiceData.description);
@@ -135,6 +136,9 @@ export function SousServiceFormUpdate() {
 
     fetch(`/api/sousService/${selectedSousServiceId}`, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formSousService,
     })
       .then((response) => {
@@ -155,7 +159,7 @@ export function SousServiceFormUpdate() {
         setError("Erreur lors de la mise à jour du sous-service.");
         setSuccessMessage(null);
       });
-    formRef.current?.reset();
+    
   };
 
   return (

@@ -44,6 +44,7 @@ export function HabitatForm() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const token = localStorage.getItem("jwt_token");
     const formHabitat = new FormData();
     formHabitat.append("nom", formData.nom);
     formHabitat.append("description", formData.description);
@@ -62,6 +63,9 @@ export function HabitatForm() {
     });
     fetch("/api/habitat/new", {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formHabitat,
     })
       .then(async (response) => {
@@ -77,7 +81,7 @@ export function HabitatForm() {
       })
       .then((data) => {
         if (data && data.status === "success") {
-          setSuccess("Service ajouté avec succès !");
+          setSuccess("Habitat ajouté avec succès !");
           setFormData({
             id: 0,
             nom: "",
@@ -97,7 +101,7 @@ export function HabitatForm() {
 
       .catch((error) => {
         console.error("Erreur lors de la soumission du formulaire:", error);
-        setError("Erreur lors de l'ajout du service.");
+        setError("Erreur lors de l'ajout de l'habitat.");
         setSuccess(null);
         setResetImage(false);
       });

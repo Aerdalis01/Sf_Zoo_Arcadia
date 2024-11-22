@@ -3,10 +3,10 @@ import { Animal } from "../../../models/animalInterface";
 import { Habitat } from "../../../models/habitatInterface";
 import { TextInputField } from "../form/TextInputField";
 import { ImageForm } from "./ImageForm";
-import { fetchRaces, createRace, updateRace, deleteRace } from '../../../services/RaceService'; 
+import { fetchRaces, createRace, updateRace, deleteRace } from '../../../services/RaceService';
 
 export function AnimalForm() {
-  const[formData, setFormData] = useState<Animal>({
+  const [formData, setFormData] = useState<Animal>({
     id: 0,
     nom: "",
     idHabitat: "",
@@ -24,24 +24,24 @@ export function AnimalForm() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    
+
     fetchRaces().then((data) => setRaces(data));
   }, []);
 
   const handleRaceSubmit = (race) => {
-    
+
     setRaces([...races, race]);
-    setShowRaceInput(false);  
+    setShowRaceInput(false);
   };
 
   const handleEditRace = (race) => {
-    setEditingRace(race); 
+    setEditingRace(race);
     setShowRaceInput(true);
   };
 
   useEffect(() => {
     fetch("/api/habitat/")
-      .then((response) =>{
+      .then((response) => {
         return response.json();
       })
       .then((data) => {
@@ -52,7 +52,7 @@ export function AnimalForm() {
       );
   }, []);
 
-  
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -64,6 +64,7 @@ export function AnimalForm() {
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const token = localStorage.getItem("jwt_token");
     const formAnimal = new FormData();
     formAnimal.append("nom", formData.nom)
     formAnimal.append("idHabitat", formData.idHabitat)
@@ -92,6 +93,9 @@ export function AnimalForm() {
     });
     fetch("/api/animal/new", {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formAnimal,
     })
       .then(async (response) => {
@@ -132,36 +136,36 @@ export function AnimalForm() {
         setError("Erreur lors de l'ajout du service.");
         setSuccessMessage(null);
       });
-      formRef.current.reset();
+    formRef.current.reset();
   };
   return (
     <form ref={formRef} onSubmit={handleSubmit}>
-    <TextInputField
-      name="nom"
-      label="Nom de l'animal"
-      value={formData.nom}
-      onChange={handleChange}
-    />
-
-    <div>
-      <label htmlFor="habitat">Habitat :</label>
-      <select
-        id="habitat"
-        name="idHabitat"
-        value={formData.idHabitat}
+      <TextInputField
+        name="nom"
+        label="Nom de l'animal"
+        value={formData.nom}
         onChange={handleChange}
-      >
-        <option value="">Choisir un habitat</option>
-        {habitat.map((habitat) => (
-          <option key={habitat.id} value={habitat.id}>
-            {habitat.nom}
-          </option>
-        ))}
-      </select>
-    </div>
+      />
 
-    <div>
-    <label htmlFor="race">Race :</label>
+      <div>
+        <label htmlFor="habitat">Habitat :</label>
+        <select
+          id="habitat"
+          name="idHabitat"
+          value={formData.idHabitat}
+          onChange={handleChange}
+        >
+          <option value="">Choisir un habitat</option>
+          {habitat.map((habitat) => (
+            <option key={habitat.id} value={habitat.id}>
+              {habitat.nom}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label htmlFor="race">Race :</label>
         {!showRaceInput ? (
           <>
             <select
@@ -175,32 +179,32 @@ export function AnimalForm() {
                   {race.nom}
                 </option>
               ))}
-          </select>
-          <button type="button" onClick={() => setShowRaceInput(true)}>
-            Créer une nouvelle race
-          </button>
-        </>
-      ) : (
-        <>
-          <TextInputField
-            name="nomRace"
-            label="Nom de la nouvelle race"
-            value={formData.nomRace}
-            onChange={handleChange}
-          />
-          <button type="button" onClick={() => setShowRaceInput(false)}>
-            Choisir une race existante
-          </button>
-        </>
-      )}
-    </div>
+            </select>
+            <button type="button" onClick={() => setShowRaceInput(true)}>
+              Créer une nouvelle race
+            </button>
+          </>
+        ) : (
+          <>
+            <TextInputField
+              name="nomRace"
+              label="Nom de la nouvelle race"
+              value={formData.nomRace}
+              onChange={handleChange}
+            />
+            <button type="button" onClick={() => setShowRaceInput(false)}>
+              Choisir une race existante
+            </button>
+          </>
+        )}
+      </div>
 
-    <ImageForm serviceName={formData.nom} onImageSelect={setFile} resetImage={resetImage} />
+      <ImageForm serviceName={formData.nom} onImageSelect={setFile} resetImage={resetImage} />
 
-    <button type="submit">Enregistrer l'animal</button>
+      <button type="submit">Enregistrer l'animal</button>
 
-    {error && <p style={{ color: "red" }}>{error}</p>}
-    {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-  </form>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+    </form>
   );
 }

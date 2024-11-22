@@ -110,6 +110,7 @@ export function ServiceFormUpdate() {
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const token = localStorage.getItem("jwt_token");
     if (!serviceData.nom) {
       setError("Les champs Nom et Type sont obligatoires.");
       return;
@@ -156,6 +157,9 @@ export function ServiceFormUpdate() {
 
     fetch(`/api/service/update/${selectedServiceId}`, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formService,
     })
       .then((response) => {

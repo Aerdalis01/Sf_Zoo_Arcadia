@@ -24,14 +24,14 @@ security:
             security: false
 
         api_admin:
-            pattern: ^/api/admin/register/new
+            pattern: ^/api/admin/register
             stateless: true
-            custom_authenticator: App\Security\LoginAuthenticator
+            
             
         api:
             pattern: ^/api
             stateless: true
-            custom_authenticator: App\Security\LoginAuthenticator
+           
 
         main:
             provider: app_user_provider
@@ -40,8 +40,7 @@ security:
             custom_authenticator: App\Security\LoginAuthenticator
 
     access_control:
-        # - { attributes: {'_route_admin_register_new': 'register'}, roles: ROLE_ADMIN }
-        # - { route: 'register', roles: ROLE_ADMIN }
+        
         
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
     
