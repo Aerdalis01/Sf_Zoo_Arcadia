@@ -18,6 +18,7 @@ class AccessTokenHandler implements AccessTokenHandlerInterface
     public function getUserBadgeFrom(string $accessToken): UserBadge
     {
         $userData = $this->jwtService->decode($accessToken);
+
         $email = $userData['email'] ?? null;
 
         if (!$email) {
@@ -25,7 +26,9 @@ class AccessTokenHandler implements AccessTokenHandlerInterface
         }
 
         return new UserBadge($email, function ($userIdentifier) {
-            return $this->userProvider->loadUserByIdentifier($userIdentifier);
+            $user = $this->userProvider->loadUserByIdentifier($userIdentifier);
+
+            return $user;
         });
     }
 }

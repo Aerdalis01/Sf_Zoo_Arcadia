@@ -22,4 +22,9 @@ class JwtService
     {
         return (array) JWT::decode($token, new Key($this->jwtSecret, 'HS256'));
     }
+
+    public function generateToken(array $payload): string
+    {
+        return JWT::encode($payload, $this->jwtSecret, 'HS256');
+    }
 }

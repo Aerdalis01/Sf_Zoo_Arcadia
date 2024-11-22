@@ -1,7 +1,8 @@
-// AuthContext.tsx
+
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import {jwtDecode} from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
+
 
 interface AuthContextType {
   connected: boolean;
@@ -9,6 +10,12 @@ interface AuthContextType {
   login: (token: string) => void;
   logout: () => void;
   getRolesFromToken: () => string[];
+  hasRole: (role: string) => boolean;
+}
+interface DecodedToken {
+  exp: number; 
+  roles?: string[]; 
+  [key: string]: any;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,14 +27,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const isTokenExpired = (token: string): boolean => {
     try {
-      const decodedToken: any = jwtDecode(token);
+      const decodedToken: DecodedToken = jwtDecode<DecodedToken>(token);
       const currentTime = Math.floor(Date.now() / 1000);
       return decodedToken.exp < currentTime;
     } catch (error) {
-      return true;
+      console.error("Erreur lors de la vérification de l'expiration du token :", error);
+      return true; 
     }
   };
-
  
 
   const getRolesFromToken = (): string[] => {
@@ -44,28 +51,52 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const login = (token: string) => {
-    localStorage.setItem("jwt_token", token);
-    const decodedToken: any = jwtDecode(token);
-    console.log("Rôles de l'utilisateur à la connexion :", decodedToken.roles);
-    setUserRoles(Array.isArray(decodedToken.roles) ? decodedToken.roles : []);
-    setIsConnected(true);
-  };
+    if (!token || typeof token !== "string") {
+      console.error("Token invalide ou manquant :", token);
+      return;
+    }
 
-  const logout = async () => {
     try {
-      await fetch('/api/logout', {
-        method: 'POST',
-        credentials: 'include', 
-      });
-      localStorage.removeItem("jwt_token");
-      setIsConnected(false);
-      setUserRoles([]);
-      navigate("/login");
+      const decodedToken = jwtDecode<DecodedToken>(token);
+      console.log("Token décodé :", decodedToken);
+      localStorage.setItem("jwt_token", token);
+      setUserRoles(decodedToken.roles || []);
+      setIsConnected(true);
     } catch (error) {
-      console.error("Erreur lors de la déconnexion :", error);
-      
+      console.error("Erreur lors du décodage du token :", error);
     }
   };
+  
+  const logout = async () => {
+    try {
+        const token = localStorage.getItem("jwt_token");
+        
+        if (!token) {
+            console.error("Aucun token trouvé pour la déconnexion.");
+            return;
+        }
+
+        const response = await fetch('/api/logout', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("jwt_token")}`, // Envoyer le token existant dans l'en-tête Authorization
+          },
+        });
+        if (response.ok) {
+          // Logique de suppression du token
+          localStorage.removeItem("jwt_token");
+          setIsConnected(false);
+          setUserRoles([]);
+          navigate("/login");
+        } else {
+          console.error("Erreur lors de la déconnexion");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la déconnexion :", error);
+      }
+    };
+
   useEffect(() => {
     const token = localStorage.getItem("jwt_token");
     if (token && !isTokenExpired(token)) {
@@ -75,9 +106,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       logout();
     }
   }, []);
-
+  const hasRole = (role: string): boolean => {
+    return userRoles.includes(role);
+  };
   return (
-    <AuthContext.Provider value={{ connected, userRoles, login, logout, getRolesFromToken }}>
+    <AuthContext.Provider value={{ connected, userRoles, login, logout, getRolesFromToken, hasRole }}>
       {children}
     </AuthContext.Provider>
   );

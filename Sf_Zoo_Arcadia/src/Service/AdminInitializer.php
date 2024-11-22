@@ -2,9 +2,12 @@
 
 namespace App\Service;
 
+use App\Entity\Token;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Firebase\JWT\JWT;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -21,7 +24,8 @@ class AdminInitializer
         ParameterBagInterface $parameterBag,
         EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $passwordHasher,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        // #[Autowire(env: 'JWT_SECRET')] private readonly string $jwtSecret,
     ) {
         $this->entityManager = $entityManager;
         $this->passwordHasher = $passwordHasher;
@@ -44,10 +48,24 @@ class AdminInitializer
 
             $this->entityManager->persist($admin);
             $this->entityManager->flush();
+            // Générez un token JWT
+            // $payload = [
+            //     'user_id' => $admin->getId(),
+            //     'email' => $admin->getEmail(),
+            //     'roles' => $admin->getRoles(),
+            //     'exp' => time() + 3600, // 1 heure d'expiration
+            // ];
+            // $tokenString = JWT::encode($payload, $this->jwtSecret, 'HS256');
+
+            // $token = new Token();
+            // $token->setToken($tokenString);
+            // $token->setExpireAt((new \DateTimeImmutable())->modify('+1 hour'));
+            // $token->setUser($admin);
+
+            // $this->entityManager->persist($token);
+            // $this->entityManager->flush();
 
             $this->logger->info("Admin user created successfully with email {$this->adminEmail}.");
-        } else {
-            $this->logger->info("Admin user with email {$this->adminEmail} already exists.");
         }
     }
 }

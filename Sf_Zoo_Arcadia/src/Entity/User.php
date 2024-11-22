@@ -40,6 +40,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist'])]
+    private ?Token $token = null;
+
     #[ORM\PrePersist]
     public function prePersist()
     {
@@ -128,5 +131,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
+    }
+
+    public function getToken(): ?Token
+    {
+        return $this->token;
+    }
+
+    public function setToken(?Token $token): static
+    {
+        if ($this->token !== null && $this->token->getUser() === $this) {
+            $this->token->setUser(null);
+        }
+        if ($token !== null && $token->getUser() !== $this) {
+            $token->setUser($this);
+        }
+        $this->token = $token;
+
+        return $this;
     }
 }

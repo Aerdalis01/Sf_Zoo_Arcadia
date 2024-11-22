@@ -15,7 +15,8 @@ parameters:
             veterinaire: ['ROLE_VETERINAIRE']
 
 services:
-    
+    Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface: '@security.user_password_hasher'
+
     _defaults:
         autowire: true      
         autoconfigure: true 
@@ -29,6 +30,9 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    App\Controller\:
+            resource: '../src/Controller'
+            tags: ['controller.service_arguments']
 
     App\Service\MailerService:
         arguments:
@@ -42,9 +46,13 @@ services:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
 
+
     App\Command\InitializeAdminCommand:
-        arguments:
-            $adminInitializer: '@App\Service\AdminInitializer'
+            arguments:
+                $adminInitializer: '@App\Service\AdminInitializer'
+
+    App\Command\CleanExpiredTokensCommand:
+        tags: ['console.command']
 
     App\Service\AdminInitializer:
         arguments:
@@ -52,7 +60,21 @@ services:
             $entityManager: '@doctrine.orm.entity_manager'
             $passwordHasher: '@security.password_hasher'
             $logger: '@logger'
-            
+            # $jwtSecret: '%env(JWT_SECRET)%'
+   
     App\Controller\RegistrationController:
         arguments:
             $rolesMap: '%user_roles_map%'
+
+    App\EventListener\JwtMiddleware:
+        arguments:
+            $secretKey: '%env(JWT_SECRET)%'
+            $protectedRoutes: ['_app_api_admin_register_new']
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: 10 }
+       
+    
+
+    App\Controller\LogoutController:
+        public: true
+        tags: ['controller.service_arguments']

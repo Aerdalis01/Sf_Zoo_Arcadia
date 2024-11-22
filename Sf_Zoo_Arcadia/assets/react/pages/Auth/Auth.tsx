@@ -1,12 +1,21 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 
 export const fetchAuth = async (url: string,  options: RequestInit = {}) => {
   const token = localStorage.getItem('jwt_token');
+
   if (!token) {
     throw new Error("Utilisateur non authentifié");
+  }
+
+ const isTokenExpired = (token: string): boolean => {
+    const decoded: JwtPayload = jwtDecode(token);
+    const currentTime = Math.floor(Date.now() / 1000);
+    return decoded.exp ? decoded.exp < currentTime : true;
+  };
+
+  if (isTokenExpired(token)) {
+    throw new Error("Token expiré, veuillez vous reconnecter.");
   }
 
   const headers = new Headers({
@@ -15,8 +24,7 @@ export const fetchAuth = async (url: string,  options: RequestInit = {}) => {
   });
 
   if (options.headers) {
-    const additionalHeaders = options.headers as Record<string, string>;
-    Object.entries(additionalHeaders).forEach(([key, value]) => {
+    Object.entries(options.headers as Record<string, string>).forEach(([key, value]) => {
       headers.append(key, value);
     });
   }
@@ -26,37 +34,11 @@ export const fetchAuth = async (url: string,  options: RequestInit = {}) => {
     headers, 
   });
 
-  if (response.status === 401) {
-    throw new Error("Accès non autorisé");
+  if (!response.ok) {
+    throw new Error(`Erreur ${response.status}: ${response.statusText}`);
   }
-  
+
   return response.json();
 };
 
-export const ProtectedRoute = ({ children, allowedRoles }) => {
-  const token = localStorage.getItem('jwt_token');
 
-  if (!token) {
-    alert("Token non trouvé, redirection vers login");
-    return <Navigate to="/login" replace />;
-  }
-
-  try {
-    const decodedToken: any = jwtDecode(token);
-
-    const userRoles = decodedToken.roles || [];
-
-    const hasAccess = allowedRoles.some(role => userRoles.includes(role));
-
-    if (!hasAccess) {
-      alert("Vous n'avez pas l'autorisation d'accéder à cette page.");
-      return <Navigate to="/login" replace />;
-    }
-
-  } catch (error) {
-    console.error("Erreur lors du décodage du token :", error);
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-};

@@ -12,16 +12,29 @@ export const useRoleActions = () => {
 
     const fetchAvis = async () => {
       try {
+        // Récupération du token JWT depuis le stockage local
+        const token = localStorage.getItem('jwt_token');
+        console.log(localStorage.getItem('jwt_token'));
+
+        // Vérification de la présence du token
+        if (!token) {
+          throw new Error('Token JWT manquant. Veuillez vous authentifier.');
+        }
+
+        // Envoi de la requête avec le header Authorization
         const response = await fetch('/api/avis', {
           method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
-  
+
         if (!response.ok) {
           throw new Error('Erreur lors de la récupération des avis.');
         }
-  
+
         const data = await response.json();
-  
         setAvis(data);
       } catch (err) {
         console.error('Erreur:', err);
@@ -30,7 +43,7 @@ export const useRoleActions = () => {
         setLoading(false);
       }
     };
-  
+
     fetchAvis();
   }, []);
 

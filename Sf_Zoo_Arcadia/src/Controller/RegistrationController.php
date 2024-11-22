@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\JwtService;
 use App\Service\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -13,31 +14,42 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/admin/register', name: '_app_api_admin_register_')]
-#[IsGranted('ROLE_ADMIN')]
 class RegistrationController extends AbstractController
 {
     public function __construct(
         private MailerService $mailer,
         private LoggerInterface $logger,
-        private array $rolesMap
+        private array $rolesMap,
+        private JwtService $jwtService,
+        private AuthorizationCheckerInterface $authorizationChecker,
+        private Security $security
     ) {
     }
 
     #[Route('/new', name: 'new', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN')]
     public function createUser(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
-        Security $security
     ): Response {
         if (!$this->isGranted('ROLE_ADMIN')) {
-            return new JsonResponse(['error' => 'Accès refusé'], 403);
+            return new JsonResponse(['error' => 'Accès interdit'], 403);
+        }
+
+        return new JsonResponse(['message' => 'Accès autorisé']);
+
+        $data = json_decode($request->getContent(), true);
+
+        if (!$data || empty($data['email']) || empty($data['password']) || empty($data['role'])) {
+            return new JsonResponse([
+                'status' => 'error',
+                'errors' => 'Email, mot de passe ou rôle requis',
+            ], 400);
         }
 
         $data = json_decode($request->getContent(), true);

@@ -35,33 +35,50 @@ export const LoginPage: React.FC = () => {
 
     const result = loginSchema.safeParse(formValues);
 
-    if (result.success) {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          
-        },
-        body: JSON.stringify(formValues),
-      });
-      if (response.ok) {
-        const { token } = await response.json();
-        login(token);
-        setSuccessMessage("Connexion réussie !");
-        localStorage.setItem("jwt_token", token);
-        setTimeout(() => {
-          setSuccessMessage(null);
-          navigate("/"); 
-        }, 2000);
-      } else {
-        setFormError("Échec de la connexion. Veuillez réessayer.");
-      }
-    } else {
+    if (!result.success) {
+      
       const fieldErrors: { [key: string]: string } = {};
       result.error.errors.forEach((error) => {
         fieldErrors[error.path[0]] = error.message;
       });
       setErrors(fieldErrors);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formValues),
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (!response.ok) {
+        console.error("Erreur d'authentification :", data.error);
+        setFormError(data.error || "Erreur d'authentification.");
+        return;
+      }
+
+      const token = data.token;
+
+      if (!token || typeof token !== "string") {
+        console.error("Token invalide ou manquant :", token);
+        setFormError("Token invalide ou manquant.");
+        return;
+      }
+
+      
+      localStorage.setItem("jwt_token", token);
+      login(token);
+      setSuccessMessage("Connexion réussie !");
+      setTimeout(() => {
+        setSuccessMessage(null);
+        navigate("/");
+      }, 2000);
+    } catch (error) {
+      console.error("Erreur réseau :", error);
+      setFormError("Une erreur réseau s'est produite.");
     }
   };
 

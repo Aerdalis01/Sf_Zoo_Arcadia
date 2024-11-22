@@ -13,33 +13,40 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        # api_login:
-        #     pattern: ^/api/login
-        #     provider: app_user_provider
-        #     json_login:
-        #         check_path: /api/login
-        #         username_path: email
-        #         password_path: password
-        #         success_handler: App\Security\LoginSuccessHandler
-                
+        api_login:
+            pattern: ^/api/login
+            stateless: true
+            custom_authenticator: App\Security\LoginAuthenticator
 
+        api_logout:
+            pattern: ^/api/logout
+            stateless: true
+            security: false
 
+        api_admin:
+            pattern: ^/api/admin/register/new
+            stateless: true
+            custom_authenticator: App\Security\LoginAuthenticator
+            
         api:
-            pattern: ^/api/ 
-            provider: app_user_provider
-            access_token:
-                token_handler: App\Security\AccessTokenHandler
-
+            pattern: ^/api
+            stateless: true
+            custom_authenticator: App\Security\LoginAuthenticator
 
         main:
             provider: app_user_provider
-            access_token:
-                token_handler: App\Security\AccessTokenHandler
+            lazy: true
+            security: true
+            custom_authenticator: App\Security\LoginAuthenticator
 
-    # access_control:
-    #     - { path: ^/api/login, roles: ROLE_USER }
-    #     - { path: ^/api/alimentation/new, roles: ROLE_ADMIN }
-    #     - { path: ^/api/animalReport/new, roles: ROLE_ADMIN }
+    access_control:
+        # - { attributes: {'_route_admin_register_new': 'register'}, roles: ROLE_ADMIN }
+        # - { route: 'register', roles: ROLE_ADMIN }
+        
+        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    
+    
+        
         
 
 when@test:
