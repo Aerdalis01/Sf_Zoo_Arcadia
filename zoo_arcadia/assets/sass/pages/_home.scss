@@ -1,0 +1,207 @@
+@import "../vendors/custom-bootstrap";
+
+/* Section services */
+.services {
+  min-height: 90svh;
+  height: auto;
+  position: relative;
+  backdrop-filter: opacity(80%);
+  z-index: 0;
+
+  @include media-breakpoint-up(lg) {
+    min-height: 120svh;
+  }
+
+  @include media-breakpoint-up(xl) {
+    min-height: 140svh;
+  }
+  .card{
+    z-index: 1000;
+  }
+  .btn-service{
+    position: absolute;
+    bottom: 3%;
+    left: 50%;
+    transform: translate(-50%);
+    z-index: 1000;
+  }
+}
+
+.content-greenSvg {
+  position: absolute;
+  bottom: 0;
+  z-index: 2;
+  opacity: 90%;
+}
+
+.services-title {
+  height: 150px;
+  position: relative;
+  z-index: 3;
+  font-size: 1.2rem;
+}
+
+.content-orangeSvg {
+  height: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 90%;
+}
+
+.svg-rectangle {
+  position: relative;
+  z-index: 1;
+
+  @include media-breakpoint-down(md) {
+    content: url("../../../public/uploads/images/svgDeco/RecOrMob.svg");
+  }
+}
+
+.svg-ellipse {
+  z-index: 1;
+
+  @include media-breakpoint-up(lg) {
+    content: url("../../../public/uploads/images/svgDeco/demiElOrLg.svg");
+    background-repeat: no-repeat;
+  }
+}
+
+/* Section animaux */
+.animaux {
+  min-height: 100svh;
+  height: auto;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: opacity(80%);
+  z-index: 0;
+
+  .card-body {
+    background-color: #fff;
+    opacity: 80%;
+  }
+}
+
+.svg-top {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  opacity: 90%;
+
+  @include media-breakpoint-up(sm) {
+    content: url("../../../public/uploads/images/svgDeco/DemiEllipseVerte.svg");
+  }
+}
+
+.animaux .svg-left {
+  height: 95%;
+  position: absolute;
+  left: -80px;
+  top: 5%;
+  z-index: 0;
+  opacity: 90%;
+
+  @include media-breakpoint-up(md) {
+    left: -40px;
+  }
+}
+
+.animaux .svg-right {
+  height: 95%;
+  position: absolute;
+  top: 5%;
+  right: -80px;
+  z-index: 0;
+  opacity: 90%;
+
+  @include media-breakpoint-up(md) {
+    right: -40px;
+  }
+}
+
+.animaux-text {
+  display: none;
+
+  @include media-breakpoint-up(md) {
+    display: block;
+    font-size: 1.1rem;
+  }
+}
+
+/* Section avis */
+
+
+.avis {
+  height: auto;
+  position: relative;
+  hr{
+    color: transparent;
+  }
+}
+
+.avis-title {
+  opacity: 90%;
+}
+.card-avis {
+  color: white;
+  border: 1px solid $gray-600;
+  border-radius: 20px;
+  background-color: $green;
+  
+}
+
+
+/* Modal avis */
+.modal-form {
+  min-height: 300px;
+  position: fixed;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 5px;
+  border: 1px solid $gray-600;
+  border-radius: 20px;
+  background-color: $green;
+  font-family: 'Akaya_kanadaka', inter, sans-serif;
+  color: $warning;
+  display: flex;
+
+  &--exit {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    cursor: pointer;
+  }
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  display: flex;
+  z-index: 1000;
+}
+.overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+.open {
+  position: fixed;
+  z-index: 9999;
+  display: block;
+}
+
+.etoile {
+  cursor: pointer;
+  z-index: 9999;
+}
+
+.avis-btn {
+  height: 45px;
+  width: 150px;
+}

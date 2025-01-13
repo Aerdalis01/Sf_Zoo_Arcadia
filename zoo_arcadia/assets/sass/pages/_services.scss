@@ -1,0 +1,148 @@
+@import "../vendors/_bootstrap";
+
+.les-services {
+  background:transparent;
+  position: relative;
+  height: auto;
+  
+  
+  .first-service-section {
+    height: auto;
+    min-height: 100svh;
+    position: relative;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    
+    .service-title {
+      position: relative;
+      top: 0;
+      z-index: 1000;
+    }
+    .first-section-top-decoration
+     {
+      z-index: 999;
+      top: 0;
+      position: absolute;
+    }
+
+    .first-section-bottom-decoration
+    {
+      z-index: 999;
+      bottom: 0;
+      position: absolute;
+      
+    }
+    .sous-services-container{
+      position: relative;
+      height: auto;
+      flex-grow: 1;
+      z-index: 1000;
+      
+      .sousService-img{
+        z-index: 1000;
+      }
+      .ratio-container {
+        aspect-ratio: 21 / 9;
+        width: 100%;
+        overflow: hidden; /* Masque le débordement pour respecter le ratio */
+      }
+      
+      .ratio-container .content {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .sous-services-btn{
+        height: 50%;
+      }
+      @media (min-width: 768px) {
+        .ratio-container {
+          aspect-ratio: 1 / 1;
+        }
+        .sous-services-btn{
+          height: 25%;
+        }
+      }
+      .image-container img {
+        object-fit: contain; 
+    }
+    }
+  }
+  .middle-service-section,
+  .last-service-section{
+    position: relative;
+    height: 100vh;
+    height: auto;
+    z-index: 1000;
+  
+    .other-section-top-decoration,
+    .last-section-top-decoration {
+      z-index: 999;
+      top: 0;
+      position: absolute;
+      margin: 0;
+      padding: 0;
+    }
+    .other-section-bottom-decoration,
+    .last-section-bottom-decoration {
+      z-index: 999;
+      bottom: 0;
+      position: absolute;
+      margin: 0;
+      padding: 0;
+    }
+    .service-title {
+      position: relative;
+      z-index: 1000;
+    }
+    .card-container {
+      position: relative;
+      max-height: auto;
+      flex-grow: 1;
+      z-index: 1000;
+      @include media-breakpoint-up(lg) {
+        min-height: 120svh;
+      }
+      .visite--card-body {
+        aspect-ratio: 1;
+      }
+      .service-description,
+      .service-img {
+        z-index: 1000;
+        position: relative;
+      }
+    } 
+    .horaire-container{
+      position: relative;
+      overflow: contain;
+      z-index: 1000;
+      flex-grow: 1;
+
+     .horaire-card{
+      height: auto;
+     }
+    }
+  }
+  .btn-carte-zoo {
+    position: relative;
+    z-index: 1000;
+
+    width: 300px;
+    height: 30px;
+    font-size: 0.6rem;
+    @include media-breakpoint-up(sm) {
+      width:auto;
+      height: auto;
+      font-size: 0.9rem;
+    }
+    
+  }
+  .close-button-custom{
+    color: black;
+  }
+}
