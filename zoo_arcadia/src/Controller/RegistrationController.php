@@ -90,6 +90,7 @@ class RegistrationController extends AbstractController
             'admin' => ['ROLE_ADMIN'],
             'employe' => ['ROLE_EMPLOYE'],
             'veterinaire' => ['ROLE_VETERINAIRE'],
+            'visiteur' => ['ROLE_VISITOR'],
         ];
 
         if (!array_key_exists($data['role'], $rolesMap)) {
