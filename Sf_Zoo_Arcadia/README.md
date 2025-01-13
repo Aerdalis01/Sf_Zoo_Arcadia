@@ -12,7 +12,7 @@
 - **MongoDB** : Base de donnée non relationnel
 
 ### Frontend :
-- **Node.js** : 12.x ou supérieur (Pour le build des assets front-end)
+- **Node.js** : 22.9 ou supérieur (Pour le build des assets front-end)
 - **NPM** : 6.x ou supérieur (Gestionnaire de paquets pour le front-end)
 - **Sass** et **Bootstrap** (Préprocesseur CSS et framework pour l'interface utilisateur)
 - **TypeScript** (Langage pour le développement front-end)
@@ -208,6 +208,7 @@ MONGODB_URL=mongodb://<user>:<password>@127.0.0.1:27017
 
 4. **Commande initialisation**
     ```bash
+      chmod +x rest_db_and_init.sh
       ./rest_db_and_init.sh
 
 Cela créer la bdd, l'admin ainsi que les fixtures et lance le serveur mongodb
@@ -270,6 +271,10 @@ Pour la production :
     ```bash
       npm install
 
+# Configurer le mailer DSN avec les informations du serveur:
+  .env:
+  MAILER_DSN=smtp://127.0.0.1:1025
+  Modifier les informations en remplaçant le MAILER_DSN avec les informations de l'hébergeur
 # Compilation du fichier en local (impossible sur le serveur):
   -**Compilez pour la production :**
     ```bash
