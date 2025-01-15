@@ -1,0 +1,16 @@
+@import "../vendors/_custom-bootstrap";
+
+footer {
+  position: relative;
+  color: $warning;
+  font-family: 'Akaya_kanadaka', inter, sans-serif;
+}
+
+hr {
+  width: 50px;
+}
+
+.footer-logo {
+  width: 45px;
+  height: 45px;
+}
